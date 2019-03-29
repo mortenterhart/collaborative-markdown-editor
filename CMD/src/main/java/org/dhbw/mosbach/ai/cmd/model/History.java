@@ -28,6 +28,9 @@ public class History {
 	@Column(name="CONTENT")
 	private String name;
 	
+	@Column(name="HASH")
+	private String hash;
+	
 	@Column(name="CTIME")
 	private LocalDateTime ctime;
 	
@@ -52,6 +55,14 @@ public class History {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 
 	public LocalDateTime getCtime() {

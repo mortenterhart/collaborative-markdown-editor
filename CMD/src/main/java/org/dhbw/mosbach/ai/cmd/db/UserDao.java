@@ -3,11 +3,13 @@ package org.dhbw.mosbach.ai.cmd.db;
 import java.io.Serializable;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.JpaFactory;
@@ -15,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Bean class for user interactions with the database
+ * Dao class for user interactions with the database
  * @author 3040018
  */
 @RequestScoped
@@ -26,19 +28,27 @@ public class UserDao implements Serializable{
 
 	@PersistenceContext(unitName=CmdConfig.JPA_UNIT_NAME)
 	private EntityManager em;
+	
+	@Inject
+	private RepoDao repoDao;
 
 	public UserDao() {
 		this.em = JpaFactory.getEntityManager();
 	}
 
 	/**
-	 * Create a user to register them.
+	 * Create a user to register them and also create a repo for them.
 	 * @param u Given User object
 	 */
 	@Transactional
 	public void createUser(User u) {
 
 		this.em.persist(u);
+		
+		Repo repo = new Repo();
+		repo.setOwner(u);
+		
+		repoDao.createRepo(repo);
 
 		log.debug("Created a new user in database");
 	}

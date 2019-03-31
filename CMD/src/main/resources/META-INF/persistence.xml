@@ -7,10 +7,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   <persistence-unit name="cmd" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 	<jta-data-source>java:/cmd</jta-data-source>
-	<class>org.dhbw.mosbach.ai.cmd.model.User</class>
-	<class>org.dhbw.mosbach.ai.cmd.model.Repo</class>
 	<class>org.dhbw.mosbach.ai.cmd.model.Doc</class>
 	<class>org.dhbw.mosbach.ai.cmd.model.History</class>
+	<class>org.dhbw.mosbach.ai.cmd.model.Repo</class>
+	<class>org.dhbw.mosbach.ai.cmd.model.User</class>
     <properties>
        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
        <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>

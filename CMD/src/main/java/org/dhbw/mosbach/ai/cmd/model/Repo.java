@@ -42,4 +42,13 @@ public class Repo {
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("User: \n")
+				.append("\tid: "   + this.id + "\n")
+				.append("\tOwner: " + this.owner.getName() + "\n")
+				.toString();
+	}
 }

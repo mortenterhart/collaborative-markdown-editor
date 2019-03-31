@@ -120,4 +120,19 @@ public class Doc {
 	public void setRepo(Repo repo) {
 		this.repo = repo;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("User: \n")
+				.append("\tid: "   + this.id + "\n")
+				.append("\tName: " + this.name + "\n")
+				.append("\tUsers: " + this.users + "\n")
+				.append("\tCreated: " + this.ctime + "\n")
+				.append("\tLast updated: " + this.utime + "\n")
+				.append("\tCreated by: " + this.cuser + "\n")
+				.append("\tUpdated by: " + this.uuser + "\n")
+				.append("\tContent: " + this.content + "\n")
+				.toString();
+	}
 }

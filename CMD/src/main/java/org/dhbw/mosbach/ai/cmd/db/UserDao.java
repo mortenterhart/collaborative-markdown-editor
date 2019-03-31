@@ -2,10 +2,10 @@ package org.dhbw.mosbach.ai.cmd.db;
 
 import java.io.Serializable;
 
+import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 
 import org.dhbw.mosbach.ai.cmd.model.User;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * Bean class for user interactions with the database
  * @author 3040018
  */
-@TransactionScoped
+@RequestScoped
 public class UserDao implements Serializable{
 
 	private static final long serialVersionUID = -5249679220763364046L;
@@ -38,9 +38,7 @@ public class UserDao implements Serializable{
 	@Transactional
 	public void createUser(User u) {
 
-		this.em.getTransaction().begin();
 		this.em.persist(u);
-		this.em.getTransaction().commit();
 
 		log.debug("Created a new user in database");
 	}

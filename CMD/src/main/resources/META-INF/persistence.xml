@@ -4,15 +4,15 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
   version="2.1">
 
-  <persistence-unit name="cmd" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="cmd" transaction-type="JTA">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 	<jta-data-source>java:/cmd</jta-data-source>
-	<class>org.dhbw.mosbach.ai.cmd.model.User</class>
-	<class>org.dhbw.mosbach.ai.cmd.model.Repo</class>
 	<class>org.dhbw.mosbach.ai.cmd.model.Doc</class>
 	<class>org.dhbw.mosbach.ai.cmd.model.History</class>
+	<class>org.dhbw.mosbach.ai.cmd.model.Repo</class>
+	<class>org.dhbw.mosbach.ai.cmd.model.User</class>
     <properties>
-       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
        <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
       <property name="hibernate.show_sql" value="true" />
       <property name="hibernate.hbm2ddl.auto" value="update" />

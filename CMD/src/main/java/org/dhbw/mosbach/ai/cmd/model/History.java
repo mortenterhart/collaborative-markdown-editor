@@ -26,7 +26,7 @@ public class History {
 	private int id;
 
 	@Column(name="CONTENT")
-	private String name;
+	private String content;
 	
 	@Column(name="HASH")
 	private String hash;
@@ -49,12 +49,12 @@ public class History {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getContent() {
+		return content;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public String getHash() {
@@ -87,5 +87,18 @@ public class History {
 
 	public void setDoc(Doc doc) {
 		this.doc = doc;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append("User: \n")
+				.append("\tid: "   + this.id + "\n")
+				.append("\tHash: " + this.hash + "\n")
+				.append("\tCreated: " + this.ctime + "\n")
+				.append("\tLast updated: " + this.utime + "\n")
+				.append("\tDocument: " + this.doc.getId() + "\n")
+				.append("\tContent: " + this.content + "\n")
+				.toString();
 	}
 }

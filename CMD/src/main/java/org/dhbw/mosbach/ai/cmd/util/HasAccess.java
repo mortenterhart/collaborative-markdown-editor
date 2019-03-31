@@ -11,7 +11,7 @@ public enum HasAccess {
 		this.hasAccess = hasAccess;
 	}
 	
-	public String getAccess() {
+	public String getHasAccess() {
 		return this.hasAccess;
 	}
 }

@@ -30,9 +30,6 @@ public class Doc {
 	@Column(name="CONTENT")
 	private String content;
 	
-	@Column(name="USERS")
-	private String users;
-	
 	@Column(name="CTIME")
 	private LocalDateTime ctime;
 	
@@ -71,14 +68,6 @@ public class Doc {
 
 	public void setContent(String content) {
 		this.content = content;
-	}
-
-	public String getUsers() {
-		return users;
-	}
-
-	public void setUsers(String users) {
-		this.users = users;
 	}
 
 	public LocalDateTime getCtime() {
@@ -127,7 +116,6 @@ public class Doc {
 				.append("User: \n")
 				.append("\tid: "   + this.id + "\n")
 				.append("\tName: " + this.name + "\n")
-				.append("\tUsers: " + this.users + "\n")
 				.append("\tCreated: " + this.ctime + "\n")
 				.append("\tLast updated: " + this.utime + "\n")
 				.append("\tCreated by: " + this.cuser + "\n")

@@ -1,6 +1,8 @@
 package org.dhbw.mosbach.ai.cmd.servlet;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,21 +26,27 @@ public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 6763956539947432612L;
 	private static final Logger log = LoggerFactory.getLogger(RegisterServlet.class);
 
+	@Inject
+	private UserDao userDao;
+	
+	@Inject
+	private Hashing hashing;
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String username = (String)request.getParameter(CmdConfig.SESSION_USERNAME);
-		String password = new Hashing().hashPassword((String)request.getParameter(CmdConfig.PARAM_PASSWORD));
+		String password = hashing.hashPassword((String)request.getParameter(CmdConfig.PARAM_PASSWORD));
 		String mail 	= (String)request.getParameter(CmdConfig.PARAM_MAIL);
 		
 		if(username != null && !username.isEmpty() && password != null && !password.isEmpty()) 
 		{
-			if(new UserDao().getUser(username) == null) 
+			if(userDao.getUser(username) == null) 
 			{
 				User user = new User();
 				user.setName(username);
 				user.setPassword(password);
 				user.setMail(mail);
-				new UserDao().createUser(user);
+				userDao.createUser(user);
 				
 				log.debug("User registered successfully.");
 			}

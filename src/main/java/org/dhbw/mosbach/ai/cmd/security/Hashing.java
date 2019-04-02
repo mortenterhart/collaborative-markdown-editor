@@ -1,5 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.security;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+
+import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -31,5 +35,24 @@ public class Hashing {
         return (password != null && !password.isEmpty()) &&
                (hash != null && !hash.isEmpty()) ?
             BCrypt.checkpw(password, hash) : false;
+    }
+    
+    /**
+     * Hash the content of a doc for comparison purposes.
+     * SHA-1 is used since it does not have to be cryptographically secure
+     * but instead needs to be quite fast.
+     * @param content Given content
+     * @return A hex representation of the SHA-1 hash of the content
+     */
+    public String hashDocContent(String content) {
+    	
+    	try {
+    		MessageDigest md = MessageDigest.getInstance(CmdConfig.HASH_DOC_CONTENT);
+
+    		return new BigInteger(1, md.digest(content.getBytes())).toString(16);    		
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
     }
 }

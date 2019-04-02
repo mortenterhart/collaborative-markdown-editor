@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.io.Serializable;
 
 /**
  * Dao class for user interactions with the database
@@ -21,9 +20,8 @@ import java.io.Serializable;
  * @author 3040018
  */
 @RequestScoped
-public class UserDao implements Serializable {
+public class UserDao {
 
-    private static final long serialVersionUID = -5249679220763364046L;
     private static final Logger log = LoggerFactory.getLogger(UserDao.class);
 
     @PersistenceContext(unitName = CmdConfig.JPA_UNIT_NAME)

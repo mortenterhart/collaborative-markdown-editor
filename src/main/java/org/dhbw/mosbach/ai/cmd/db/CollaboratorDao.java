@@ -59,7 +59,7 @@ public class CollaboratorDao {
     	
     	try {
     		collaborators = (List<Collaborator>) this.em
-                   .createQuery("FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess=HasAccess.Y")
+                   .createQuery("FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess:=HasAccess.Y")
                    .setParameter("id", d.getId())
                    .getResultList();
         } catch (NoResultException e) {
@@ -81,7 +81,7 @@ public class CollaboratorDao {
     	
     	try {
     		collaborators = (List<Collaborator>) this.em
-                   .createQuery("FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess=HasAccess.Y")
+                   .createQuery("FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess:=HasAccess.Y")
                    .setParameter("id", u.getId())
                    .getResultList();
         } catch (NoResultException e) {
@@ -103,7 +103,7 @@ public class CollaboratorDao {
     	
     	 try {
     		collaborator = (Collaborator) this.em
-    				.createQuery("FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id:=doc_id AND c.hasAccess=HasAccess.Y")
+    				.createQuery("FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id:=doc_id AND c.hasAccess:=HasAccess.Y")
                     .setParameter("user_id", u.getId())
                     .setParameter("doc_id", d.getId())
                     .getSingleResult();

@@ -65,7 +65,7 @@ public class HistoryDao {
 
         try {
         	history = (History) this.em
-                   .createQuery("FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                   .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
                    .setParameter("doc_id", d.getId())
                    .getResultList()
                    .get(0);
@@ -82,13 +82,14 @@ public class HistoryDao {
 	 * @return A list of history entries if there are any, null otherwise
 	 */
     @SuppressWarnings("unchecked")
+    @Transactional
 	public List<History> getFullHistoryForDoc(Doc d) {
     	
     	List<History> fullHistory = new ArrayList<>();
     	
     	try {
     		fullHistory = (List<History>) this.em
-                   .createQuery("FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                   .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
                    .setParameter("doc_id", d.getId())
                    .getResultList();
         } catch (NoResultException e) {

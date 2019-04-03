@@ -58,14 +58,36 @@ public class UserDao {
      * @param username Given username
      * @return A User object, if one was found with the username, otherwise it returns null
      */
-    public User getUser(String username) {
+    public User getUserByName(String username) {
 
         User user = null;
 
         try {
             user = (User) this.em
-                .createQuery("FROM User u WHERE LOWER(u.name)=:username")
+                .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
                 .setParameter("username", username.toLowerCase())
+                .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+
+        return user;
+    }
+    
+    /**
+     * Get a user entry from the database based on the provided id.
+     *
+     * @param id Given id
+     * @return A User object, if one was found with the id, otherwise it returns null
+     */
+    public User getUserById(int id) {
+
+        User user = null;
+
+        try {
+            user = (User) this.em
+                .createQuery("SELECT u FROM User u WHERE u.id=:id")
+                .setParameter("id", id)
                 .getSingleResult();
         } catch (NoResultException e) {
             return null;

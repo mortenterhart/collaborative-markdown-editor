@@ -13,6 +13,7 @@ import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
+import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.dhbw.mosbach.ai.cmd.util.JpaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +54,19 @@ public class CollaboratorDao {
      * @return A list of collaborators found for that doc, null if no collaborators are found
      */
     @SuppressWarnings("unchecked")
+    @Transactional
 	public List<Collaborator> getCollaboratorsForDoc(Doc d) {
     	
     	List<Collaborator> collaborators = new ArrayList<>();
     	
     	try {
     		collaborators = (List<Collaborator>) this.em
-                   .createQuery("FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess:=HasAccess.Y")
+                   .createQuery("SELECT c FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess=:hasAccess")
                    .setParameter("id", d.getId())
+                   .setParameter("hasAccess", HasAccess.Y)
                    .getResultList();
         } catch (NoResultException e) {
+        	e.printStackTrace();
             return null;
         }
     	
@@ -81,10 +85,12 @@ public class CollaboratorDao {
     	
     	try {
     		collaborators = (List<Collaborator>) this.em
-                   .createQuery("FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess:=HasAccess.Y")
-                   .setParameter("id", u.getId())
-                   .getResultList();
+    				.createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess=:hasAccess")
+                    .setParameter("id", u.getId())
+                    .setParameter("hasAccess", HasAccess.Y)
+                    .getResultList();
         } catch (NoResultException e) {
+        	e.printStackTrace();
             return null;
         }
     	
@@ -103,9 +109,10 @@ public class CollaboratorDao {
     	
     	 try {
     		collaborator = (Collaborator) this.em
-    				.createQuery("FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id:=doc_id AND c.hasAccess:=HasAccess.Y")
+    				.createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id=:doc_id AND c.hasAccess=:hasAccess")
                     .setParameter("user_id", u.getId())
                     .setParameter("doc_id", d.getId())
+                    .setParameter("hasAccess", HasAccess.Y)
                     .getSingleResult();
          } catch (NoResultException e) {
              return null;
@@ -117,14 +124,17 @@ public class CollaboratorDao {
     /**
      * Update an existing collaborator entry
      * @param c Given collaborator object
+     * @return The number of updated rows
      */
-    public void updateCollaborator(Collaborator c) {
+    @Transactional
+    public int updateCollaborator(Collaborator c) {
 		
-		this.em.createQuery("UPDATE Collaborator c SET c.hasAccess:=hasAccess WHERE c.doc.id:=doc_id AND c.user.id:=user_id")
-		.setParameter("hasAccess", c.getHasAccess())
-		.setParameter("doc_id", c.getDoc().getId())
-		.setParameter("user_id", c.getUser().getId());
-		
-		log.debug("Updated collaborator: " + c.getId());
+    	log.debug("Updating collaborator: " + c.getId());
+    	
+		return this.em.createQuery("UPDATE Collaborator c SET c.hasAccess=:hasAccess WHERE c.doc.id=:doc_id AND c.user.id=:user_id")
+					  .setParameter("hasAccess", c.getHasAccess())
+					  .setParameter("doc_id", c.getDoc().getId())
+					  .setParameter("user_id", c.getUser().getId())
+					  .executeUpdate();
 	}
 }

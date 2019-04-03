@@ -39,7 +39,7 @@ public class RegisterServlet extends HttpServlet {
         String mail = (String) request.getParameter(CmdConfig.PARAM_MAIL);
 
         if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
-            if (userDao.getUser(username) == null) {
+            if (userDao.getUserByName(username) == null) {
                 User user = new User();
                 user.setName(username);
                 user.setPassword(password);

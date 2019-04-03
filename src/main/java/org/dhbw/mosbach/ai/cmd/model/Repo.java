@@ -24,7 +24,7 @@ public class Repo {
     @Column
     private int id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_USERS")
     private User owner;
 

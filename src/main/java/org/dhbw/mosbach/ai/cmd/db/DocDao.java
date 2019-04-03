@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -32,7 +33,7 @@ public class DocDao {
     private EntityManager em;
 	
 	@Inject
-	CollaboratorDao collaboratorDao;
+	private CollaboratorDao collaboratorDao;
 	
     public DocDao() {
         this.em = JpaFactory.getEntityManager();
@@ -62,7 +63,7 @@ public class DocDao {
 
         try {
         	doc = (Doc) this.em
-                   .createQuery("FROM Doc d WHERE d.id=:doc_id")
+                   .createQuery("SELECT d FROM Doc d WHERE d.id=:doc_id")
                    .setParameter("doc_id", id)
                    .getSingleResult();
         } catch (NoResultException e) {
@@ -73,43 +74,75 @@ public class DocDao {
     }
 	
 	/**
-	 * Get all the documents where the given user is the owner or a collaborator
+	 * Get all the documents where the given user is the owner
 	 * @param u Given user
 	 * @return A list of docs, null if nothing is found
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Doc> getDocsForUser(User u) {
+    @Transactional
+	public List<Doc> getDocsOwnedBy(User u) {
 		
 		List<Doc> docs = new ArrayList<>();
 		
 		try {
-			
-			List<Collaborator> collaborations = collaboratorDao.getCollaborationsForUser(u);
-			
     		docs = (List<Doc>) this.em
-                   .createQuery("FROM Doc d WHERE (d.owner.id=:user_id OR d.id IN :collaborations.doc.id) ORDER BY d.ctime DESC")
+                   .createQuery("SELECT d FROM Doc d WHERE d.cuser.id=:user_id ORDER BY d.ctime DESC")
                    .setParameter("user_id", u.getId())
-                   .setParameter("collaborations", collaborations)
                    .getResultList();
         } catch (NoResultException e) {
             return null;
         }
 		
-		return docs.isEmpty() ? docs : null;
+		return docs;
+	}
+	
+	/**
+	 * Get all the documents where the given user is a collaborator
+	 * @param u Given user
+	 * @return A list of docs, null if nothing is found
+	 */
+	@SuppressWarnings("unchecked")
+    @Transactional
+	public List<Doc> getDocsCollaboratedBy(User u) {
+		
+		List<Doc> docs = new ArrayList<>();
+		
+		try {			
+    		docs = (List<Doc>) this.em
+                   .createQuery("SELECT d FROM Doc d WHERE d.cuser.id IN :collaborations ORDER BY d.ctime DESC")
+                   .setParameter("collaborations", getIdListFromCollaborator(collaboratorDao.getCollaborationsForUser(u)))
+                   .getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
+		
+		return docs;
+	}
+	
+	/**
+	 * Utility program to turn the list of collaborator objects into a list of doc ids
+	 * @param collaborations Given list of collaborator objects
+	 * @return A list of integers, containing the doc ids
+	 */
+	private List<Integer> getIdListFromCollaborator(List<Collaborator> collaborations) {
+		return collaborations.stream().map(Collaborator::getDoc).collect(Collectors.toList()).stream().map(Doc::getId).collect(Collectors.toList());
 	}
 	
 	/**
 	 * Update a certain document in the database
 	 * @param d Given doc object
 	 * @param u Given user who initiated the update
+     * @return The number of updated rows
 	 */
-	public void updateDoc(Doc d, User u) {
+    @Transactional
+	public int updateDoc(Doc d, User u) {
 		
-		this.em.createQuery("UPDATE Doc d SET d.content:=content, d.uuser:=uuser WHERE d.id:=id")
-		.setParameter("content", d.getContent())
-		.setParameter("uuser", u.getId())
-		.setParameter("id", d.getId());
-		
-		log.debug("Updated document: " + d.getId());
+    	log.debug("Updated document: " + d.getId());
+    	
+		return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
+					  .setParameter("content", d.getContent())
+					  .setParameter("uuser", u.getId())
+					  .setParameter("id", d.getId())
+					  .executeUpdate();
 	}
 }

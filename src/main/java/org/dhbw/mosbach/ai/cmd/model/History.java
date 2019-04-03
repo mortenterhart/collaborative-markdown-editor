@@ -34,7 +34,7 @@ public class History {
     @Column(name = "CTIME")
     private LocalDateTime ctime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_DOCS")
     private Doc doc;
 

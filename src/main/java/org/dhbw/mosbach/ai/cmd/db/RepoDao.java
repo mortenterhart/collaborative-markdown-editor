@@ -55,7 +55,7 @@ public class RepoDao {
 
         try {
             repo = (Repo) this.em
-                .createQuery("FROM Repo r WHERE r.owner.id=:userid")
+                .createQuery("SELECT r FROM Repo r WHERE r.owner.id=:userid")
                 .setParameter("userid", user.getId())
                 .getSingleResult();
         } catch (NoResultException e) {

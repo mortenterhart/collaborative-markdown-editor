@@ -35,4 +35,8 @@ public abstract class CmdConfig {
      * JPA unit name
      */
     public static final String PERSISTENCE_UNIT_NAME = "cmd";
+    /**
+     * Hashing algorithm for the doc content and history database table
+     */
+    public static final String HASH_DOC_CONTENT = "SHA-1";
 }

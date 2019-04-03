@@ -37,13 +37,15 @@ public class Doc {
     @Column(name = "UTIME")
     private LocalDateTime utime;
 
-    @Column(name = "CUSER")
-    private String cuser;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CUSER")
+    private User cuser;
 
-    @Column(name = "UUSER")
-    private String uuser;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "UUSER")
+    private User uuser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_REPOS")
     private Repo repo;
 
@@ -86,24 +88,24 @@ public class Doc {
     public void setUtime(LocalDateTime utime) {
         this.utime = utime;
     }
+    
+    public User getCuser() {
+		return cuser;
+	}
 
-    public String getCuser() {
-        return cuser;
-    }
+	public void setCuser(User cuser) {
+		this.cuser = cuser;
+	}
 
-    public void setCuser(String cuser) {
-        this.cuser = cuser;
-    }
+	public User getUuser() {
+		return uuser;
+	}
 
-    public String getUuser() {
-        return uuser;
-    }
+	public void setUuser(User uuser) {
+		this.uuser = uuser;
+	}
 
-    public void setUuser(String uuser) {
-        this.uuser = uuser;
-    }
-
-    public Repo getRepo() {
+	public Repo getRepo() {
         return repo;
     }
 
@@ -119,8 +121,8 @@ public class Doc {
             .append("\tName: " + this.name + "\n")
             .append("\tCreated: " + this.ctime + "\n")
             .append("\tLast updated: " + this.utime + "\n")
-            .append("\tCreated by: " + this.cuser + "\n")
-            .append("\tUpdated by: " + this.uuser + "\n")
+            .append("\tCreated by: " + this.cuser.getName() + "\n")
+            .append("\tUpdated by: " + this.uuser.getName() + "\n")
             .append("\tContent: " + this.content + "\n")
             .toString();
     }

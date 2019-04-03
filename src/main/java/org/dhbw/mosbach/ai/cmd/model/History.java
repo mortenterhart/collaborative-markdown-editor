@@ -34,10 +34,7 @@ public class History {
     @Column(name = "CTIME")
     private LocalDateTime ctime;
 
-    @Column(name = "UTIME")
-    private LocalDateTime utime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_DOCS")
     private Doc doc;
 
@@ -72,15 +69,7 @@ public class History {
     public void setCtime(LocalDateTime ctime) {
         this.ctime = ctime;
     }
-
-    public LocalDateTime getUtime() {
-        return utime;
-    }
-
-    public void setUtime(LocalDateTime utime) {
-        this.utime = utime;
-    }
-
+    
     public Doc getDoc() {
         return doc;
     }
@@ -96,7 +85,6 @@ public class History {
             .append("\tid: " + this.id + "\n")
             .append("\tHash: " + this.hash + "\n")
             .append("\tCreated: " + this.ctime + "\n")
-            .append("\tLast updated: " + this.utime + "\n")
             .append("\tDocument: " + this.doc.getId() + "\n")
             .append("\tContent: " + this.content + "\n")
             .toString();

@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.io.Serializable;
 
 /**
  * Dao class for user interactions with the database
@@ -21,9 +20,8 @@ import java.io.Serializable;
  * @author 3040018
  */
 @RequestScoped
-public class UserDao implements Serializable {
+public class UserDao {
 
-    private static final long serialVersionUID = -5249679220763364046L;
     private static final Logger log = LoggerFactory.getLogger(UserDao.class);
 
     @PersistenceContext(unitName = CmdConfig.JPA_UNIT_NAME)
@@ -60,14 +58,36 @@ public class UserDao implements Serializable {
      * @param username Given username
      * @return A User object, if one was found with the username, otherwise it returns null
      */
-    public User getUser(String username) {
+    public User getUserByName(String username) {
 
         User user = null;
 
         try {
             user = (User) this.em
-                .createQuery("FROM User u WHERE LOWER(u.name)=:username")
+                .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
                 .setParameter("username", username.toLowerCase())
+                .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+
+        return user;
+    }
+    
+    /**
+     * Get a user entry from the database based on the provided id.
+     *
+     * @param id Given id
+     * @return A User object, if one was found with the id, otherwise it returns null
+     */
+    public User getUserById(int id) {
+
+        User user = null;
+
+        try {
+            user = (User) this.em
+                .createQuery("SELECT u FROM User u WHERE u.id=:id")
+                .setParameter("id", id)
                 .getSingleResult();
         } catch (NoResultException e) {
             return null;

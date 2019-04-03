@@ -43,7 +43,7 @@ public class TestHashing {
 		
 		String content = "test content 123 !öäüß";		
 		String hash = new Hashing().hashDocContent(content);
-		String expectedHash = "7fbf6259d6c81d8f4de5ba9e000eb57142ac5eb8";
+		String expectedHash = "d2a43c8e0de0fe56ec69d70f3540682ab30684c1";
 
 		assertEquals(expectedHash, hash);
 	}

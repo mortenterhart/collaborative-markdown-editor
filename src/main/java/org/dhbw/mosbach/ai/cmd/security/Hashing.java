@@ -1,6 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.security;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
@@ -49,7 +50,7 @@ public class Hashing {
     	try {
     		MessageDigest md = MessageDigest.getInstance(CmdConfig.HASH_DOC_CONTENT);
 
-    		return new BigInteger(1, md.digest(content.getBytes())).toString(16);    		
+    		return new BigInteger(1, md.digest(content.getBytes(StandardCharsets.UTF_8))).toString(16);    		
     	} catch(Exception e) {
     		e.printStackTrace();
     		return null;

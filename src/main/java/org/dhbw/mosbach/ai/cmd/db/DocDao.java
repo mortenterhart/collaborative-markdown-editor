@@ -145,4 +145,16 @@ public class DocDao {
 					  .setParameter("id", d.getId())
 					  .executeUpdate();
 	}
+    
+    @Transactional
+	public int transferRepo(Doc d) {
+		
+    	log.debug("Updated document: " + d.getId());
+    	
+		return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
+					  .setParameter("repo", d.getRepo())
+					  .setParameter("uuser", d.getUuser())
+					  .setParameter("id", d.getId())
+					  .executeUpdate();
+	}
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
+import org.dhbw.mosbach.ai.cmd.db.RepoDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
@@ -34,13 +35,16 @@ public class CollaboratorServlet extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(CollaboratorServlet.class);
 
 	@Inject
-	CollaboratorDao collaboratorDao;
+	private CollaboratorDao collaboratorDao;
 	
 	@Inject
-	DocDao docDao;
+	private DocDao docDao;
 	
 	@Inject
-	UserDao userDao;
+	private UserDao userDao;
+	
+	@Inject
+	private RepoDao repoDao;
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -92,8 +96,8 @@ public class CollaboratorServlet extends HttpServlet {
 	private void removeOrUnsubscribeCollab(User userToRemove, User currentUser, Collaborator c, boolean isRemove) {
 		
 		c.setHasAccess(HasAccess.N);
-		
-		if(isRemove && c.getDoc().getCuser().equals(currentUser))
+
+		if(c.getDoc().getRepo().equals(repoDao.getRepo(currentUser)) && isRemove)
 			c.setUser(userToRemove);
 		else
 			c.setUser(currentUser);		

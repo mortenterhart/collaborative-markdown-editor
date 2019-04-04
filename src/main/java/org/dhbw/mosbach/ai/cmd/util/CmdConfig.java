@@ -72,6 +72,10 @@ public abstract class CmdConfig {
 	 */
 	public static final String SERVLET_PATH_UNSUBSCRIBE = "/unsubscribe";
 	/**
+	 * Path to the DocServlet class to transfer ownership of a given doc to another user.
+	 */
+	public static final String SERVLET_PATH_TRANSFER_OWNER = "transfer";
+	/**
 	 * JPA unit name
 	 */
 	public static final String PERSISTENCE_UNIT_NAME = "cmd";

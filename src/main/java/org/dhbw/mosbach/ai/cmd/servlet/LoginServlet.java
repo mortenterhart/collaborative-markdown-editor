@@ -40,7 +40,10 @@ public class LoginServlet extends HttpServlet {
             User user = userDao.getUserByName(username);
 
             if (user != null) {
-                if (hashing.checkPassword((String) request.getParameter(CmdConfig.PARAM_PASSWORD), user.getPassword())) {                	
+                if (hashing.checkPassword((String) request.getParameter(CmdConfig.PARAM_PASSWORD), user.getPassword())) {
+                	
+                	request.getSession().setAttribute(CmdConfig.SESSION_USER, user);
+                	request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
                     log.debug("Login successful!");
                 } else {
                     log.debug("Wrong password!");

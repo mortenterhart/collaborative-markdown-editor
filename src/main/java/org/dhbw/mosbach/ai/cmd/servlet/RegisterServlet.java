@@ -34,9 +34,9 @@ public class RegisterServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String username = (String) request.getParameter(CmdConfig.SESSION_USERNAME);
-        String password = hashing.hashPassword((String) request.getParameter(CmdConfig.PARAM_PASSWORD));
-        String mail = (String) request.getParameter(CmdConfig.PARAM_MAIL);
+        String username = (String)request.getParameter(CmdConfig.SESSION_USERNAME);
+        String password = hashing.hashPassword((String)request.getParameter(CmdConfig.PARAM_PASSWORD));
+        String mail 	= (String)request.getParameter(CmdConfig.PARAM_MAIL);
 
         if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
             if (userDao.getUserByName(username) == null) {

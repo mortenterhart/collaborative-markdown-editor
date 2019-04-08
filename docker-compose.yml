@@ -1,0 +1,57 @@
+version: "3.6"
+
+services:
+    webapp:
+        image: "collab-down:latest"
+        hostname: collab-down
+        container_name: "collab-down-instance"
+        build:
+            context: .
+            dockerfile: Dockerfile.webapp
+            args:
+                buildno: 1
+        ports:
+            - "8080:8080"
+            - "9990:9990"
+        links:
+            - "mysql:mysql-server"
+        restart: on-failure
+        depends_on:
+            - mysql
+
+    data:
+        container_name: collab-down-data
+        image: "mysql-initialized:latest"
+        command: "true"
+        depends_on:
+          - mysql
+
+    mysql:
+        image: "mysql-initialized:latest"
+        hostname: mysql-server
+        container_name: mysql-instance
+        build:
+            context: .
+            dockerfile: Dockerfile.mysql
+            args:
+                buildno: 2
+        deploy:
+            mode: replicated
+            replicas: 5
+            restart_policy:
+                condition: on-failure
+        volumes:
+            - type: volume
+              source: mysql_data
+              target: /var/lib/mysql
+              volume:
+                  nocopy: true
+        ports:
+            - "3306:3306"
+        restart: on-failure
+
+volumes:
+    mysql_data:
+        name: collab-down-data
+        labels:
+            org.dhbw.mosbach.cmd.license: LGPL 3.0

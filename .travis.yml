@@ -1,2 +1,13 @@
 language: java
 jdk: oraclejdk11
+
+before_deploy:
+  - docker version
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: b/HZn3RgkHOHuvIuDNoNbTbO++Zc1qPo6vEy58SM6X1yRRlCmK1yLjdAfkITccrT/oUoFEzx7YO4VU1jprEuVOCP0+Y1dZ7QtI7THFSfKB1oLAM7Kuz0MiLI+m5bKvdE6wJU462uJot1vS+eDPl3OPyf/kJxsStkcOANyvQuIBk8Ooa0gOtP0yg+ncnn5q/w0bzKbmNWMHJ9/z/w5cZvOZp/F4KI58Sf+9cFWcve+eNC4kXuWEAgDVzZ2BL/OfVE8H0T1P3wtb86ZqYjz1XHYL5kDzHJbtt3afgiS+68eM8xDNkXhoNR5RgyhX2oMcbber8J8l9b0WS9lkagWOPUA1nP1/KwVuaoaHHPfXWwIRPOeMC32KSF/HOViMVYsemkWGRp1lCey/Gl6TUH7m2Xg6q1jRXoGj+R2yM2P+zy2PAliGOdQnJ7b5tYkvMvkFRwx2W1br4ZGjaiwyW4jTAicFN2GUhDIIsJWyFVxFv/y72zYNyWNkWWWMLEuJbbqziE2IPtjPnB7ZJqZVnqLMdYqG2Ul1aAe2PfP3txTMm2hJuKsgh6grpu8bqWgmWLD+RXmlCp4jYzk0XULnLlqQJPZ8HaILAoyLVR02vEMdn3bsgg1AjRaxRPkPI8I8VJuISR9d9h6IA25H90UVTNijkT+VHy17xzSUKcatE04qFVD74=
+  app: collab-down
+  strategy: api
+  on: master

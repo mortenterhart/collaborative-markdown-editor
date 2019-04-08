@@ -1,0 +1,14 @@
+FROM mysql:8.0.15 as database
+
+ARG buildno
+
+ENV MYSQL_USER mysqluser
+ENV MYSQL_PASSWORD mysqlpass
+ENV MYSQL_DATABASE cmd
+ENV MYSQL_PORT 3306
+
+ADD sql/cmd.sql /docker-entrypoint-initdb.d
+
+RUN echo "Build Number: ${buildno}"
+
+EXPOSE ${MYSQL_PORT}

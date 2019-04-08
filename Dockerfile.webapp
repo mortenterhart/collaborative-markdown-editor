@@ -1,0 +1,36 @@
+FROM jboss/wildfly:16.0.0.Final as server
+
+ARG buildno
+
+WORKDIR .
+
+ENV WEBAPP_PORT 8080/tcp
+ENV ADMINISTRATION_PORT 9990/tcp
+
+ENV WILDFLY_USER wildfly
+ENV WILDFLY_PASSWORD wildfly
+
+ENV DB_NAME cmd
+ENV DB_USER mysqluser
+ENV DB_PASSWORD mysqlpass
+ENV DB_PORT 3306
+ENV DB_URI mysql-server:${DB_PORT}
+
+ENV MYSQL_VERSION 8.0.15
+ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh
+ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
+
+RUN echo "Build Number: ${buildno}"
+
+# Configure WildFly server
+ADD ./jboss-configure-datasource.sh .
+RUN ./jboss-configure-datasource.sh
+
+RUN rm -f ./jboss-configure-datasource.sh
+
+ADD "target/CMD.war" ${JBOSS_HOME}/standalone/deployments
+
+EXPOSE ${WEBAPP_PORT}
+EXPOSE ${ADMINISTRATION_PORT}
+
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]

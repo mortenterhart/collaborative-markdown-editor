@@ -24,7 +24,7 @@ RUN echo "Build Number: ${buildno}"
 
 # Configure WildFly server
 ADD ./jboss-configure-datasource.sh .
-RUN ls -la ${JBOSS_HOME} && stat ${JBOSS_HOME}
+RUN ls -la ${PWD} && stat ${PWD}/jboss-configure-datasource.sh
 RUN ./jboss-configure-datasource.sh
 
 RUN rm -f ./jboss-configure-datasource.sh

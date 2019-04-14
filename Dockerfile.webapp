@@ -23,8 +23,7 @@ ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
 RUN echo "Build Number: ${buildno}"
 
 # Configure WildFly server
-RUN pwd
-RUN whoami
+RUN ls -la ${JBOSS_HOME} && stat ${JBOSS_HOME}
 ADD ./jboss-configure-datasource.sh .
 RUN ./jboss-configure-datasource.sh
 

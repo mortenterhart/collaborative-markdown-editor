@@ -12,9 +12,10 @@ services:
                 buildno: 1
         ports:
             - "8080:8080"
-            - "9990:9990"
         links:
             - "mysql:mysql-server"
+        networks:
+          - service_network
         restart: on-failure
         depends_on:
             - mysql
@@ -39,6 +40,8 @@ services:
               target: /var/lib/mysql
               volume:
                   nocopy: true
+        networks:
+          - service_network
         ports:
             - "3306:3306"
         restart: on-failure
@@ -48,3 +51,7 @@ volumes:
         name: collab-down-data
         labels:
             org.dhbw.mosbach.cmd.license: LGPL 3.0
+
+networks:
+  service_network:
+      name: collab-down-network

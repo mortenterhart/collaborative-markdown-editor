@@ -1,3 +1,14 @@
 build:
+    docker:
+        webapp: Dockerfile.webapp
+        mysql: Dockerfile.mysql
+    config:
+        buildno: 1
 release:
-script:
+run:
+    webapp:
+        command:
+            - /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+    mysql:
+        command:
+            - mysqld

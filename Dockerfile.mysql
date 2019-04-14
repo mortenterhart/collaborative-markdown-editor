@@ -2,8 +2,11 @@ FROM mysql:8.0.15 as database
 
 ARG buildno
 
+ENV MYSQL_ROOT_PASSWORD mysqlroot
+
 ENV MYSQL_USER mysqluser
 ENV MYSQL_PASSWORD mysqlpass
+
 ENV MYSQL_DATABASE cmd
 ENV MYSQL_PORT 3306
 

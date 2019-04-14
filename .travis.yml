@@ -1,6 +1,9 @@
 language: java
 jdk: oraclejdk11
 
+services:
+  - docker
+
 before_deploy:
   - docker version
 

@@ -30,7 +30,7 @@ RUN ./jboss-configure-datasource.sh
 
 RUN rm -f ./jboss-configure-datasource.sh
 
-ADD "target/CMD.war" ${JBOSS_HOME}/standalone/deployments
+ADD --chown=jboss:jboss "target/CMD.war" ${JBOSS_HOME}/standalone/deployments
 
 EXPOSE ${WEBAPP_PORT}
 

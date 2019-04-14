@@ -1,3 +1,7 @@
+setup:
+    addons:
+        - plan: heroku-buildpack-java
+          as: build-tool
 build:
     docker:
         webapp: Dockerfile.webapp

@@ -20,12 +20,14 @@ ENV MYSQL_VERSION 8.0.15
 ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh
 ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
 
+USER jboss
+
 RUN echo "Build Number: ${buildno}"
 
 # Configure WildFly server
-USER jboss
 ADD ./jboss-configure-datasource.sh .
 RUN ls -la ${PWD} && stat ${PWD}/jboss-configure-datasource.sh
+RUN chown jboss:jboss ./jboss-configure-datasource.sh
 RUN ./jboss-configure-datasource.sh
 
 RUN rm -f ./jboss-configure-datasource.sh

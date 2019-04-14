@@ -4,7 +4,6 @@ build:
         mysql: Dockerfile.mysql
     config:
         buildno: 1
-release:
 run:
     web: echo App is running!
     webapp:

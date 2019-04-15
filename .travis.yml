@@ -1,2 +1,9 @@
 language: java
 jdk: oraclejdk11
+
+# Cache Maven local repository and node
+# modules
+cache:
+    directories:
+        - ${HOME}/.m2            # Maven repository
+        - frontend/node_modules  # NPM modules

@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "postbuild": "mv build ../project_backend/"
+    "postbuild": "node postscript.js"
   },
   "dependencies": {
     "core-js": "^2.6.5",

@@ -70,3 +70,7 @@ buildNumber.properties
 
 # Vim Temporary Files
 *.swp
+
+# Built frontend
+src/main/webapp/
+!src/main/webapp/.gitkeep

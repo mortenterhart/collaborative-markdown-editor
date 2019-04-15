@@ -7,7 +7,7 @@
                         <v-tab>Login</v-tab>
                         <v-tab>Register</v-tab>
                         <v-tab-item>
-                            <v-form>
+                            <v-form method="POST" action="login">
                                 <v-text-field
                                         append-icon="person"
                                         name="username"
@@ -21,11 +21,11 @@
                                         label="Password"
                                         v-model="loginPassword"
                                         @click:append="hideLoginPassword = !hideLoginPassword"></v-text-field>
-                                <v-btn block color="primary" @click="handleLogin">Login</v-btn>
+                                <v-btn type="submit" block color="primary">Login</v-btn>
                             </v-form>
                         </v-tab-item>
                         <v-tab-item>
-                            <v-form>
+                            <v-form method="POST" action="register">
                                 <v-text-field
                                         append-icon="person"
                                         :rules="usernameRules"
@@ -48,7 +48,7 @@
                                         label="Password"
                                         v-model="regPassword"
                                         @click:append="hideRegPassword = !hideRegPassword"></v-text-field>
-                                <v-btn block color="primary" @click="handleRegistration">Register</v-btn>
+                                <v-btn type="submit" block color="primary">Register</v-btn>
                             </v-form>
                         </v-tab-item>
                     </v-tabs>
@@ -80,13 +80,7 @@
         methods: {
             ...mapMutations({
                 hideLoginDialog: 'login/hideLoginDialog'
-            }),
-            handleLogin: function() {
-                // handle login
-            },
-            handleRegistration: function() {
-                // handle registration
-            }
+            })
         },
         watch: {
             regUsername: function(username) {

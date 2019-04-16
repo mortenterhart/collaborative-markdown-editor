@@ -13,7 +13,7 @@
         <template v-if="showOverview">
             <v-list>
                 <v-list-tile>
-                    <v-list-tile-title>Your documents</v-list-tile-title>
+                    <v-list-tile-title>Your Documents</v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(doc, i) in docs">
@@ -23,17 +23,18 @@
                         </v-list-tile-action>
                         <v-list-tile-title>{{ doc.title }}</v-list-tile-title>
                         <v-spacer />
+                        <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
                         <v-icon @click="showDocumentHistory(doc)">history</v-icon>
                     </v-list-tile>
                 </template>
             </v-list>
         </template>
-        <template v-else>
+        <template v-if="showHistory">
             <v-list>
                 <v-list-tile>
-                    <v-list-tile-title>Document history</v-list-tile-title>
+                    <v-list-tile-title>Document History</v-list-tile-title>
                     <v-spacer/>
-                    <v-icon @click="showOverview = true">keyboard_backspace</v-icon>
+                    <v-icon @click="showOverview = true; showHistory =  false">keyboard_backspace</v-icon>
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(changes, i) in currentDocument.history">
@@ -48,6 +49,33 @@
                 </template>
             </v-list>
         </template>
+        <template v-if="showCollaborators">
+            <v-list>
+                <v-list-tile>
+                    <v-list-tile-title>The Collaborators</v-list-tile-title>
+                    <v-spacer/>
+                    <v-icon @click="showOverview = true; showCollaborators = false">keyboard_backspace</v-icon>
+                </v-list-tile>
+                <v-divider/>
+                <template v-for="(collaborator, i) in currentDocument.collaborators">
+                    <v-list-tile v-bind:key="i">
+                        <v-list-tile-action>
+                            <v-icon>person</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>{{ collaborator }}</v-list-tile-title>
+                        <v-spacer />
+                        <v-icon>cancel</v-icon>
+                    </v-list-tile>
+                </template>
+                <v-list-tile>
+                    <v-text-field
+                            label="Add Collaborators"
+                            single-line
+                    ></v-text-field>
+                    <v-icon>person_add</v-icon>
+                </v-list-tile>
+            </v-list>
+        </template>
     </div>
 </template>
 
@@ -56,16 +84,24 @@
         name: "Drawer",
         data: () => ({
             showOverview: true,
+            showHistory: false,
+            showCollaborators: false,
             currentDocument: {},
             docs: [
-                { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019']},
-                { icon: 'group', title: 'Projektarbeit', history: ['11.04.2019', '01.04.2019']},
-                { icon: 'group', title: 'Jave EE', history: ['20.04.2019', '16.04.2019', '05.04.2019']},
+                { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
+                { icon: 'group', title: 'Projektarbeit', history: ['11.04.2019', '01.04.2019'], collaborators: ['Phillip Seitz', 'Jacob Krauth']},
+                { icon: 'group', title: 'Jave EE', history: ['20.04.2019', '16.04.2019', '05.04.2019'], collaborators: ['Fabian Schulz']},
             ]
         }),
         methods: {
             showDocumentHistory: function(doc) {
                 this.showOverview = false;
+                this.showHistory = true;
+                this.currentDocument = doc;
+            },
+            showCollaboratorList: function(doc) {
+                this.showOverview = false;
+                this.showCollaborators = true;
                 this.currentDocument = doc;
             }
         }

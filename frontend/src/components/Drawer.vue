@@ -27,6 +27,13 @@
                         <v-icon @click="showDocumentHistory(doc)">history</v-icon>
                     </v-list-tile>
                 </template>
+                <v-list-tile>
+                    <v-text-field
+                            label="New Document"
+                            single-line
+                    ></v-text-field>
+                    <v-icon>note_add</v-icon>
+                </v-list-tile>
             </v-list>
         </template>
         <template v-if="showHistory">

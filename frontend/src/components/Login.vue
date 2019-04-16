@@ -21,7 +21,7 @@
                                         label="Password"
                                         v-model="loginPassword"
                                         @click:append="hideLoginPassword = !hideLoginPassword"></v-text-field>
-                                <v-btn block color="primary">Login</v-btn>
+                                <v-btn block color="primary" @click="handleLogin">Login</v-btn>
                             </v-form>
                         </v-tab-item>
                         <v-tab-item>
@@ -48,7 +48,7 @@
                                         label="Password"
                                         v-model="regPassword"
                                         @click:append="hideRegPassword = !hideRegPassword"></v-text-field>
-                                <v-btn block color="primary">Register</v-btn>
+                                <v-btn block color="primary" @click="handleRegistration">Register</v-btn>
                             </v-form>
                         </v-tab-item>
                     </v-tabs>
@@ -80,7 +80,15 @@
         methods: {
             ...mapMutations({
                 hideLoginDialog: 'login/hideLoginDialog'
-            })
+            }),
+            handleLogin: function() {
+                this.hideLoginDialog();
+                // handle Login
+            },
+            handleRegistration: function() {
+                this.hideLoginDialog();
+                // handle Registration
+            }
         },
         watch: {
             regUsername: function(username) {

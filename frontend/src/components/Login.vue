@@ -83,11 +83,17 @@
             }),
             handleLogin: function() {
                 this.hideLoginDialog();
-                // handle Login
+                this.$snotify.success(
+                    'You\'re getting logged in',
+                    'Success'
+                );
             },
             handleRegistration: function() {
                 this.hideLoginDialog();
-                // handle Registration
+                this.$snotify.success(
+                    'You\'ve created an account',
+                    'Success'
+                );
             }
         },
         watch: {

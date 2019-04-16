@@ -32,7 +32,7 @@
                             label="New Document"
                             single-line
                     ></v-text-field>
-                    <v-icon>note_add</v-icon>
+                    <v-icon @click="addDocument">note_add</v-icon>
                 </v-list-tile>
             </v-list>
         </template>
@@ -51,7 +51,7 @@
                         </v-list-tile-action>
                         <v-list-tile-title>{{ changes }}</v-list-tile-title>
                         <v-spacer />
-                        <v-icon>done</v-icon>
+                        <v-icon @click="revertHistory">done</v-icon>
                     </v-list-tile>
                 </template>
             </v-list>
@@ -71,7 +71,7 @@
                         </v-list-tile-action>
                         <v-list-tile-title>{{ collaborator }}</v-list-tile-title>
                         <v-spacer />
-                        <v-icon>cancel</v-icon>
+                        <v-icon @click="removeCollaborator">cancel</v-icon>
                     </v-list-tile>
                 </template>
                 <v-list-tile>
@@ -79,7 +79,7 @@
                             label="Add Collaborators"
                             single-line
                     ></v-text-field>
-                    <v-icon>person_add</v-icon>
+                    <v-icon @click="addCollaborator">person_add</v-icon>
                 </v-list-tile>
             </v-list>
         </template>
@@ -110,6 +110,30 @@
                 this.showOverview = false;
                 this.showCollaborators = true;
                 this.currentDocument = doc;
+            },
+            addDocument: function() {
+                this.$snotify.success(
+                    'Document was created',
+                    'Success'
+                );
+            },
+            removeCollaborator: function() {
+                this.$snotify.success(
+                    'Collaborator was removed',
+                    'Success'
+                );
+            },
+            addCollaborator: function() {
+                this.$snotify.success(
+                    'Collaborator was added',
+                    'Success'
+                );
+            },
+            revertHistory: function() {
+                this.$snotify.success(
+                    'History was reverted',
+                    'Success'
+                );
             }
         }
     }

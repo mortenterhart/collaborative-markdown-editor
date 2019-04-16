@@ -23,9 +23,21 @@
         components: {
             markdownEditor
         },
+        computed: {
+            simplemde () {
+                return this.$refs.markdownEditor.simplemde
+            }
+        },
         methods: {
             submit: function() {
                 this.$emit('contentWasChanged', this.content);
+
+                let cm = this.simplemde.codemirror;
+                let startPoint = cm.getCursor('start');
+                let endPoint = cm.getCursor('end');
+
+                console.log(startPoint)
+                console.log(endPoint)
             }
         }
     }

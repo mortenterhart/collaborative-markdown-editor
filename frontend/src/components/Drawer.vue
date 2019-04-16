@@ -10,17 +10,44 @@
             </v-layout>
         </v-img>
 
-        <v-list>
-            <template v-for="(item, i) in items">
-                <v-divider v-if="item.divider" :key="i"></v-divider>
-                <v-list-tile v-else :key="item.title">
-                    <v-list-tile-action>
-                        <v-icon>{{ item.icon }}</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+        <template v-if="showOverview">
+            <v-list>
+                <v-list-tile>
+                    <v-list-tile-title>Your documents</v-list-tile-title>
                 </v-list-tile>
-            </template>
-        </v-list>
+                <v-divider/>
+                <template v-for="(doc, i) in docs">
+                    <v-list-tile v-bind:key="i">
+                        <v-list-tile-action>
+                            <v-icon>{{ doc.icon }}</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>{{ doc.title }}</v-list-tile-title>
+                        <v-spacer />
+                        <v-icon @click="showDocumentHistory(doc)">history</v-icon>
+                    </v-list-tile>
+                </template>
+            </v-list>
+        </template>
+        <template v-else>
+            <v-list>
+                <v-list-tile>
+                    <v-list-tile-title>Document history</v-list-tile-title>
+                    <v-spacer/>
+                    <v-icon @click="showOverview = true">keyboard_backspace</v-icon>
+                </v-list-tile>
+                <v-divider/>
+                <template v-for="(changes, i) in currentDocument.history">
+                    <v-list-tile v-bind:key="i">
+                        <v-list-tile-action>
+                            {{ currentDocument.history.length - i }}
+                        </v-list-tile-action>
+                        <v-list-tile-title>{{ changes }}</v-list-tile-title>
+                        <v-spacer />
+                        <v-icon>done</v-icon>
+                    </v-list-tile>
+                </template>
+            </v-list>
+        </template>
     </div>
 </template>
 
@@ -28,17 +55,20 @@
     export default {
         name: "Drawer",
         data: () => ({
-            items: [
-                { icon: 'inbox', title: 'Inbox' },
-                { icon: 'star', title: 'Starred' },
-                { icon: 'send', title: 'Sent mail' },
-                { icon: 'drafts', title: 'Drafts' },
-                { divider: true },
-                { icon: 'mail', title: 'All mail' },
-                { icon: 'delete', title: 'Trash' },
-                { icon: 'error', title: 'Spam' }
+            showOverview: true,
+            currentDocument: {},
+            docs: [
+                { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019']},
+                { icon: 'group', title: 'Projektarbeit', history: ['11.04.2019', '01.04.2019']},
+                { icon: 'group', title: 'Jave EE', history: ['20.04.2019', '16.04.2019', '05.04.2019']},
             ]
-        })
+        }),
+        methods: {
+            showDocumentHistory: function(doc) {
+                this.showOverview = false;
+                this.currentDocument = doc;
+            }
+        }
     }
 </script>
 

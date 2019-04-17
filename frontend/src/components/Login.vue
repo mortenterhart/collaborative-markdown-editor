@@ -7,7 +7,7 @@
                         <v-tab>Login</v-tab>
                         <v-tab>Register</v-tab>
                         <v-tab-item>
-                            <v-form method="POST" action="login">
+                            <v-form>
                                 <v-text-field
                                         append-icon="person"
                                         name="username"
@@ -21,11 +21,11 @@
                                         label="Password"
                                         v-model="loginPassword"
                                         @click:append="hideLoginPassword = !hideLoginPassword"></v-text-field>
-                                <v-btn type="submit" block color="primary">Login</v-btn>
+                                <v-btn block color="primary" @click="handleLogin">Login</v-btn>
                             </v-form>
                         </v-tab-item>
                         <v-tab-item>
-                            <v-form method="POST" action="register">
+                            <v-form>
                                 <v-text-field
                                         append-icon="person"
                                         :rules="usernameRules"
@@ -48,7 +48,7 @@
                                         label="Password"
                                         v-model="regPassword"
                                         @click:append="hideRegPassword = !hideRegPassword"></v-text-field>
-                                <v-btn type="submit" block color="primary">Register</v-btn>
+                                <v-btn block color="primary" @click="handleRegistration">Register</v-btn>
                             </v-form>
                         </v-tab-item>
                     </v-tabs>
@@ -60,6 +60,7 @@
 
 <script>
     import { mapMutations } from 'vuex';
+    import Cookie from "js-cookie";
 
     export default {
         name: "Login",
@@ -80,7 +81,29 @@
         methods: {
             ...mapMutations({
                 hideLoginDialog: 'login/hideLoginDialog'
-            })
+            }),
+            handleLogin: function() {
+                this.axios.post('http://localhost:8080/CMD/api/authentication/login',
+                    {
+                        headers: {
+                            Cookie: Cookie.get("JSESSIONID")
+                        }
+                    }).then((response) => {
+                        console.log(response.data);
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                        );
+                });
+            },
+            handleRegistration: function() {
+                this.hideLoginDialog();
+                this.$snotify.success(
+                    'You\'ve created an account',
+                    'Success'
+                );
+            }
         },
         watch: {
             regUsername: function(username) {

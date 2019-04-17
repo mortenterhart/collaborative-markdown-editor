@@ -9,9 +9,12 @@
     "postbuild": "node postscript.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "core-js": "^2.6.5",
+    "js-cookie": "^2.2.0",
     "marked": "^0.6.2",
     "vue": "^2.6.6",
+    "vue-axios": "^2.1.4",
     "vue-simplemde": "^0.5.1",
     "vue-snotify": "^3.2.1",
     "vuetify": "^1.5.5",

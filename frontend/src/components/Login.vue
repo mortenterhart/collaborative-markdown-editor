@@ -60,6 +60,7 @@
 
 <script>
     import { mapMutations } from 'vuex';
+    import Cookie from "js-cookie";
 
     export default {
         name: "Login",
@@ -82,11 +83,19 @@
                 hideLoginDialog: 'login/hideLoginDialog'
             }),
             handleLogin: function() {
-                this.hideLoginDialog();
-                this.$snotify.success(
-                    'You\'re getting logged in',
-                    'Success'
-                );
+                this.axios.post('http://localhost:8080',
+                    {
+                        headers: {
+                            Cookie: Cookie.get("JSESSIONID")
+                        }
+                    }).then((response) => {
+                        console.log(response.data);
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                        );
+                });
             },
             handleRegistration: function() {
                 this.hideLoginDialog();

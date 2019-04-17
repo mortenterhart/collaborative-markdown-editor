@@ -9,17 +9,10 @@
             <Drawer/>
         </v-navigation-drawer>
         <v-toolbar
-                :clipped-left="clipped"
                 fixed
                 app
         >
             <v-toolbar-side-icon @click="drawer = !drawer"/>
-            <v-btn
-                    icon
-                    @click.stop="clipped = !clipped"
-            >
-                <v-icon>web</v-icon>
-            </v-btn>
             <v-toolbar-title v-text="title"/>
             <v-spacer/>
             <v-toolbar-items>
@@ -61,7 +54,6 @@
         data() {
             return {
                 content: '',
-                clipped: false,
                 drawer: false,
                 items: [
                     {

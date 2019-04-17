@@ -3,6 +3,7 @@
             v-model="content"
             @input="submit"
             ref="markdownEditor"
+            id="foo"
             :configs="configs"
     ></markdown-editor>
 </template>
@@ -32,12 +33,13 @@
             submit: function() {
                 this.$emit('contentWasChanged', this.content);
 
-                let cm = this.simplemde.codemirror;
-                let startPoint = cm.getCursor('start');
-                let endPoint = cm.getCursor('end');
+                //let cm = this.simplemde.codemirror;
+                //let startPoint = cm.getCursor('start');
+                //let endPoint = cm.getCursor('end');
+                //console.log(startPoint)
 
-                console.log(startPoint)
-                console.log(endPoint)
+                // document.querySelector("#foo").selectionEnd
+                //console.log(this.simplemde.element.selectionEnd)
             }
         }
     }

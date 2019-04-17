@@ -39,7 +39,7 @@ public class AuthenticationService {
 
     @POST
     @Path("/login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response doLogin(@FormParam(FormParameters.USERNAME) String username,
                             @FormParam(FormParameters.PASSWORD) String password) {
@@ -68,7 +68,7 @@ public class AuthenticationService {
 
     @POST
     @Path("/register")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response doRegister(@FormParam(FormParameters.USERNAME) String username,
                                @FormParam(FormParameters.EMAIL) String email,

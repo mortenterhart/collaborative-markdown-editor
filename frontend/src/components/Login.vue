@@ -83,7 +83,7 @@
                 hideLoginDialog: 'login/hideLoginDialog'
             }),
             handleLogin: function() {
-                this.axios.post('http://localhost:8080',
+                this.axios.post('http://localhost:8080/CMD/api/authentication/login',
                     {
                         headers: {
                             Cookie: Cookie.get("JSESSIONID")

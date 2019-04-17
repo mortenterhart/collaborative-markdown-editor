@@ -24,6 +24,7 @@
             <v-spacer/>
             <v-toolbar-items>
                 <v-btn flat @click="$store.commit('login/showLoginDialog')">Login</v-btn>
+                <v-btn flat @click="handleLogout">Logout</v-btn>
             </v-toolbar-items>
         </v-toolbar>
         <v-content>
@@ -75,6 +76,14 @@
                     }
                 ],
                 title: 'Collaborative Markdown Editor'
+            }
+        },
+        methods: {
+            handleLogout: function() {
+                this.$snotify.success(
+                    'You\'re getting logged out',
+                    'Success'
+                );
             }
         }
     }

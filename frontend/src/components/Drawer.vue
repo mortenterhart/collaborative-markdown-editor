@@ -29,6 +29,7 @@
                 </template>
                 <v-list-tile>
                     <v-text-field
+                            v-model.trim="documentName"
                             label="New Document"
                             single-line
                     ></v-text-field>
@@ -76,6 +77,7 @@
                 </template>
                 <v-list-tile>
                     <v-text-field
+                            v-model.trim="collaboratorName"
                             label="Add Collaborators"
                             single-line
                     ></v-text-field>
@@ -93,6 +95,8 @@
             showOverview: true,
             showHistory: false,
             showCollaborators: false,
+            documentName: '',
+            collaboratorName: '',
             currentDocument: {},
             docs: [
                 { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
@@ -112,6 +116,14 @@
                 this.currentDocument = doc;
             },
             addDocument: function() {
+                if (this.documentName === '') {
+                    this.$snotify.error(
+                        'Document needs a name',
+                        'Error'
+                    );
+                    return;
+                }
+
                 this.$snotify.success(
                     'Document was created',
                     'Success'
@@ -124,6 +136,14 @@
                 );
             },
             addCollaborator: function() {
+                if (this.collaboratorName === '') {
+                    this.$snotify.error(
+                        'Enter a collaborator name',
+                        'Error'
+                    );
+                    return;
+                }
+
                 this.$snotify.success(
                     'Collaborator was added',
                     'Success'

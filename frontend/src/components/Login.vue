@@ -83,10 +83,52 @@
                 hideLoginDialog: 'login/hideLoginDialog'
             }),
             handleLogin: function() {
+                if (this.loginUsername.trim() === '') {
+                    this.$snotify.error(
+                        'Enter your username',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.loginPassword.trim() === '') {
+                    this.$snotify.error(
+                        'Enter your password',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.axios.post('/authentication/login',
+                    {
+                        username: this.loginUsername,
+                        password: this.loginPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                    );
+                }).catch((error) => {
+                    this.$snotify.error(
+                        error.response.data.message,
+                        'Error'
+                    );
+                });
+
+                /*
                 this.axios.post('http://localhost:8080/CMD/api/authentication/login',
                     {
                         headers: {
                             Cookie: Cookie.get("JSESSIONID")
+                        },
+                        data: {
+
                         }
                     }).then((response) => {
                         console.log(response.data);
@@ -95,14 +137,59 @@
                             'You\'re getting logged in',
                             'Success'
                         );
-                });
+                });*/
             },
             handleRegistration: function() {
-                this.hideLoginDialog();
-                this.$snotify.success(
-                    'You\'ve created an account',
-                    'Success'
-                );
+                if (this.regUsername.trim() === '') {
+                    this.$snotify.error(
+                        'Enter a username',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.regEmail.trim() === '') {
+                    this.$snotify.error(
+                        'Enter an email',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.regPassword.trim() === '') {
+                    this.$snotify.error(
+                        'Enter a password',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.axios.post('/authentication/register',
+                    {
+                        username: this.regUsername,
+                        email: this.regEmail,
+                        password: this.regPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'ve created an account',
+                            'Success'
+                        );
+
+                        this.loginUsername = this.regUsername;
+                        this.loginPassword = this.regPassword;
+                        this.handleLogin();
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                });
             }
         },
         watch: {
@@ -124,7 +211,7 @@
             },
             regPassword: function(password) {
                 if (password === '') {
-                    this.passwordRules = []
+                    this.passwordRules = [];
                     return
                 }
 

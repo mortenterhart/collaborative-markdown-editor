@@ -99,6 +99,29 @@
                     return;
                 }
 
+                this.axios.post('/authentication/login',
+                    {
+                        username: this.loginUsername,
+                        password: this.loginPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                    );
+                }).catch((error) => {
+                    this.$snotify.error(
+                        error.response.data.message,
+                        'Error'
+                    );
+                });
+
+                /*
                 this.axios.post('http://localhost:8080/CMD/api/authentication/login',
                     {
                         headers: {
@@ -114,7 +137,7 @@
                             'You\'re getting logged in',
                             'Success'
                         );
-                });
+                });*/
             },
             handleRegistration: function() {
                 if (this.regUsername.trim() === '') {
@@ -141,27 +164,32 @@
                     return;
                 }
 
-                if (this.emailRules.length !== 0) {
-                    this.$snotify.error(
-                        'Invalid email',
-                        'Error'
-                    );
-                    return;
-                }
+                this.axios.post('/authentication/register',
+                    {
+                        username: this.regUsername,
+                        email: this.regEmail,
+                        password: this.regPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'ve created an account',
+                            'Success'
+                        );
 
-                if (this.passwordRules.length !== 0) {
-                    this.$snotify.error(
-                        'Invalid password',
-                        'Error'
-                    );
-                    return;
-                }
-
-                this.hideLoginDialog();
-                this.$snotify.success(
-                    'You\'ve created an account',
-                    'Success'
-                );
+                        this.loginUsername = this.regUsername;
+                        this.loginPassword = this.regPassword;
+                        this.handleLogin();
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                });
             }
         },
         watch: {

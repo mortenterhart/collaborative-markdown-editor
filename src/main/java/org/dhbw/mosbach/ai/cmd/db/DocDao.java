@@ -86,7 +86,7 @@ public class DocDao {
 		
 		try {
     		docs = (List<Doc>) this.em
-                   .createQuery("SELECT d FROM Doc d WHERE d.cuser.id=:user_id ORDER BY d.ctime DESC")
+                   .createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id=:user_id ORDER BY d.ctime DESC")
                    .setParameter("user_id", u.getId())
                    .getResultList();
         } catch (NoResultException e) {
@@ -109,7 +109,7 @@ public class DocDao {
 		
 		try {			
     		docs = (List<Doc>) this.em
-                   .createQuery("SELECT d FROM Doc d WHERE d.cuser.id IN :collaborations ORDER BY d.ctime DESC")
+                   .createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id IN :collaborations ORDER BY d.ctime DESC")
                    .setParameter("collaborations", getIdListFromCollaborator(collaboratorDao.getCollaborationsForUser(u)))
                    .getResultList();
         } catch (NoResultException e) {

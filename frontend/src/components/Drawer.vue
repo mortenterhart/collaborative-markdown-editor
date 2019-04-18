@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
+        <v-img :aspect-ratio="16/9" :src="require('../assets/work.jpeg')">
             <v-layout pa-2 column fill-height class="lightbox white--text">
                 <v-spacer></v-spacer>
                 <v-flex shrink>
@@ -141,7 +141,7 @@
 
 <style scoped>
     .lightbox {
-        box-shadow: 0 0 20px inset rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 50px inset rgba(0, 0, 0, 1);
         background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 72px);
     }
 </style>

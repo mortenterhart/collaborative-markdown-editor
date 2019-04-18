@@ -62,7 +62,7 @@
                                         <v-icon x-large class="blue--text text--lighten-2">share</v-icon>
                                     </v-card-text>
                                     <v-card-title primary-title class="layout justify-center">
-                                        <div class="headline text-xs-center">Collaborate with your friends</div>
+                                        <div class="headline text-xs-center">Collaborate</div>
                                     </v-card-title>
                                     <v-card-text>
                                         Imagine working simultaneously on the same markdown document with multiple users. Don't you think it would be easier to get shit done? Our editor is both local and global and will help you to connect without limitations with people from your city, your state and your universe!

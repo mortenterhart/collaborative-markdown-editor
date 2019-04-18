@@ -6,6 +6,8 @@ import org.dhbw.mosbach.ai.cmd.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.response.Forbidden;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
+import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +43,10 @@ public class AuthenticationService {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doLogin(@FormParam(FormParameters.USERNAME) String username,
-                            @FormParam(FormParameters.PASSWORD) String password) {
+    public Response doLogin(LoginModel payload) {
+        String username = payload.getUsername();
+        String password = payload.getPassword();
+
         if (username == null || username.isEmpty()) {
             log.debug("login: applied username was null or empty");
             return new BadRequest().create("Username was not specified");
@@ -70,9 +74,11 @@ public class AuthenticationService {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doRegister(@FormParam(FormParameters.USERNAME) String username,
-                               @FormParam(FormParameters.EMAIL) String email,
-                               @FormParam(FormParameters.PASSWORD) String password) {
+    public Response doRegister(RegisterModel payload) {
+        String username = payload.getUsername();
+        String email = payload.getEmail();
+        String password = payload.getPassword();
+
         if (username == null || username.isEmpty()) {
             log.debug("register: applied username was null or empty");
             return new BadRequest().create("Username was not specified");

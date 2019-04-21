@@ -7,7 +7,7 @@
                         <v-tab>Login</v-tab>
                         <v-tab>Register</v-tab>
                         <v-tab-item>
-                            <v-form method="POST" action="login">
+                            <v-form>
                                 <v-text-field
                                         append-icon="person"
                                         name="username"
@@ -21,11 +21,11 @@
                                         label="Password"
                                         v-model="loginPassword"
                                         @click:append="hideLoginPassword = !hideLoginPassword"></v-text-field>
-                                <v-btn type="submit" block color="primary">Login</v-btn>
+                                <v-btn block color="primary" @click="handleLogin">Login</v-btn>
                             </v-form>
                         </v-tab-item>
                         <v-tab-item>
-                            <v-form method="POST" action="register">
+                            <v-form>
                                 <v-text-field
                                         append-icon="person"
                                         :rules="usernameRules"
@@ -48,7 +48,7 @@
                                         label="Password"
                                         v-model="regPassword"
                                         @click:append="hideRegPassword = !hideRegPassword"></v-text-field>
-                                <v-btn type="submit" block color="primary">Register</v-btn>
+                                <v-btn block color="primary" @click="handleRegistration">Register</v-btn>
                             </v-form>
                         </v-tab-item>
                     </v-tabs>
@@ -60,6 +60,7 @@
 
 <script>
     import { mapMutations } from 'vuex';
+    import Cookie from "js-cookie";
 
     export default {
         name: "Login",
@@ -80,7 +81,116 @@
         methods: {
             ...mapMutations({
                 hideLoginDialog: 'login/hideLoginDialog'
-            })
+            }),
+            handleLogin: function() {
+                if (this.loginUsername.trim() === '') {
+                    this.$snotify.error(
+                        'Enter your username',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.loginPassword.trim() === '') {
+                    this.$snotify.error(
+                        'Enter your password',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.axios.post('/authentication/login',
+                    {
+                        username: this.loginUsername,
+                        password: this.loginPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                    );
+                }).catch((error) => {
+                    this.$snotify.error(
+                        error.response.data.message,
+                        'Error'
+                    );
+                });
+
+                /*
+                this.axios.post('http://localhost:8080/CMD/api/authentication/login',
+                    {
+                        headers: {
+                            Cookie: Cookie.get("JSESSIONID")
+                        },
+                        data: {
+
+                        }
+                    }).then((response) => {
+                        console.log(response.data);
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'re getting logged in',
+                            'Success'
+                        );
+                });*/
+            },
+            handleRegistration: function() {
+                if (this.regUsername.trim() === '') {
+                    this.$snotify.error(
+                        'Enter a username',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.regEmail.trim() === '') {
+                    this.$snotify.error(
+                        'Enter an email',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.regPassword.trim() === '') {
+                    this.$snotify.error(
+                        'Enter a password',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.axios.post('/authentication/register',
+                    {
+                        username: this.regUsername,
+                        email: this.regEmail,
+                        password: this.regPassword
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.hideLoginDialog();
+                        this.$snotify.success(
+                            'You\'ve created an account',
+                            'Success'
+                        );
+
+                        this.loginUsername = this.regUsername;
+                        this.loginPassword = this.regPassword;
+                        this.handleLogin();
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                });
+            }
         },
         watch: {
             regUsername: function(username) {
@@ -101,7 +211,7 @@
             },
             regPassword: function(password) {
                 if (password === '') {
-                    this.passwordRules = []
+                    this.passwordRules = [];
                     return
                 }
 

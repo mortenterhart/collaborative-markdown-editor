@@ -113,13 +113,14 @@
                         this.$snotify.success(
                             'You\'re getting logged in',
                             'Success'
-                    );
-                }).catch((error) => {
-                    this.$snotify.error(
-                        error.response.data.message,
-                        'Error'
-                    );
-                });
+                        );
+                        this.$store.commit('login/setIsLoggedIn', true)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    });
 
                 /*
                 this.axios.post('http://localhost:8080/CMD/api/authentication/login',

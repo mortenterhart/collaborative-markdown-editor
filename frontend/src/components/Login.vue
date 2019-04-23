@@ -120,7 +120,8 @@
                             error.response.data.message,
                             'Error'
                         );
-                    });
+                    }
+                );
 
                 /*
                 this.axios.post('http://localhost:8080/CMD/api/authentication/login',

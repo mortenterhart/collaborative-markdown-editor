@@ -28,7 +28,7 @@
         </v-toolbar>
         <v-content>
             <Login/>
-            <template v-if="true">
+            <template v-if="false">
                 <Welcome />
             </template>
             <template v-else>

@@ -15,6 +15,7 @@
         name: "SimpleMDE",
         data: function() {
             return {
+                socket: null,
                 content: '',
                 configs: {
                     spellChecker: false
@@ -32,7 +33,13 @@
         methods: {
             submit: function() {
                 this.$emit('contentWasChanged', this.content);
-
+                this.socket.send(JSON.stringify({
+                    "type": "MESSAGE",
+                    "payload": {
+                        "content": this.content,
+                        "maskId": 1
+                    }
+                }));
                 //let cm = this.simplemde.codemirror;
                 //let startPoint = cm.getCursor('start');
                 //let endPoint = cm.getCursor('end');
@@ -40,7 +47,23 @@
 
                 // document.querySelector("#foo").selectionEnd
                 //console.log(this.simplemde.element.selectionEnd)
+            },
+            handle(data) {
+                console.log(data);
+                let received = JSON.parse(data);
+            },
+            getWebSocketURL() {
+                return "ws://localhost:8080/CMD/ws/1";
             }
+        },
+        created() {
+            if (this.socket) this.socket.close();
+            this.socket = new WebSocket(this.getWebSocketURL());
+
+            let vm = this;
+            this.socket.onmessage = function (event) {
+                vm.handle(event.data.toString());
+            };
         }
     }
 </script>

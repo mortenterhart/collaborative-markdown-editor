@@ -38,7 +38,7 @@ public class CollaboratorDao {
     /**
      * Add an entry to the doc table
      *
-     * @param d Given doc object
+     * @param c Given doc object
      */
     @Transactional
     public void createCollaborator(Collaborator c) {

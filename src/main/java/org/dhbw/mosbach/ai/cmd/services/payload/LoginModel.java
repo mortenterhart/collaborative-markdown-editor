@@ -1,6 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import org.dhbw.mosbach.ai.cmd.services.FormParameters;
+import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class LoginModel {
 
-    @XmlElement(name = FormParameters.USERNAME)
+    @XmlElement(name = JsonParameters.USERNAME)
     private String username;
 
-    @XmlElement(name = FormParameters.PASSWORD)
+    @XmlElement(name = JsonParameters.PASSWORD)
     private String password;
 
     public String getUsername() {

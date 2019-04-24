@@ -103,22 +103,35 @@ public class DocDao {
 	 */
 	@SuppressWarnings("unchecked")
     @Transactional
-	public List<Doc> getDocsCollaboratedBy(User u) {
-		
+    public List<Doc> getDocsCollaboratedBy(User u) {
+
 		List<Doc> docs = new ArrayList<>();
-		
+
 		try {
-    		docs = (List<Doc>) this.em
-                   .createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id IN :collaborations ORDER BY d.ctime DESC")
-                   .setParameter("collaborations", getIdListFromCollaborator(collaboratorDao.getCollaborationsForUser(u)))
-                   .getResultList();
-        } catch (NoResultException e) {
-            return null;
-        }
-		
+
+			List<Collaborator> collaborations = collaboratorDao.getCollaborationsForUser(u);
+
+			if(collaborations != null) {
+				List<Integer> collaborationsIds = getIdListFromCollaborator(collaborations);
+				if(!collaborationsIds.isEmpty()) {
+
+					docs = (List<Doc>) this.em
+							.createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id IN :collaborations ORDER BY d.ctime DESC")
+							.setParameter("collaborations", collaborationsIds)
+							.getResultList();
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} catch (NoResultException e) {
+			return null;
+		}
+
 		return docs;
 	}
-	
+
 	/**
 	 * Utility program to turn the list of collaborator objects into a list of doc ids
 	 * @param collaborations Given list of collaborator objects

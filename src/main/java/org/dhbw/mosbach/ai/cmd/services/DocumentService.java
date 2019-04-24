@@ -75,7 +75,9 @@ public class DocumentService {
         List<Doc> ownerDocs = docDao.getDocsOwnedBy(sessionUser);
         List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(sessionUser);
 
-        ownerDocs.addAll(collaboratorDocs);
+        if (collaboratorDocs != null) {
+            ownerDocs.addAll(collaboratorDocs);
+        }
 
         return Response.ok().entity(ownerDocs).build();
     }

@@ -67,6 +67,7 @@ public class AuthenticationService {
         }
 
         request.getSession().setAttribute(CmdConfig.SESSION_USER, user);
+        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, user.getName());
         request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
 
         log.debug("login: User '{}' logged in successfully", username);

@@ -1,5 +1,8 @@
+import Cookie from "js-cookie";
+
 const state = {
-    showLoginDialog: false
+    showLoginDialog: false,
+    isLoggedIn: !!Cookie.get("JSESSIONID"),
 };
 
 const getters = {
@@ -16,6 +19,9 @@ const mutations = {
     },
     hideLoginDialog (state) {
         state.showLoginDialog = false
+    },
+    setIsLoggedIn: (state, newValue) => {
+        state.isLoggedIn = newValue
     }
 };
 

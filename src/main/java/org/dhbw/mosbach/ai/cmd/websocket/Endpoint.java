@@ -73,10 +73,10 @@ public class Endpoint {
 
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, config.getUserProperties().get(CmdConfig.SESSION_USERNAME));
         users.add(session);
-        
+
         if(docs.get(docId) == null)
-        	docs.put(docId, new ActiveDocument(docDao.getDoc(docId), 0, new ArrayList<>()));
-        	
+        	docs.put(docId, new ActiveDocument(new DocDao().getDoc(docId), 0, new ArrayList<>()));
+
         docs.get(docId).getUsers().add(session);
     }
 
@@ -88,7 +88,7 @@ public class Endpoint {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-    	
+
     	Message msg = new Gson().fromJson(message, Message.class);
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	

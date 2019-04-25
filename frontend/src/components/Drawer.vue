@@ -174,7 +174,8 @@
                     'History was reverted',
                     'Success'
                 );
-            }
+            },
+
         }
     }
 </script>

@@ -46,9 +46,9 @@ public class AuthenticationService {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doLogin(LoginModel payload) {
-        String username = payload.getUsername();
-        String password = payload.getPassword();
+    public Response doLogin(LoginModel loginModel) {
+        String username = loginModel.getUsername();
+        String password = loginModel.getPassword();
 
         if (username == null || username.isEmpty()) {
             log.debug("login: applied username was null or empty");
@@ -67,6 +67,7 @@ public class AuthenticationService {
         }
 
         request.getSession().setAttribute(CmdConfig.SESSION_USER, user);
+        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, user.getName());
         request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
 
         log.debug("login: User '{}' logged in successfully", username);
@@ -77,10 +78,10 @@ public class AuthenticationService {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doRegister(RegisterModel payload) {
-        String username = payload.getUsername();
-        String email = payload.getEmail();
-        String password = payload.getPassword();
+    public Response doRegister(RegisterModel registerModel) {
+        String username = registerModel.getUsername();
+        String email = registerModel.getEmail();
+        String password = registerModel.getPassword();
 
         if (username == null || username.isEmpty()) {
             log.debug("register: applied username was null or empty");

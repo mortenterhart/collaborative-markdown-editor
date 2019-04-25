@@ -89,6 +89,8 @@
 </template>
 
 <script>
+    import Cookies from 'js-cookie';
+
     export default {
         name: "Drawer",
         data: () => ({
@@ -124,10 +126,28 @@
                     return;
                 }
 
-                this.$snotify.success(
-                    'Document was created',
-                    'Success'
-                );
+                this.axios.post('/document/add',
+                    {
+                        documentName: this.documentName
+                    },
+                    {
+                        headers: {
+                            'Cookie': Cookies.get("JSESSIONID"),
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        this.documentName = '';
+                        this.$snotify.success(
+                            'Document was created',
+                            'Success'
+                        );
+                    }).catch((error) => {
+                            this.$snotify.error(
+                                error.response.data.message,
+                                'Error'
+                            );
+                        }
+                    );
             },
             removeCollaborator: function() {
                 this.$snotify.success(

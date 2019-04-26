@@ -22,17 +22,15 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Endpoint for the web socket communication between the client and the server
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}", configurator = Configurator.class)
+@ServerEndpoint(value = "/ws/{docId}")
 public class Endpoint {
 	
 	/*
@@ -42,11 +40,7 @@ public class Endpoint {
 	 * 			- Maybe use onMessage directly after onOpen from JS?
 	 * 		- Figure out how to supply length from deletion method of ActiveDocument from client at MessageBroker.transform
 	 */
-    
-	/**
-	 * Signed in users
-	 */
-    private static Set<Session> users = Collections.synchronizedSet(new HashSet<>());
+
     /**
      * Active docs being worked on by n users
      */
@@ -72,7 +66,6 @@ public class Endpoint {
     public void onOpen(@PathParam("docId") int docId, EndpointConfig config, Session session) {
 
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, config.getUserProperties().get(CmdConfig.SESSION_USERNAME));
-        users.add(session);
 
         if(docs.get(docId) == null)
         	docs.put(docId, new ActiveDocument(new DocDao().getDoc(docId), 0, new ArrayList<>()));
@@ -104,8 +97,6 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
-    	
-    	users.remove(session);
         
     	for(int docId : docs.keySet()) {
     		

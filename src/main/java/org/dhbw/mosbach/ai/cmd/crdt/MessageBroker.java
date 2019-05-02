@@ -28,18 +28,19 @@ public class MessageBroker {
 	
 	/**
 	 * Creates a message if a user joined or left a document, so the other users can be notified.
+	 * Also creates a message to send the doc contents if a user just joined
 	 * @param docId Given document id
-	 * @param username Given user name to either join or leave
+	 * @param msg Given message content depending on the type of system message
 	 * @param messageType Given message type
 	 * @return A message object
 	 */
-	public Message createSystemMessage(int docId, String username, MessageType messageType) {
+	public Message createSystemMessage(int docId, String msg, MessageType messageType) {
 		
 		Message message = new Message();
 
 		message.setDocId(docId);
 		message.setMessageType(messageType);
-		message.setMsg(username);
+		message.setMsg(msg);
 		
 		return message;
 	}
@@ -59,6 +60,20 @@ public class MessageBroker {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	/**
+	 * Publishes a message to a single user only. Used to initially 
+	 * send the doc contents to a user upon connecting
+	 * @param msg Given message
+	 * @param session Session of user to send the message to
+	 */
+	public void publishToSingleUser(Message msg, Session session) {
+		try {
+			session.getBasicRemote().sendObject(msg);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -1,12 +1,17 @@
 package org.dhbw.mosbach.ai.cmd.util;
 
+/**
+ * Message types send via web sockets
+ * @author 3040018
+ */
 public enum MessageType {
-
+	
 	Insert("Insert"),
 	Delete("Delete"),
 	Replace("Replace"),
 	UserJoined("UserJoined"),
-	UserLeft("UserLeft");
+	UserLeft("UserLeft"),
+	ContentInit("ContentInit");
 	
 	private String messageType;
 	

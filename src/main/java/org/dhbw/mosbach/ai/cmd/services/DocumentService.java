@@ -29,6 +29,10 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author 6694964
+ */
+
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
 public class DocumentService {
@@ -91,8 +95,13 @@ public class DocumentService {
         for (Doc doc : ownerDocs) {
             List<History> history = historyDao.getFullHistoryForDoc(doc);
             List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(doc);
+            String icon = "person";
 
-            models.add(new DocumentListModel("owner", doc, history, collaborators));
+            if (!collaborators.isEmpty()) {
+                icon = "group";
+            }
+
+            models.add(new DocumentListModel(icon, doc, history, collaborators));
         }
 
         if (collaboratorDocs != null) {
@@ -100,7 +109,7 @@ public class DocumentService {
                 List<History> history = historyDao.getFullHistoryForDoc(collabDoc);
                 List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(collabDoc);
 
-                models.add(new DocumentListModel("collaboration", collabDoc, history, collaborators));
+                models.add(new DocumentListModel("group", collabDoc, history, collaborators));
             }
         }
 

@@ -6,11 +6,9 @@ import org.dhbw.mosbach.ai.cmd.crdt.MessageBroker;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
-
-import com.google.gson.Gson;
+import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 import javax.inject.Inject;
-import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -30,14 +28,11 @@ import java.util.Map;
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}")
+@ServerEndpoint(value = "/ws/{docId}/{username}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class Endpoint {
 	
 	/*
 	 * TODO: 
-	 * 
-	 * 		- Notify clients on connecting and disconnecting users via MessageType.UserJoined / UserLeft
-	 * 			- Maybe use onMessage directly after onOpen from JS?
 	 * 		- Figure out how to supply length from deletion method of ActiveDocument from client at MessageBroker.transform
 	 */
 
@@ -49,28 +44,24 @@ public class Endpoint {
     @Inject
     private MessageBroker messageBroker;
     
-    @Inject
-    private DocDao docDao;
-    
-    @Inject
-    private UserDao userDao;
-    
-    /**
+	/**
      * Gets triggered once a web socket connection is opened.
-     *
-     * @param docId  Given doc id to access
-     * @param config  Given config from Configurator.java
-     * @param session Current user session
-     */
+	 * @param docId Given document id
+	 * @param username Given username of current user
+	 * @param session Current user session
+	 */
     @OnOpen
-    public void onOpen(@PathParam("docId") int docId, EndpointConfig config, Session session) {
+    public void onOpen(@PathParam("docId") int docId, @PathParam(CmdConfig.SESSION_USERNAME) String username, Session session) {
 
-        session.getUserProperties().put(CmdConfig.SESSION_USERNAME, config.getUserProperties().get(CmdConfig.SESSION_USERNAME));
+        session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
 
         if(docs.get(docId) == null)
         	docs.put(docId, new ActiveDocument(new DocDao().getDoc(docId), 0, new ArrayList<>()));
-
+        
         docs.get(docId).getUsers().add(session);
+        
+        Message userJoinedMsg = messageBroker.createSystemMessage(docId, username, MessageType.UserJoined);
+        messageBroker.publish(userJoinedMsg, docs.get(docId));
     }
 
     /**
@@ -80,9 +71,8 @@ public class Endpoint {
      * @param session Current user session
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(Message msg, Session session) {
 
-    	Message msg = new Gson().fromJson(message, Message.class);
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
     	messageBroker.transform(msg, currentDoc);
@@ -102,12 +92,18 @@ public class Endpoint {
     		
     		List<Session> workingUsers = docs.get(docId).getUsers();
     		
-    		for(Session singleUserSession : workingUsers)
-    			if(singleUserSession.equals(session))
+    		for(Session singleUserSession : workingUsers) {
+    			if(singleUserSession.equals(session)) {
     				workingUsers.remove(singleUserSession);
-    		
+    				
+    				String userName = (String)singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERNAME);
+    		        Message userLeftdMsg = messageBroker.createSystemMessage(docId, userName, MessageType.UserLeft);
+    		        messageBroker.publish(userLeftdMsg, docs.get(docId));
+    			}	
+    		}	
+
     		if(workingUsers.isEmpty()) {
-    			docDao.updateDoc(docs.get(docId).getDoc(), userDao.getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    			new DocDao().updateDoc(docs.get(docId).getDoc(), new UserDao().getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
     			docs.remove(docId);
     		}
     	}       

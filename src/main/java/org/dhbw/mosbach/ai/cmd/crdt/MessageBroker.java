@@ -1,9 +1,8 @@
 package org.dhbw.mosbach.ai.cmd.crdt;
 
-import java.io.IOException;
 import javax.websocket.Session;
 
-import com.google.gson.Gson;
+import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 /**
  * Wrapper class to keep a consistent document state and publish updates to all the connected clients
@@ -23,8 +22,26 @@ public class MessageBroker {
 			case Insert: 	activeDocument.insert(msg.getCursorPos(), msg.getMsg()); break;
 			case Delete: 	activeDocument.del(msg.getCursorPos(), 1); break;
 			case Replace: 	activeDocument.replace(msg.getCursorPos(), 1, msg.getMsg()); break;
-			default: break;
+			default: throw new RuntimeException("Provided unsupported message type for transform.");
 		}
+	}
+	
+	/**
+	 * Creates a message if a user joined or left a document, so the other users can be notified.
+	 * @param docId Given document id
+	 * @param username Given user name to either join or leave
+	 * @param messageType Given message type
+	 * @return A message object
+	 */
+	public Message createSystemMessage(int docId, String username, MessageType messageType) {
+		
+		Message message = new Message();
+
+		message.setDocId(docId);
+		message.setMessageType(messageType);
+		message.setMsg(username);
+		
+		return message;
 	}
 
 	/**
@@ -38,8 +55,8 @@ public class MessageBroker {
 		
 		for(Session session : activeDocument.getUsers()) {
 			try {
-				session.getBasicRemote().sendText(new Gson().toJson(msg));
-			} catch (IOException e) {
+				session.getBasicRemote().sendObject(msg);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

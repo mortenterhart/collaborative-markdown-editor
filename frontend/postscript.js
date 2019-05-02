@@ -13,8 +13,8 @@ if (os.type() === 'Darwin') {
     exec(`rm -r "${webappPath}"/*`, log);
     exec(`mv dist/* "${webappPath}"`, log);
 } else if (os.type() === 'Windows_NT') {
-    exec(`RMDIR "${webappPath}"/*`, log);
-    exec(`MOVE /Y dist\\* "${webappPath}"`, log);
+    exec(`del /S /Q "${webappPath}"\\*`, log);
+    exec(`xcopy dist\\* "${webappPath}"\\* /s /e /i /Y`, log);
 } else {
     throw new Error("Unsupported OS found: " + os.type());
 }

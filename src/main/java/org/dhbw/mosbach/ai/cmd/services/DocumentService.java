@@ -1,13 +1,18 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
+import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
+import org.dhbw.mosbach.ai.cmd.db.HistoryDao;
 import org.dhbw.mosbach.ai.cmd.db.RepoDao;
+import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
+import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentModel;
+import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -32,6 +38,12 @@ public class DocumentService {
 
     @Inject
     private RepoDao repoDao;
+
+    @Inject
+    private HistoryDao historyDao;
+
+    @Inject
+    private CollaboratorDao collaboratorDao;
 
     @Context
     private HttpServletRequest request;
@@ -75,10 +87,23 @@ public class DocumentService {
         List<Doc> ownerDocs = docDao.getDocsOwnedBy(sessionUser);
         List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(sessionUser);
 
-        if (collaboratorDocs != null) {
-            ownerDocs.addAll(collaboratorDocs);
+        List<DocumentListModel> models = new ArrayList<>();
+        for (Doc doc : ownerDocs) {
+            List<History> history = historyDao.getFullHistoryForDoc(doc);
+            List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(doc);
+
+            models.add(new DocumentListModel("owner", doc, history, collaborators));
         }
 
-        return Response.ok().entity(ownerDocs).build();
+        if (collaboratorDocs != null) {
+            for (Doc collabDoc : collaboratorDocs) {
+                List<History> history = historyDao.getFullHistoryForDoc(collabDoc);
+                List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(collabDoc);
+
+                models.add(new DocumentListModel("collaboration", collabDoc, history, collaborators));
+            }
+        }
+
+        return Response.ok().entity(models).build();
     }
 }

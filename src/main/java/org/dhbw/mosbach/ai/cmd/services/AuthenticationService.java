@@ -115,4 +115,20 @@ public class AuthenticationService {
         log.debug("User '{}' was registered successfully", username);
         return new Success().create("Registration successful");
     }
+
+    @POST
+    @Path("/logout")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response doLogout() {
+        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+            return new Success().create("You are already logged out");
+        }
+
+        request.getSession().setAttribute(CmdConfig.SESSION_USER, null);
+        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, null);
+        request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, false);
+        request.getSession().invalidate();
+
+        return new Success().create("Successfully logged out");
+    }
 }

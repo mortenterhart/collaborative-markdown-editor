@@ -5,6 +5,7 @@ import org.dhbw.mosbach.ai.cmd.crdt.Message;
 import org.dhbw.mosbach.ai.cmd.crdt.MessageBroker;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
+import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
@@ -55,10 +56,20 @@ public class Endpoint {
 
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
 
-        if(docs.get(docId) == null)
-        	docs.put(docId, new ActiveDocument(new DocDao().getDoc(docId), 0, new ArrayList<>()));
+        Doc doc = null;
+        
+        if(docs.get(docId) == null) {
+        	doc = new DocDao().getDoc(docId);
+        	docs.put(docId, new ActiveDocument(doc, 0, new ArrayList<>()));
+        }
+        	
+        if(doc == null)
+        	doc = docs.get(docId).getDoc();
         
         docs.get(docId).getUsers().add(session);
+        
+        Message contentInitMsg = messageBroker.createSystemMessage(docId, doc.getContent(), MessageType.ContentInit);
+        messageBroker.publishToSingleUser(contentInitMsg, session);
         
         Message userJoinedMsg = messageBroker.createSystemMessage(docId, username, MessageType.UserJoined);
         messageBroker.publish(userJoinedMsg, docs.get(docId));

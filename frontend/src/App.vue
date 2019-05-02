@@ -86,6 +86,13 @@
         },
         methods: {
             handleLogout: function() {
+                this.axios.post('authentication/logout', {},
+                    {
+                        headers: {
+                            'Cookie': Cookies.get('JSESSIONID')
+                        }
+                    }
+                );
                 Cookies.set('JSESSIONID', '=', { path: '' });
                 Cookies.remove('JSESSIONID', { path: '' });
                 this.$store.commit('login/setIsLoggedIn', false);

@@ -33,13 +33,10 @@
         methods: {
             submit: function() {
                 this.$emit('contentWasChanged', this.content);
+                /*
                 this.socket.send(JSON.stringify({
-                    "type": "MESSAGE",
-                    "payload": {
-                        "content": this.content,
-                        "maskId": 1
-                    }
-                }));
+                    "msg": this.content,
+                })); */
                 //let cm = this.simplemde.codemirror;
                 //let startPoint = cm.getCursor('start');
                 //let endPoint = cm.getCursor('end');
@@ -53,10 +50,11 @@
                 let received = JSON.parse(data);
             },
             getWebSocketURL() {
-                return "ws://localhost:8080/CMD/ws/1";
+                return "ws://localhost:8080/CMD/ws/" + this.$route.params.id;
             }
         },
         created() {
+            console.log(this.$route.params.id);
             if (this.socket) this.socket.close();
             this.socket = new WebSocket(this.getWebSocketURL());
 

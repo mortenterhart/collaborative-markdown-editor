@@ -137,6 +137,7 @@
                             'Success'
                         );
                         this.$store.commit('login/setIsLoggedIn', true)
+                        this.$store.commit('login/setUsername', this.username)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,

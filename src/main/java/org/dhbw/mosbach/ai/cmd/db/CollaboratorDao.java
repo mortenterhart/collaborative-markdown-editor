@@ -70,7 +70,7 @@ public class CollaboratorDao {
             return null;
         }
     	
-    	return collaborators.isEmpty() ? collaborators : null;
+    	return collaborators;
     }
     
     /**
@@ -94,7 +94,7 @@ public class CollaboratorDao {
             return null;
         }
     	
-    	return collaborators.isEmpty() ? collaborators : null;
+    	return collaborators;
     }
     
     /**

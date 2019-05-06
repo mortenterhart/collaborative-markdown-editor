@@ -50,7 +50,7 @@
                 let received = JSON.parse(data);
             },
             getWebSocketURL() {
-                return "ws://localhost:8080/CMD/ws/" + this.$route.params.id;
+                return `ws://localhost:8080/CMD/ws/${this.$route.params.id}/${this.$store.state.login.username}`;
             }
         },
         created() {

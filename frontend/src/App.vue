@@ -15,7 +15,7 @@
             <v-toolbar-side-icon
                     v-if="this.$store.state.login.isLoggedIn"
                     @click="drawer = !drawer"/>
-            <v-toolbar-title v-text="title"/>
+            <v-toolbar-title v-text="this.$store.state.app.title"/>
             <v-spacer/>
             <v-toolbar-items>
                 <template v-if="!this.$store.state.login.isLoggedIn">
@@ -39,7 +39,6 @@
 <script>
     import Login from './components/Login'
     import Drawer from "./components/Drawer";
-    import Cookies from 'js-cookie';
 
     export default {
         name: 'App',
@@ -49,8 +48,7 @@
         },
         data() {
             return {
-                drawer: false,
-                title: 'Collaborative Markdown Editor'
+                drawer: false
             }
         },
         methods: {
@@ -59,12 +57,19 @@
                     {
                         withCredentials: true
                     }
-                );
-                this.$store.commit('login/setIsLoggedIn', false);
-                this.$snotify.success(
-                    'You\'re getting logged out',
-                    'Success'
-                );
+                ).then((response) => {
+                    this.$router.push('/');
+                    this.$store.commit('login/setIsLoggedIn', false);
+                    this.$snotify.success(
+                        'You\'re getting logged out',
+                        'Success'
+                    );
+                }).catch((error) => {
+                    this.$snotify.error(
+                        error.response.data.message,
+                        'Error'
+                    );
+                })
             }
         }
     }

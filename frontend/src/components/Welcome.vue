@@ -145,6 +145,9 @@
                     social_cover: require('../assets/social.jpg')
                 }
             };
+        },
+        beforeMount() {
+            this.$store.commit('app/setTitle', 'Collaborative Markdown Editor')
         }
     }
 </script>

@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 
 public class Success extends ResponseObject {
 
-    public Success() {
-        super(Response.Status.OK);
+    public Success(String message) {
+        super(Response.Status.OK, message);
     }
 }

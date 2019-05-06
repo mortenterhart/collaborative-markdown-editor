@@ -17,6 +17,7 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -58,7 +59,7 @@ public class DocumentService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addDocument(DocumentModel documentModel) {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
-            return new Unauthorized().create("You have to login to be able to create a new document");
+            return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
 
         User user = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
@@ -75,7 +76,7 @@ public class DocumentService {
 
         docDao.createDoc(document);
 
-        return new Success().create("Document was created successfully");
+        return new Success("Document was created successfully").buildResponse();
     }
 
     @GET
@@ -83,7 +84,7 @@ public class DocumentService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllDocuments() {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
-            return new Unauthorized().create("You have to login to be able to fetch all documents");
+            return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();
         }
 
         User sessionUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);

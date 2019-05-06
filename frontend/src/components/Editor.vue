@@ -51,6 +51,9 @@
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)
                         break;
+                    case "ContentInit":
+                        this.content = data.msg
+                        break;
                 }
             },
             getWebSocketURL() {
@@ -58,6 +61,8 @@
             }
         },
         mounted() {
+            this.content = '';
+            this.submit()
             if (this.socket) this.socket.close();
             this.socket = new WebSocket(this.getWebSocketURL());
 

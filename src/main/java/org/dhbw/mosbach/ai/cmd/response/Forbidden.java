@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 
 public class Forbidden extends ResponseObject {
 
-    public Forbidden() {
-        super(Response.Status.FORBIDDEN);
+    public Forbidden(String message) {
+        super(Response.Status.FORBIDDEN, message);
     }
 }

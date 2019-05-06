@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class RegisterModel {
+public class RegisterModel implements Payload {
 
     @XmlElement(name = JsonParameters.USERNAME)
     private String username;

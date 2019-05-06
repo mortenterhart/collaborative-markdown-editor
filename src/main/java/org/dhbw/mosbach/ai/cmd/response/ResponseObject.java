@@ -7,12 +7,12 @@ public class ResponseObject {
     private Status status;
     private String message;
 
-    public ResponseObject(Response.Status status) {
+    public ResponseObject(Response.Status status, String message) {
         this.status = new Status(status);
+        this.message = message;
     }
 
-    public Response create(String message) {
-        this.message = message;
+    public Response buildResponse() {
         return Response.status(status.getCode()).entity(this).build();
     }
 

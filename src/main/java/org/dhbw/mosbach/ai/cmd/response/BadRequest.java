@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 
 public class BadRequest extends ResponseObject {
 
-    public BadRequest() {
-        super(Response.Status.BAD_REQUEST);
+    public BadRequest(String message) {
+        super(Response.Status.BAD_REQUEST, message);
     }
 }

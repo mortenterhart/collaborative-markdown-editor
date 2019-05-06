@@ -9,4 +9,8 @@ public abstract class JsonParameters {
     public static final String EMAIL = "email";
 
     public static final String DOCUMENT_NAME = "documentName";
+
+    public static final String DOCUMENT_ID = "documentId";
+
+    public static final String COLLABORATOR_USERNAME = "collaboratorUsername";
 }

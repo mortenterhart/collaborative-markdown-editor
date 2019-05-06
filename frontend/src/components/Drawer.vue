@@ -21,7 +21,7 @@
                         <v-list-tile-action>
                             <v-icon>{{ doc.icon }}</v-icon>
                         </v-list-tile-action>
-                        <v-list-tile-title>{{ doc.title }}</v-list-tile-title>
+                        <v-list-tile-title>{{ doc.document.name }}</v-list-tile-title>
                         <v-spacer />
                         <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
                         <v-icon @click="showDocumentHistory(doc)">history</v-icon>
@@ -89,8 +89,6 @@
 </template>
 
 <script>
-    import Cookies from 'js-cookie';
-
     export default {
         name: "Drawer",
         data: () => ({
@@ -101,9 +99,9 @@
             collaboratorName: '',
             currentDocument: {},
             docs: [
-                { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
-                { icon: 'group', title: 'Projektarbeit', history: ['11.04.2019', '01.04.2019'], collaborators: ['Phillip Seitz', 'Jacob Krauth']},
-                { icon: 'group', title: 'Jave EE', history: ['20.04.2019', '16.04.2019', '05.04.2019'], collaborators: ['Fabian Schulz']},
+                { icon: 'person', document: { name: 'Studienarbeit' }, history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
+                { icon: 'group', document: { name: 'Projektarbeit' }, history: ['11.04.2019', '01.04.2019'], collaborators: ['Phillip Seitz', 'Jacob Krauth']},
+                { icon: 'group', document: { name: 'Jave EE' }, history: ['20.04.2019', '16.04.2019', '05.04.2019'], collaborators: ['Fabian Schulz']},
             ]
         }),
         methods: {
@@ -132,22 +130,23 @@
                     },
                     {
                         headers: {
-                            'Cookie': Cookies.get("JSESSIONID"),
                             'Content-Type': 'application/json'
-                        }
+                        },
+                        withCredentials: true
                     }).then(() => {
                         this.documentName = '';
                         this.$snotify.success(
                             'Document was created',
                             'Success'
                         );
+                        this.fetchDocuments()
                     }).catch((error) => {
-                            this.$snotify.error(
-                                error.response.data.message,
-                                'Error'
-                            );
-                        }
-                    );
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                );
             },
             removeCollaborator: function() {
                 this.$snotify.success(
@@ -175,7 +174,23 @@
                     'Success'
                 );
             },
-
+            fetchDocuments: function() {
+                this.axios.get('/document/all',
+                    {
+                        withCredentials: true
+                    }).then((response) => {
+                        this.docs = response.data;
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                );
+            }
+        },
+        beforeMount() {
+            this.fetchDocuments();
         }
     }
 </script>

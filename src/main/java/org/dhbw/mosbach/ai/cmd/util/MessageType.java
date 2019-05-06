@@ -11,7 +11,8 @@ public enum MessageType {
 	Replace("Replace"),
 	UserJoined("UserJoined"),
 	UserLeft("UserLeft"),
-	ContentInit("ContentInit");
+	ContentInit("ContentInit"),
+	DocumentTitle("DocumentTitle");
 	
 	private String messageType;
 	

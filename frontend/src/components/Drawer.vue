@@ -21,7 +21,7 @@
                         <v-list-tile-action>
                             <v-icon>{{ doc.icon }}</v-icon>
                         </v-list-tile-action>
-                        <v-list-tile-title>{{ doc.document.name }}</v-list-tile-title>
+                        <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                         <v-spacer />
                         <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
                         <v-icon @click="showDocumentHistory(doc)">history</v-icon>
@@ -99,9 +99,7 @@
             collaboratorName: '',
             currentDocument: {},
             docs: [
-                { icon: 'person', document: { name: 'Studienarbeit' }, history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
-                { icon: 'group', document: { name: 'Projektarbeit' }, history: ['11.04.2019', '01.04.2019'], collaborators: ['Phillip Seitz', 'Jacob Krauth']},
-                { icon: 'group', document: { name: 'Jave EE' }, history: ['20.04.2019', '16.04.2019', '05.04.2019'], collaborators: ['Fabian Schulz']},
+                { icon: '', document: { name: '' }, history: [''], collaborators: ['']},
             ]
         }),
         methods: {
@@ -187,6 +185,9 @@
                         );
                     }
                 );
+            },
+            openDocument: function(doc) {
+                this.$router.push(`/doc/${doc.id}`)
             }
         },
         beforeMount() {

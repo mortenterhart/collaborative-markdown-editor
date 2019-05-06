@@ -96,6 +96,6 @@ public class HistoryDao {
             return null;
         }
     	
-    	return fullHistory.isEmpty() ? fullHistory : null;
+    	return fullHistory;
     }
 }

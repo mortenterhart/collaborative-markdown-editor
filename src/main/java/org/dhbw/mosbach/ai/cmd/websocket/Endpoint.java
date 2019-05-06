@@ -71,6 +71,9 @@ public class Endpoint {
         Message contentInitMsg = messageBroker.createSystemMessage(docId, doc.getContent(), MessageType.ContentInit);
         messageBroker.publishToSingleUser(contentInitMsg, session);
         
+        Message documentTitleMsg = messageBroker.createSystemMessage(docId,  doc.getName(), MessageType.DocumentTitle);
+        messageBroker.publishToSingleUser(documentTitleMsg, session);
+        
         Message userJoinedMsg = messageBroker.createSystemMessage(docId, username, MessageType.UserJoined);
         messageBroker.publish(userJoinedMsg, docs.get(docId));
     }

@@ -3,5 +3,5 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 
 Vue.use(VueAxios, axios.create({
-    baseURL: window.location.href + '/api'
+    baseURL: window.location.origin + '/CMD/api'
 }));

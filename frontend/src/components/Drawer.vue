@@ -188,6 +188,7 @@
             },
             openDocument: function(doc) {
                 this.$router.push(`/doc/${doc.id}`)
+                this.$store.commit('app/incEditorKey')
             }
         },
         beforeMount() {

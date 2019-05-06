@@ -2,7 +2,7 @@
     <v-container fluid fill-height>
         <v-layout row>
             <v-flex xs6 pr-2>
-                <MDE @contentWasChanged="content = $event"/>
+                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"/>
             </v-flex>
             <v-flex xs6 pl-2>
                 <Preview :content="content"/>

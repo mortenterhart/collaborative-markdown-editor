@@ -57,13 +57,9 @@
             handleLogout: function() {
                 this.axios.post('authentication/logout', {},
                     {
-                        headers: {
-                            'Cookie': Cookies.get('JSESSIONID')
-                        }
+                        withCredentials: true
                     }
                 );
-                Cookies.set('JSESSIONID', '=', { path: '' });
-                Cookies.remove('JSESSIONID', { path: '' });
                 this.$store.commit('login/setIsLoggedIn', false);
                 this.$snotify.success(
                     'You\'re getting logged out',

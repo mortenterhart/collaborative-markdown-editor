@@ -4,7 +4,7 @@ import javax.ws.rs.core.Response;
 
 public class Unauthorized extends ResponseObject {
 
-    public Unauthorized() {
-        super(Response.Status.UNAUTHORIZED);
+    public Unauthorized(String message) {
+        super(Response.Status.UNAUTHORIZED, message);
     }
 }

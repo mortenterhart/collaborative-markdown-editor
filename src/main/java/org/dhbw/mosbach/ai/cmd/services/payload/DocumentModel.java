@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class DocumentModel {
+public class DocumentModel implements Payload {
 
     @XmlElement(name = JsonParameters.DOCUMENT_NAME, required = true)
     private String name;

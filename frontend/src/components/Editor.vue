@@ -46,21 +46,24 @@
                 //console.log(this.simplemde.element.selectionEnd)
             },
             handle(data) {
-                console.log(data);
-                let received = JSON.parse(data);
+                console.log(data)
+                switch (data.messageType) {
+                    case "DocumentTitle":
+                        this.$store.commit('app/setTitle', data.msg)
+                        break;
+                }
             },
             getWebSocketURL() {
                 return `ws://localhost:8080/CMD/ws/${this.$route.params.id}/${this.$store.state.login.username}`;
             }
         },
-        created() {
-            console.log(this.$route.params.id);
+        mounted() {
             if (this.socket) this.socket.close();
             this.socket = new WebSocket(this.getWebSocketURL());
 
             let vm = this;
             this.socket.onmessage = function (event) {
-                vm.handle(event.data.toString());
+                vm.handle(JSON.parse(event.data.toString()));
             };
         }
     }

@@ -8,6 +8,7 @@ import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
+import org.dhbw.mosbach.ai.cmd.services.response.LoginUserModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.RegisterValidation;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public class AuthenticationService {
         request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
 
         log.debug("login: User '{}' logged in successfully", username);
-        return new Success("Logged in successfully").buildResponse();
+        return new LoginUserModel(new Success("Logged in successfully"), user).buildResponse();
     }
 
     @POST

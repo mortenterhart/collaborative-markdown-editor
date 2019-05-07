@@ -38,9 +38,11 @@ public class MessageBroker {
 		
 		Message message = new Message();
 
+		message.setCursorPos(-1);
 		message.setDocId(docId);
 		message.setMessageType(messageType);
 		message.setMsg(msg);
+		message.setUserId(-1);
 		
 		return message;
 	}

@@ -56,9 +56,9 @@ public class ActiveDocument {
 	public void insert(int i, String msg){
 
 		doc.setContent(new StringBuilder()
-					 	.append(doc.getContent().substring(0, i - 1))
+					 	.append(doc.getContent().substring(0, i))
 					 	.append(msg)
-					 	.append(doc.getContent().substring(i - 1))
+					 	.append(doc.getContent().substring(i))
 					 	.toString());
 		state++;
 	}

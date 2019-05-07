@@ -86,6 +86,9 @@ public class Endpoint {
      */
     @OnMessage
     public void onMessage(Message msg, Session session) {
+    	
+    	System.out.println("In onMessage");
+    	System.out.println(msg.toString());
 
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
@@ -101,6 +104,8 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
+    	
+    	System.out.println("In onClose");
         
     	for(int docId : docs.keySet()) {
     		

@@ -137,7 +137,7 @@
                             'Success'
                         );
                         this.$store.commit('login/setIsLoggedIn', true)
-                        this.$store.commit('login/setUsername', this.username)
+                        this.$store.commit('login/setUsername', this.loginUsername)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,

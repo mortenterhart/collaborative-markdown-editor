@@ -53,8 +53,6 @@ public class MessageBroker {
 	 * @param activeDocument Current active document
 	 */
 	public void publish(Message msg, ActiveDocument activeDocument) {
-
-		msg.setMsg(activeDocument.getDoc().getContent());
 		
 		for(Session session : activeDocument.getUsers()) {
 			try {

@@ -92,8 +92,8 @@ public class Endpoint {
 
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
-    	messageBroker.transform(msg, currentDoc);
     	messageBroker.publish(msg, currentDoc);
+    	messageBroker.transform(msg, currentDoc);
     }
 
     /**

@@ -75,7 +75,7 @@ public class Endpoint {
         messageBroker.publishToSingleUser(documentTitleMsg, session);
         
         Message userJoinedMsg = messageBroker.createSystemMessage(docId, username, MessageType.UserJoined);
-        messageBroker.publish(userJoinedMsg, docs.get(docId));
+        messageBroker.publishToOtherUsers(userJoinedMsg, docs.get(docId), session);
     }
 
     /**
@@ -92,7 +92,7 @@ public class Endpoint {
 
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
-    	messageBroker.publish(msg, currentDoc);
+    	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     	messageBroker.transform(msg, currentDoc);
     }
 
@@ -117,7 +117,7 @@ public class Endpoint {
     				
     				String userName = (String)singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERNAME);
     		        Message userLeftdMsg = messageBroker.createSystemMessage(docId, userName, MessageType.UserLeft);
-    		        messageBroker.publish(userLeftdMsg, docs.get(docId));
+    		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
     			}	
     		}	
 

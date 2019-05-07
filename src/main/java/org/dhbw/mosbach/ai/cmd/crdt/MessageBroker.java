@@ -52,11 +52,12 @@ public class MessageBroker {
 	 * @param msg Given message
 	 * @param activeDocument Current active document
 	 */
-	public void publish(Message msg, ActiveDocument activeDocument) {
+	public void publishToOtherUsers(Message msg, ActiveDocument activeDocument, Session currentUserSession) {
 		
 		for(Session session : activeDocument.getUsers()) {
 			try {
-				session.getBasicRemote().sendObject(msg);
+				if (session != currentUserSession)
+					session.getBasicRemote().sendObject(msg);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

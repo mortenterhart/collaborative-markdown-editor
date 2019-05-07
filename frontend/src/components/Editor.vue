@@ -45,7 +45,7 @@
                 const pos = e.cursorPosition - (e.content.length - e.lastReceivedContent.length)
                 const msg = JSON.stringify({
                     "userId": 0,
-                    "docId": e.$route.params.id,
+                    "docId": Number(e.$route.params.id),
                     "cursorPos": pos,
                     "msg": e.content.substring(pos, e.cursorPosition),
                     "messageType": "Insert"

@@ -56,4 +56,15 @@ public class Message {
 	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
 	}
+	
+	@Override
+	public String toString() {
+        return new StringBuilder()
+                .append("\tuserId: " + this.userId + "\n")
+                .append("\tdocId: " + this.docId + "\n")
+                .append("\tmessageType: " + this.messageType.toString() + "\n")
+                .append("\tcursorPos: " + this.cursorPos + "\n")
+                .append("\tmsg: " + this.msg + "\n")
+                .toString();
+	}
 }

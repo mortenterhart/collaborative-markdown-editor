@@ -31,9 +31,9 @@ public class MessageDecoder implements Decoder.Text<Message>{
 		
 		Message message = new Message();
 		
-		message.setUserId(jsonMsg.getInt("userId", -1));
-		message.setDocId(jsonMsg.getInt("docId", -1));
-		message.setCursorPos(jsonMsg.getInt("cursorPos", 0));
+		message.setUserId(jsonMsg.getInt("userId"));
+		message.setDocId(jsonMsg.getInt("docId"));
+		message.setCursorPos(jsonMsg.getInt("cursorPos"));
 		message.setMsg(jsonMsg.getString("msg")  == null ? "" : jsonMsg.getString("msg"));
 		message.setMessageType(MessageType.valueOf(jsonMsg.getString("messageType")));
 		

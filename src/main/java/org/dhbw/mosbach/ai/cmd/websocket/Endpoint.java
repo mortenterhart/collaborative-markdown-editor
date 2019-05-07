@@ -81,7 +81,7 @@ public class Endpoint {
     /**
      * Gets triggered once a message is sent from the client.<br>
      *
-     * @param message Given message
+     * @param msg Given message
      * @param session Current user session
      */
     @OnMessage

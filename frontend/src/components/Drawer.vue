@@ -24,7 +24,7 @@
                         <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                         <v-spacer />
                         <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                        <v-icon @click="showDocumentHistory(doc)">history</v-icon>
+                        <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
                     </v-list-tile>
                 </template>
                 <v-list-tile>
@@ -70,7 +70,7 @@
                         <v-list-tile-action>
                             <v-icon>person</v-icon>
                         </v-list-tile-action>
-                        <v-list-tile-title>{{ collaborator }}</v-list-tile-title>
+                        <v-list-tile-title>{{ collaborator.user.name }}</v-list-tile-title>
                         <v-spacer />
                         <v-icon @click="removeCollaborator">cancel</v-icon>
                     </v-list-tile>
@@ -99,7 +99,7 @@
             collaboratorName: '',
             currentDocument: {},
             docs: [
-                { icon: '', document: { name: '' }, history: [''], collaborators: ['']},
+                { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
             ]
         }),
         methods: {
@@ -161,9 +161,29 @@
                     return;
                 }
 
-                this.$snotify.success(
-                    'Collaborator was added',
-                    'Success'
+                this.axios.post('/collaborators/add',
+                    {
+                        collaboratorUsername: this.collaboratorName,
+                        documentId: this.currentDocument.document.id
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.collaboratorName = '';
+                        this.$snotify.success(
+                            'Collaborator was added',
+                            'Success'
+                        );
+                        this.fetchDocuments()
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
                 );
             },
             revertHistory: function() {

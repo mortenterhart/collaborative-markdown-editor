@@ -9,6 +9,7 @@
 </template>
 
 <script>
+    import debounce from 'debounce'
     import markdownEditor from 'vue-simplemde/src/markdown-editor'
 
     export default {
@@ -16,6 +17,8 @@
         data: function() {
             return {
                 socket: null,
+                cursorPosition: 0,
+                lastReceivedContent: '',
                 content: '',
                 configs: {
                     spellChecker: false
@@ -33,18 +36,25 @@
         methods: {
             submit: function() {
                 this.$emit('contentWasChanged', this.content);
-                /*
-                this.socket.send(JSON.stringify({
-                    "msg": this.content,
-                })); */
-                //let cm = this.simplemde.codemirror;
-                //let startPoint = cm.getCursor('start');
-                //let endPoint = cm.getCursor('end');
-                //console.log(startPoint)
-
-                // document.querySelector("#foo").selectionEnd
-                //console.log(this.simplemde.element.selectionEnd)
+                this.cursorPosition = this.simplemde.codemirror.getCursor('start').ch
+                this.sendContentDiff(this)
             },
+            sendContentDiff: debounce(e => {
+                console.log(e)
+
+                const pos = e.cursorPosition - (e.content.length - e.lastReceivedContent.length)
+                const msg = JSON.stringify({
+                    "userId": 0,
+                    "docId": e.$route.params.id,
+                    "cursorPos": pos,
+                    "msg": e.content.substring(pos, e.cursorPosition),
+                    "messageType": "Insert"
+                })
+                console.log(msg)
+                e.socket.send(msg);
+
+                e.lastReceivedContent = e.content // funktioniert hier nicht
+            }, 400),
             handle(data) {
                 console.log(data)
                 switch (data.messageType) {
@@ -53,6 +63,7 @@
                         break;
                     case "ContentInit":
                         this.content = data.msg
+                        this.lastReceivedContent = this.content
                         break;
                 }
             },
@@ -62,7 +73,7 @@
         },
         mounted() {
             this.content = '';
-            this.submit()
+            this.$emit('contentWasChanged', this.content);
             if (this.socket) this.socket.close();
             this.socket = new WebSocket(this.getWebSocketURL());
 
@@ -70,6 +81,9 @@
             this.socket.onmessage = function (event) {
                 vm.handle(JSON.parse(event.data.toString()));
             };
+        },
+        destroyed() {
+            if (this.socket) this.socket.close();
         }
     }
 </script>

@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
-public class CollaboratorService implements IRestService {
+public class CollaboratorService implements RestService {
 
     @Inject
     private DocDao docDao;
@@ -109,13 +109,17 @@ public class CollaboratorService implements IRestService {
             return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
         }
 
-        if (user.getId() != document.getRepo().getOwner().getId()) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators.").buildResponse();
-        }
-
         Collaborator collaborator = collaboratorDao.getCollaborator(collaboratorId);
         if (collaborator == null) {
             return new BadRequest(String.format("Collaborator '%d' does not exist.", collaboratorId)).buildResponse();
+        }
+
+        if (documentId != collaborator.getDoc().getId()) {
+            return new BadRequest(String.format("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName())).buildResponse();
+        }
+
+        if (user.getId() != document.getRepo().getOwner().getId() && user.getId() != collaborator.getUser().getId()) {
+            return new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators.").buildResponse();
         }
 
         collaboratorDao.removeCollaborator(collaborator);

@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_AUTHENTICATION)
-public class AuthenticationService implements IRestService {
+public class AuthenticationService implements RestService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 

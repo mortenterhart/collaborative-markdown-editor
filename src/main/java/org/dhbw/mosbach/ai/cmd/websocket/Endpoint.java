@@ -25,17 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Endpoint for the web socket communication between the client and the server
+ * End point for the web socket communication between the client and the server
  *
  * @author 3040018
  */
 @ServerEndpoint(value = "/ws/{docId}/{username}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class Endpoint {
-	
-	/*
-	 * TODO: 
-	 * 		- Figure out how to supply length from deletion method of ActiveDocument from client at MessageBroker.transform
-	 */
 
     /**
      * Active docs being worked on by n users
@@ -48,7 +43,7 @@ public class Endpoint {
 	/**
      * Gets triggered once a web socket connection is opened.
 	 * @param docId Given document id
-	 * @param username Given username of current user
+	 * @param username Given user name of current user
 	 * @param session Current user session
 	 */
     @OnOpen
@@ -65,6 +60,9 @@ public class Endpoint {
         	
         if(doc == null)
         	doc = docs.get(docId).getDoc();
+        
+        if(doc.getContent() == null)
+        	docs.get(docId).getDoc().setContent("");
         
         docs.get(docId).getUsers().add(session);
         
@@ -94,6 +92,8 @@ public class Endpoint {
     	
     	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     	messageBroker.transform(msg, currentDoc);
+  
+    	System.out.println("Message after transform:\n\t" + currentDoc.getDoc().getContent());
     }
 
     /**
@@ -104,9 +104,7 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
-    	
-    	System.out.println("In onClose");
-        
+
     	for(int docId : docs.keySet()) {
     		
     		List<Session> workingUsers = docs.get(docId).getUsers();

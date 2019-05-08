@@ -71,8 +71,8 @@ public class ActiveDocument {
 	public void del(int i, int length){
 
 		doc.setContent(new StringBuilder()
-					 	.append(doc.getContent().substring(0, i - 1))
-					 	.append(doc.getContent().substring(i - 1 + length))
+					 	.append(doc.getContent().substring(0, i))
+					 	.append(doc.getContent().substring(i + length))
 					 	.toString());
 		state++;
 	}

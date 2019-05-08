@@ -35,7 +35,7 @@ import java.util.List;
 
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService implements IRestService {
+public class DocumentService implements RestService {
 
     @Inject
     private DocDao docDao;

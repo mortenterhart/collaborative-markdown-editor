@@ -38,17 +38,32 @@
                 this.$emit('contentWasChanged', this.content);
                 if (this.content.length !== this.lastReceivedContent.length) {
                     this.sendContentDiff(this)
-                    this.cursorPosition = this.getTotalCursorPos(this.content, this.simplemde.codemirror.getCursor('start').line, this.simplemde.codemirror.getCursor('start').ch)
+                    this.cursorPosition = this.getCurrentCursorPos()
                 }
             },
             sendContentDiff: debounce(e => {
-                const pos = e.cursorPosition - (e.content.length - e.lastReceivedContent.length)
+                console.log(e.simplemde.codemirror)
+                if (e.content.length === e.lastReceivedContent.length) {
+                    return
+                }
+
+                let pos, message, messageType
+                if (e.content.length > e.lastReceivedContent.length ) {
+                    pos = e.cursorPosition - (e.content.length - e.lastReceivedContent.length)
+                    message = e.content.substring(pos, e.cursorPosition)
+                    messageType = "Insert"
+                } else if (e.content.length < e.lastReceivedContent.length) {
+                    pos = e.getCurrentCursorPos()
+                    message = e.lastReceivedContent.substring(pos, pos + (e.lastReceivedContent.length - e.content.length))
+                    messageType = "Delete"
+                }
+
                 const msg = JSON.stringify({
                     "userId": e.$store.state.login.user.id,
                     "docId": Number(e.$route.params.id),
                     "cursorPos": pos,
-                    "msg": e.content.substring(pos, e.cursorPosition),
-                    "messageType": "Insert"
+                    "msg": message,
+                    "messageType": messageType
                 })
                 console.log(msg)
                 e.socket.send(msg);
@@ -66,11 +81,17 @@
                         this.content = data.msg
                         break;
                     case "Insert":
-                        const cursor = this.getCursorFromTotalCursorPos(this.content, data.cursorPos)
                         this.lastReceivedContent = this.content.substring(0, data.cursorPos) + data.msg + this.content.substring(data.cursorPos)
-                        this.simplemde.codemirror.getDoc().replaceRange(data.msg, cursor)
+                        this.simplemde.codemirror.getDoc().replaceRange(data.msg, this.getCursorFromTotalCursorPos(this.content, data.cursorPos))
+                        break;
+                    case "Delete":
+                        this.lastReceivedContent = this.content.substring(0, data.cursorPos) + this.content.substring(data.cursorPos + data.msg.length)
+                        this.simplemde.codemirror.getDoc().replaceRange("", this.getCursorFromTotalCursorPos(this.content, data.cursorPos), this.getCursorFromTotalCursorPos(this.content, data.cursorPos + data.msg.length))
                         break;
                 }
+            },
+            getCurrentCursorPos() {
+                return this.getTotalCursorPos(this.content, this.simplemde.codemirror.getCursor('start').line, this.simplemde.codemirror.getCursor('start').ch)
             },
             getTotalCursorPos(content, line, cursorPos) {
                 let totalCursorPos = 0

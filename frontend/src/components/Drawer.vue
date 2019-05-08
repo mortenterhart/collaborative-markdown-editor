@@ -17,15 +17,17 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(doc, i) in docs">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            <v-icon>{{ doc.icon }}</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                        <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
-                    </v-list-tile>
+                    <v-hover>
+                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
+                            <v-list-tile-action>
+                                <v-icon>{{ doc.icon }}</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
+                            <v-spacer />
+                            <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
+                            <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
+                        </v-list-tile>
+                    </v-hover>
                 </template>
                 <v-list-tile>
                     <v-text-field
@@ -66,14 +68,16 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(collaborator, i) in currentDocument.collaborators">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            <v-icon>person</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-title>{{ collaborator.user.name }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon @click="removeCollaborator">cancel</v-icon>
-                    </v-list-tile>
+                    <v-hover>
+                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
+                            <v-list-tile-action>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-title>{{ collaborator.user.name }}</v-list-tile-title>
+                            <v-spacer />
+                            <v-icon @click="removeCollaborator">cancel</v-icon>
+                        </v-list-tile>
+                    </v-hover>
                 </template>
                 <v-list-tile>
                     <v-text-field

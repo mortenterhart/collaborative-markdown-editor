@@ -5,9 +5,11 @@
                 <v-layout column align-center justify-center class="white--text">
                     <h1 class="white--text mb-2 display-1 text-xs-center" style="font-weight: 900; text-shadow: 3px 2px #000000">The Markdown Editor you share with your friends</h1>
                     <div class="white--text subheading mb-3 text-xs-center" style="font-weight: 900; text-shadow: 2px 2px #000000">Unlesh your creativity without limitations</div>
-                    <v-btn class="blue lighten-2 mt-5" dark large @click="$store.commit('login/showLoginDialog')">
-                        Get Started
-                    </v-btn>
+                    <template v-if="!this.$store.state.login.isLoggedIn">
+                        <v-btn class="blue lighten-2 mt-5" dark large @click="$store.commit('login/showLoginDialog')">
+                            Get Started
+                        </v-btn>
+                    </template>
                 </v-layout>
             </v-parallax>
         </section>
@@ -79,18 +81,6 @@
             <v-parallax :src="imageLink.social_cover" height="380">
                 <v-layout column align-center justify-center>
                     <div class="headline white--text mb-3 text-xs-center">Stay tuned for exciting new features you didn't knew you wanted</div>
-                </v-layout>
-                <v-layout justify-space-around justify-center>
-
-                    <v-icon x-large dark>fab fa-facebook-f</v-icon>
-
-                    <v-icon x-large dark>fab fa-twitter</v-icon>
-
-                    <v-icon x-large dark>fab fa-reddit-alien</v-icon>
-
-                    <v-icon x-large dark>fab fa-instagram</v-icon>
-
-                    <v-icon x-large dark>fab fa-discord</v-icon>
                 </v-layout>
             </v-parallax>
         </section>

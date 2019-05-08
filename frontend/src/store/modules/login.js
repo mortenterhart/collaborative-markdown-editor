@@ -1,7 +1,7 @@
 import Cookie from "js-cookie";
 
 const state = {
-    username: '',
+    user: null,
     showLoginDialog: false,
     isLoggedIn: !!Cookie.get("JSESSIONID"),
 };
@@ -24,8 +24,8 @@ const mutations = {
     setIsLoggedIn: (state, newValue) => {
         state.isLoggedIn = newValue
     },
-    setUsername: (state, newValue) => {
-        state.username = newValue
+    setUser: (state, newValue) => {
+        state.user = newValue
     }
 };
 

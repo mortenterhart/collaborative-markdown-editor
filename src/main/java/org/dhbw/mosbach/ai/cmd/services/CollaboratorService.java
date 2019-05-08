@@ -46,7 +46,7 @@ public class CollaboratorService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addCollaborator(CollaboratorModel model) {
         if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
-            return new Unauthorized("You have to login to be able to add a collaborator").buildResponse();
+            return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
 
         int documentId = model.getDocumentId();
@@ -56,7 +56,7 @@ public class CollaboratorService {
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document with id '%d' does not exist", documentId)).buildResponse();
+            return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
         }
 
         User collaborator = userDao.getUserByName(collaboratorUsername);
@@ -68,8 +68,12 @@ public class CollaboratorService {
             return new BadRequest("You are unauthorized. Only the owner of this document may add collaborators.").buildResponse();
         }
 
+        if (collaborator.getId() == owner.getId()) {
+            return new BadRequest("The owner cannot be added as collaborator.").buildResponse();
+        }
+
         if (collaboratorDao.getCollaborator(collaborator, document) != null) {
-            return new BadRequest(String.format("Collaborator '%s' was already added to this document", collaboratorUsername)).buildResponse();
+            return new BadRequest(String.format("Collaborator '%s' was already added to this document.", collaboratorUsername)).buildResponse();
         }
 
         Collaborator newCollaborator = new Collaborator();

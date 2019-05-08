@@ -8,11 +8,11 @@ public enum MessageType {
 	
 	Insert("Insert"),
 	Delete("Delete"),
-	Replace("Replace"),
 	UserJoined("UserJoined"),
 	UserLeft("UserLeft"),
 	ContentInit("ContentInit"),
-	DocumentTitle("DocumentTitle");
+	DocumentTitle("DocumentTitle"),
+	UsersInit("UsersInit");
 	
 	private String messageType;
 	

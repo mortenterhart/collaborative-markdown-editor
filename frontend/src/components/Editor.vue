@@ -1,7 +1,6 @@
 <template>
     <markdown-editor
             v-model="content"
-            @input="submit"
             ref="markdownEditor"
             id="foo"
             :configs="configs"
@@ -34,15 +33,7 @@
             }
         },
         methods: {
-            submit: function() {
-                this.$emit('contentWasChanged', this.content);
-                if (this.content.length !== this.lastReceivedContent.length) {
-                    this.sendContentDiff(this)
-                    this.cursorPosition = this.getCurrentCursorPos()
-                }
-            },
             sendContentDiff: debounce(e => {
-                console.log(e.simplemde.codemirror)
                 if (e.content.length === e.lastReceivedContent.length) {
                     return
                 }
@@ -114,8 +105,16 @@
                         }
                     }
                     currPos -= lines[i].length + 1
-                    console.log(currPos)
                 }
+            },
+            buildMessageStringFromArray(array) {
+                let msg = ""
+                for (let i = 0; i < array.length; i++) {
+                    if (i !== 0)
+                        msg += '\n'
+                    msg += array[i]
+                }
+                return msg
             },
             getWebSocketURL() {
                 return `ws://localhost:8080/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}`;
@@ -130,6 +129,42 @@
             this.socket.onmessage = function (event) {
                 vm.handle(JSON.parse(event.data.toString()));
             };
+
+            this.simplemde.codemirror.on("change", function(editor, changeObj) {
+                if (changeObj.origin === "setValue")
+                    return
+
+                if (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0)) {
+                    // Normal insert or delete event
+                    vm.$emit('contentWasChanged', vm.content);
+                    if (vm.content.length !== vm.lastReceivedContent.length) {
+                        vm.sendContentDiff(vm)
+                        vm.cursorPosition = vm.getCurrentCursorPos()
+                    }
+                    return
+                }
+
+                // The remaining function covers the handling of replace operations
+                const deleteMsg = JSON.stringify({
+                    "userId": vm.$store.state.login.user.id,
+                    "docId": Number(vm.$route.params.id),
+                    "cursorPos": vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch),
+                    "msg": vm.buildMessageStringFromArray(changeObj.removed),
+                    "messageType": "Delete"
+                })
+                vm.socket.send(deleteMsg);
+
+                const insertMsg = JSON.stringify({
+                    "userId": vm.$store.state.login.user.id,
+                    "docId": Number(vm.$route.params.id),
+                    "cursorPos": vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch),
+                    "msg": vm.buildMessageStringFromArray(changeObj.text),
+                    "messageType": "Insert"
+                })
+                vm.socket.send(insertMsg);
+
+                vm.lastReceivedContent = vm.content
+            })
         },
         destroyed() {
             if (this.socket) this.socket.close();

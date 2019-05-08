@@ -130,14 +130,14 @@
                         headers: {
                             'Content-Type': 'application/json',
                         }
-                    }).then(() => {
+                    }).then((response) => {
                         this.hideLoginDialog();
                         this.$snotify.success(
                             'You\'re getting logged in',
                             'Success'
                         );
                         this.$store.commit('login/setIsLoggedIn', true)
-                        this.$store.commit('login/setUsername', this.loginUsername)
+                        this.$store.commit('login/setUser', response.data.user)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,

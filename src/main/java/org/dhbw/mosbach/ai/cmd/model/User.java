@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -39,6 +41,17 @@ public class User {
 
     @Column(name = "UTIME")
     private LocalDateTime utime;
+    
+    @PrePersist
+    private void onInsert() {
+    	this.ctime = LocalDateTime.now();
+    	this.utime = this.ctime;
+    }
+    
+    @PreUpdate
+    private void onUpdate() {
+    	this.utime = LocalDateTime.now();
+    }
 
     public int getId() {
         return id;

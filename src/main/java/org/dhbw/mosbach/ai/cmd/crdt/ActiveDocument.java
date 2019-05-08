@@ -76,17 +76,4 @@ public class ActiveDocument {
 					 	.toString());
 		state++;
 	}
-
-	/**
-	 * Replaces a message from a user of a given length at a given index
-	 * @param i Given index
-	 * @param length Given length of how much to delete after the index
-	 * @param msg Given message
-	 */
-	public void replace(int i, int length, String msg){
-		
-		del(i - 1, length - 1);
-		insert(i - 1, msg);	
-		state++;
-	}
 }

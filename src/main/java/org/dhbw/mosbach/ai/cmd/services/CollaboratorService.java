@@ -64,7 +64,7 @@ public class CollaboratorService {
             return new BadRequest(String.format("User '%s' does not exist. Please choose a valid username.", collaboratorUsername)).buildResponse();
         }
 
-        if (owner.getId() != document.getCuser().getId()) {
+        if (owner.getId() != document.getRepo().getOwner().getId()) {
             return new BadRequest("You are unauthorized. Only the owner of this document may add collaborators.").buildResponse();
         }
 

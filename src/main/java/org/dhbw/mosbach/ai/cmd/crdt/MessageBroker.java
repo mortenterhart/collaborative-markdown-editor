@@ -21,7 +21,6 @@ public class MessageBroker {
 		switch(msg.getMessageType()) {
 			case Insert: 	activeDocument.insert(msg.getCursorPos(), msg.getMsg()); break;
 			case Delete: 	activeDocument.del(msg.getCursorPos(), msg.getMsg().length()); break;
-			case Replace: 	activeDocument.replace(msg.getCursorPos(), 1, msg.getMsg()); break;
 			default: throw new RuntimeException("Provided unsupported message type for transform.");
 		}
 	}

@@ -42,7 +42,6 @@
                 }
             },
             sendContentDiff: debounce(e => {
-                console.log(e.simplemde.codemirror)
                 if (e.content.length === e.lastReceivedContent.length) {
                     return
                 }

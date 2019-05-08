@@ -5,9 +5,11 @@
                 <v-layout column align-center justify-center class="white--text">
                     <h1 class="white--text mb-2 display-1 text-xs-center" style="font-weight: 900; text-shadow: 3px 2px #000000">The Markdown Editor you share with your friends</h1>
                     <div class="white--text subheading mb-3 text-xs-center" style="font-weight: 900; text-shadow: 2px 2px #000000">Unlesh your creativity without limitations</div>
-                    <v-btn class="blue lighten-2 mt-5" dark large @click="$store.commit('login/showLoginDialog')">
-                        Get Started
-                    </v-btn>
+                    <template v-if="!this.$store.state.login.isLoggedIn">
+                        <v-btn class="blue lighten-2 mt-5" dark large @click="$store.commit('login/showLoginDialog')">
+                            Get Started
+                        </v-btn>
+                    </template>
                 </v-layout>
             </v-parallax>
         </section>

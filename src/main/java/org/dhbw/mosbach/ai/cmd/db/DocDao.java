@@ -1,6 +1,5 @@
 package org.dhbw.mosbach.ai.cmd.db;
 
-import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
@@ -9,14 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Dao class for doc interactions with the database
@@ -30,9 +27,6 @@ public class DocDao {
 
     @PersistenceContext(unitName = CmdConfig.JPA_UNIT_NAME)
     private EntityManager em;
-
-    @Inject
-    private CollaboratorDao collaboratorDao;
 
     public DocDao() {
         this.em = JpaFactory.getEntityManager();
@@ -119,16 +113,6 @@ public class DocDao {
         }
 
         return docs;
-    }
-
-    /**
-     * Utility program to turn the list of collaborator objects into a list of doc ids
-     *
-     * @param collaborations Given list of collaborator objects
-     * @return A list of integers, containing the doc ids
-     */
-    private List<Integer> getIdListFromCollaborator(List<Collaborator> collaborations) {
-        return collaborations.stream().map(Collaborator::getDoc).collect(Collectors.toList()).stream().map(Doc::getId).collect(Collectors.toList());
     }
 
     /**

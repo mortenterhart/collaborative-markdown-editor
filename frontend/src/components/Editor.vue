@@ -135,18 +135,16 @@
                     return
 
                 if (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0)) {
+                    // Normal insert or delete event
                     vm.$emit('contentWasChanged', vm.content);
-
                     if (vm.content.length !== vm.lastReceivedContent.length) {
                         vm.sendContentDiff(vm)
                         vm.cursorPosition = vm.getCurrentCursorPos()
                     }
-
                     return
                 }
 
-                console.log(changeObj)
-
+                // The remaining function covers the handling of replace operations
                 const deleteMsg = JSON.stringify({
                     "userId": vm.$store.state.login.user.id,
                     "docId": Number(vm.$route.params.id),
@@ -154,7 +152,6 @@
                     "msg": vm.buildMessageStringFromArray(changeObj.removed),
                     "messageType": "Delete"
                 })
-                console.log(deleteMsg)
                 vm.socket.send(deleteMsg);
 
                 const insertMsg = JSON.stringify({
@@ -164,7 +161,6 @@
                     "msg": vm.buildMessageStringFromArray(changeObj.text),
                     "messageType": "Insert"
                 })
-                console.log(insertMsg)
                 vm.socket.send(insertMsg);
 
                 vm.lastReceivedContent = vm.content

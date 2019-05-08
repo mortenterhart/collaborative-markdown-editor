@@ -17,7 +17,6 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -98,7 +97,7 @@ public class DocumentService {
             List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(doc);
             String icon = "person";
 
-            if (!collaborators.isEmpty()) {
+            if (collaborators != null && !collaborators.isEmpty()) {
                 icon = "group";
             }
 

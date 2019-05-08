@@ -1,7 +1,7 @@
 import Cookie from "js-cookie";
 
 const state = {
-    user: null,
+    user: {id: 0, name: "", mail: ""},
     showLoginDialog: false,
     isLoggedIn: !!Cookie.get("JSESSIONID"),
 };

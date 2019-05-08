@@ -1,7 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.crdt;
 
+import java.util.List;
+
 import javax.websocket.Session;
 
+import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 /**
@@ -75,5 +78,31 @@ public class MessageBroker {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Gets the list of active users on a doc and returns them as a JSON array
+	 * @param users Given active user within a doc
+	 * @param currentUser User requesting the list, to exclude himself
+	 * @return A list of user names formatted as a JSON array
+	 */
+	public String getActiveUsers(List<Session> users, Session currentUser) {
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		
+		for(Session session : users) {
+			if(session != currentUser) {
+				sb.append("\"")
+				  .append(session.getUserProperties().get(CmdConfig.SESSION_USERNAME))
+				  .append("\"")
+				  .append(",");
+			}
+		}
+		
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append("]");
+
+		return sb.toString();
 	}
 }

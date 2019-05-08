@@ -4,8 +4,8 @@
             <v-layout pa-2 column fill-height class="lightbox white--text">
                 <v-spacer></v-spacer>
                 <v-flex shrink>
-                    <div class="subheading">Jonathan Lee</div>
-                    <div class="body-1">heyfromjonathan@gmail.com</div>
+                    <div class="subheading">{{ $store.state.login.user.name }}</div>
+                    <div class="body-1">{{ $store.state.login.user.mail }}</div>
                 </v-flex>
             </v-layout>
         </v-img>
@@ -137,7 +137,7 @@
                             'Document was created',
                             'Success'
                         );
-                        this.fetchDocuments()
+                        this.fetchDocuments(false)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
@@ -177,7 +177,7 @@
                             'Collaborator was added',
                             'Success'
                         );
-                        this.fetchDocuments()
+                        this.fetchDocuments(true)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
@@ -192,12 +192,14 @@
                     'Success'
                 );
             },
-            fetchDocuments: function() {
+            fetchDocuments: function(setCurrentDocument) {
                 this.axios.get('/document/all',
                     {
                         withCredentials: true
                     }).then((response) => {
                         this.docs = response.data;
+                        if (setCurrentDocument)
+                            this.currentDocument = this.docs.find(x => x.document.id === this.currentDocument.document.id)
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
@@ -212,7 +214,7 @@
             }
         },
         beforeMount() {
-            this.fetchDocuments();
+            this.fetchDocuments(false);
         }
     }
 </script>

@@ -135,7 +135,7 @@
                 return msg
             },
             getWebSocketURL() {
-                return `ws://localhost:8080/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}`;
+                return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}`;
             }
         },
         mounted() {

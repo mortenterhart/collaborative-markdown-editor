@@ -162,7 +162,7 @@
                         },
                         withCredentials: true
                     }).then(() => {
-                        this.currentDocument.collaborators.splice(index)
+                        this.currentDocument.collaborators.splice(index, 1)
                         if (this.currentDocument.collaborators.length === 0) {
                             this.currentDocument.icon = "person"
                         }

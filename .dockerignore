@@ -83,3 +83,6 @@ buildNumber.properties
 
 # Vim Temporary Files
 *.swp
+
+# Node modules
+frontend/node_modules/

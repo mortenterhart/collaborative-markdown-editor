@@ -30,7 +30,21 @@ RUN ./jboss-configure-datasource.sh
 
 RUN rm -f ./jboss-configure-datasource.sh
 
-ADD --chown=jboss:jboss "target/CMD.war" ${JBOSS_HOME}/standalone/deployments
+USER root
+
+RUN curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+
+RUN yum --assumeyes install nodejs
+
+USER jboss
+
+ADD --chown=jboss:jboss ./ ./collab-down
+
+RUN cd ./collab-down/frontend && npm install && npm run build
+
+RUN cd ./collab-down && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+ADD --chown=jboss:jboss "collab-down/target/CMD.war" ${JBOSS_HOME}/standalone/deployments
 
 EXPOSE ${WEBAPP_PORT}
 

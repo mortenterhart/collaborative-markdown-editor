@@ -3,7 +3,7 @@
         <v-dialog v-model="dialog" max-width="600px" lazy>
             <v-card>
                 <v-card-text>
-                    <v-tabs grow>
+                    <v-tabs grow v-model="dialogTabs">
                         <v-tab>Login</v-tab>
                         <v-tab>Register</v-tab>
                         <v-tab-item>
@@ -66,6 +66,7 @@
         name: "Login",
         data: function() {
             return {
+                dialogTabs: null,
                 loginUsername: '',
                 loginPassword: '',
                 regUsername: '',
@@ -212,6 +213,20 @@
                     }
                 }
             }
+        },
+        created() {
+            let vm = this
+            window.addEventListener('keyup', function (e) {
+                if (!vm.dialog || e.keyCode !== 13) {
+                    return
+                }
+
+                if (vm.dialogTabs === 0) {
+                    vm.handleLogin()
+                } else {
+                    vm.handleRegistration()
+                }
+            })
         }
     }
 </script>

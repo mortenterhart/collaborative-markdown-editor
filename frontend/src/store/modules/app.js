@@ -1,5 +1,6 @@
 const state = {
     title: '',
+    currentDocument: { repo: { owner: { id: -1, name: '' } } },
     editorKey: 0,
     otherCollaborators: []
 };
@@ -37,6 +38,9 @@ const mutations = {
     },
     incEditorKey: (state) => {
         state.editorKey++
+    },
+    setCurrentDocument: (state, newValue) => {
+        state.currentDocument = newValue
     }
 };
 

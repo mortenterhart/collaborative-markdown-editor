@@ -9,7 +9,7 @@ const os = require('os');
 
 const webappPath = "../src/main/webapp";
 
-if (os.type() === 'Darwin') {
+if (os.type() === 'Darwin' || os.type() === 'Linux') {
     exec(`rm -r "${webappPath}"/*`, log);
     exec(`mv dist/* "${webappPath}"`, log);
 } else if (os.type() === 'Windows_NT') {

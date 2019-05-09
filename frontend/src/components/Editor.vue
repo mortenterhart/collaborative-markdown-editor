@@ -152,8 +152,6 @@
                 if (changeObj.origin === "setValue")
                     return
 
-                console.log(changeObj)
-
                 if ((changeObj.origin !== "+input" || changeObj.removed[0].length === 0) && (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0))) {
                     // Normal insert or delete event
                     vm.$emit('contentWasChanged', vm.content);

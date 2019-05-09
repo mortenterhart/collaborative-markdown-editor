@@ -21,7 +21,6 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -109,21 +108,26 @@ public class Endpoint {
     public void onClose(Session session) {
 
     	for(int docId : docs.keySet()) {
-    		
-    		List<Session> workingUsers = docs.get(docId).getUsers();
-    		
-    		for(Session singleUserSession : workingUsers) {
+    		for(Session singleUserSession : docs.get(docId).getUsers()) {
     			if(singleUserSession.equals(session)) {
-    				workingUsers.remove(singleUserSession);
+    				
+    				docs.get(docId).getUsers().remove(singleUserSession);
     				
     				String userName = (String)singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERNAME);
     		        Message userLeftdMsg = messageBroker.createSystemMessage(docId, userName, MessageType.UserLeft);
     		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
+    		        break;
     			}	
     		}	
-
-    		if(workingUsers.isEmpty()) {
-    			new DocDao().updateDoc(docs.get(docId).getDoc(), new UserDao().getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    		
+    		if(docs.get(docId).getUsers().isEmpty()) {
+    			
+    			Doc activeDoc = docs.get(docId).getDoc();
+    			activeDoc.setUuser(new UserDao().getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    			
+    			DocDao docDao = new DocDao();
+    			docDao.updateDoc(activeDoc);
+    			
     			docs.remove(docId);
     		}
     	}       

@@ -56,7 +56,7 @@ safe_run ${JBOSS_CLI} --connect \
 info "Creating a new datasource"
 safe_run ${JBOSS_CLI} --connect --command="data-source add
         --name=${DB_NAME}DS
-        --jndi-name=java:jboss/datasources/${DB_NAME}DS
+        --jndi-name=java:/cmd
         --user-name=${DB_USER}
         --password=${DB_PASSWORD}
         --driver-name=mysql

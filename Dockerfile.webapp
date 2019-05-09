@@ -14,7 +14,7 @@ ENV DB_NAME cmd
 ENV DB_USER mysqluser
 ENV DB_PASSWORD mysqlpass
 ENV DB_PORT 3306
-ENV DB_URI mysql-server:${DB_PORT}
+ENV DB_URI mysql:${DB_PORT}
 
 ENV MYSQL_VERSION 8.0.15
 ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh

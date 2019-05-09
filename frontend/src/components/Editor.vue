@@ -60,7 +60,7 @@
 
                 e.lastReceivedContent = e.content
             }, 400),
-            handleWebsocketEvents(data) {
+            handleWebSocketEvents(data) {
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)
@@ -143,7 +143,7 @@
 
             let vm = this;
             this.socket.onmessage = function (event) {
-                vm.handleWebsocketEvents(JSON.parse(event.data.toString()));
+                vm.handleWebSocketEvents(JSON.parse(event.data.toString()));
             };
 
             this.simplemde.codemirror.on("change", function(editor, changeObj) {

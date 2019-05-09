@@ -14,5 +14,7 @@ export default new Vuex.Store({
         app
     },
     strict: debug,
-    plugins: [createPersistedState()],
+    plugins: [createPersistedState({
+        paths: ['login', 'app.currentDocument', 'app.title']
+    })],
 })

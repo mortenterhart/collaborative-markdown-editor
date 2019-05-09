@@ -152,7 +152,9 @@
                 if (changeObj.origin === "setValue")
                     return
 
-                if (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0)) {
+                console.log(changeObj)
+
+                if ((changeObj.origin !== "+input" || changeObj.removed[0].length === 0) && (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0))) {
                     // Normal insert or delete event
                     vm.$emit('contentWasChanged', vm.content);
                     if (vm.content.length !== vm.lastReceivedContent.length) {

@@ -17,6 +17,27 @@
                     @click="drawer = !drawer"/>
             <v-toolbar-title v-text="this.$store.state.app.title"/>
             <v-spacer/>
+            <template v-if="$route.name === 'document' && this.$store.state.app.otherCollaborators.length !== 0">
+                <v-menu offset-y>
+                    <template v-slot:activator="{ on }">
+                        <v-btn
+                                color="primary"
+                                dark
+                                v-on="on"
+                        >
+                            Other Collaborators
+                        </v-btn>
+                    </template>
+                    <v-list>
+                        <v-list-tile
+                                v-for="(item, index) in this.$store.state.app.otherCollaborators"
+                                :key="index"
+                        >
+                            <v-list-tile-title>{{ item }}</v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
+            </template>
             <v-toolbar-items>
                 <template v-if="!this.$store.state.login.isLoggedIn">
                     <v-btn flat @click="$store.commit('login/showLoginDialog')">Login</v-btn>

@@ -25,7 +25,8 @@
                             <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                             <v-spacer />
                             <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                            <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
+                            <!--<v-icon @click="showDocumentHistory(doc.document)">history</v-icon>-->
+                            <v-icon @click="removeDocument(doc)">cancel</v-icon>
                         </v-list-tile>
                     </v-hover>
                 </template>
@@ -88,6 +89,23 @@
                     <v-icon @click="addCollaborator">person_add</v-icon>
                 </v-list-tile>
             </v-list>
+            <template v-if="$store.state.login.user.id === currentDocument.document.repo.owner.id">
+                <br/>
+                <v-list>
+                    <v-list-tile>
+                        <v-list-tile-title>Transfer Ownership</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider/>
+                    <v-list-tile>
+                        <v-text-field
+                                v-model.trim="transferOwnershipName"
+                                label="Name of collaborator"
+                                single-line
+                        ></v-text-field>
+                        <v-icon @click="transferOwnership">send</v-icon>
+                    </v-list-tile>
+                </v-list>
+            </template>
         </template>
     </div>
 </template>
@@ -101,7 +119,8 @@
             showCollaborators: false,
             documentName: '',
             collaboratorName: '',
-            currentDocument: {},
+            transferOwnershipName: '',
+            currentDocument: { document: { repo: { owner: { id: -1 } } } },
             docs: [
                 { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
             ]
@@ -148,6 +167,13 @@
                             'Error'
                         );
                     }
+                );
+            },
+            removeDocument(doc) {
+                this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                this.$snotify.success(
+                    'Document was removed',
+                    'Success'
                 );
             },
             removeCollaborator: function(index, collaboratorId) {
@@ -210,6 +236,22 @@
                             'Error'
                         );
                     }
+                );
+            },
+            transferOwnership: function() {
+                if (this.transferOwnershipName === '') {
+                    this.$snotify.error(
+                        'Enter a collaborator name',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.transferOwnershipName = ''
+                this.currentDocument.document.repo.owner.id = -1
+                this.$snotify.success(
+                    'Ownership was transferred',
+                    'Success'
                 );
             },
             revertHistory: function() {

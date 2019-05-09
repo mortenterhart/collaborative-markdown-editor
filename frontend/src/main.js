@@ -6,6 +6,8 @@ import store from './store';
 import App from './App.vue';
 import router from './router';
 
+Vue.prototype.location = window.location;
+
 Vue.config.productionTip = false;
 
 new Vue({

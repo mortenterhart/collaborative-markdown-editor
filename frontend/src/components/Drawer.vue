@@ -25,7 +25,8 @@
                             <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                             <v-spacer />
                             <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                            <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
+                            <!--<v-icon @click="showDocumentHistory(doc.document)">history</v-icon>-->
+                            <v-icon @click="removeDocument(doc)">cancel</v-icon>
                         </v-list-tile>
                     </v-hover>
                 </template>
@@ -88,6 +89,8 @@
                     <v-icon @click="addCollaborator">person_add</v-icon>
                 </v-list-tile>
             </v-list>
+            <br/>
+
         </template>
     </div>
 </template>
@@ -148,6 +151,13 @@
                             'Error'
                         );
                     }
+                );
+            },
+            removeDocument(doc) {
+                this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                this.$snotify.success(
+                    'Document was removed',
+                    'Success'
                 );
             },
             removeCollaborator: function(index, collaboratorId) {

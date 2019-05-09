@@ -119,19 +119,21 @@ public class DocDao {
      * Update a certain document in the database
      *
      * @param d Given doc object
-     * @param u Given user who initiated the update
      * @return The number of updated rows
      */
     @Transactional
-    public int updateDoc(Doc d, User u) {
+    public int updateDoc(Doc d) {
 
         log.debug("Updated document: " + d.getId());
 
-        return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                      .setParameter("content", d.getContent())
-                      .setParameter("uuser", u.getId())
-                      .setParameter("id", d.getId())
-                      .executeUpdate();
+        this.em.getTransaction().begin();	
+        int result = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
+                      		.setParameter("content", d.getContent())
+                      		.setParameter("uuser", d.getUuser())
+                      		.setParameter("id", d.getId())
+                      		.executeUpdate();
+        this.em.getTransaction().commit();
+        return result;
     }
 
     @Transactional
@@ -139,10 +141,13 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
-                      .setParameter("repo", d.getRepo())
-                      .setParameter("uuser", d.getUuser())
-                      .setParameter("id", d.getId())
-                      .executeUpdate();
+        this.em.getTransaction().begin();	
+        int result = this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
+                			.setParameter("repo", d.getRepo())
+                			.setParameter("uuser", d.getUuser())
+                			.setParameter("id", d.getId())
+                			.executeUpdate();
+        this.em.getTransaction().commit();
+        return result;
     }
 }

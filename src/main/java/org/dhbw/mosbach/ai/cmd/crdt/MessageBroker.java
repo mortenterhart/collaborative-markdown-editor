@@ -100,7 +100,8 @@ public class MessageBroker {
 			}
 		}
 		
-		sb.deleteCharAt(sb.length() - 1);
+		if(sb.length() > 2)
+			sb.deleteCharAt(sb.length() - 1);
 		sb.append("]");
 
 		return sb.toString();

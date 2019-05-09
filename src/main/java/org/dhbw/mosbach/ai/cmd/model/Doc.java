@@ -193,7 +193,7 @@ public class Doc {
 	@Override
     public String toString() {
         return new StringBuilder()
-            .append("User: \n")
+            .append("Doc: \n")
             .append("\tid: " + this.id + "\n")
             .append("\tName: " + this.name + "\n")
             .append("\tCreated: " + this.ctime + "\n")

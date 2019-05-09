@@ -70,6 +70,7 @@
                     case "ContentInit":
                         this.lastReceivedContent = data.msg
                         this.content = data.msg
+                        this.$emit('contentWasChanged', this.content);
                         break;
                     case "Insert":
                         this.lastReceivedContent = this.content.substring(0, data.cursorPos) + data.msg + this.content.substring(data.cursorPos)

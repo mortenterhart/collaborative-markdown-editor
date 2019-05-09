@@ -11,7 +11,7 @@ import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
-import org.dhbw.mosbach.ai.cmd.services.payload.DocumentModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 
@@ -35,7 +35,7 @@ import java.util.List;
 
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService {
+public class DocumentService implements RestService {
 
     @Inject
     private DocDao docDao;
@@ -56,7 +56,7 @@ public class DocumentService {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addDocument(DocumentModel documentModel) {
+    public Response addDocument(DocumentInsertionModel documentModel) {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }

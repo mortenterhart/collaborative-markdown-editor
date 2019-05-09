@@ -75,7 +75,7 @@
                             </v-list-tile-action>
                             <v-list-tile-title>{{ collaborator.user.name }}</v-list-tile-title>
                             <v-spacer />
-                            <v-icon @click="removeCollaborator">cancel</v-icon>
+                            <v-icon @click="removeCollaborator(index, collaborator.id)">cancel</v-icon>
                         </v-list-tile>
                     </v-hover>
                 </template>
@@ -150,10 +150,32 @@
                     }
                 );
             },
-            removeCollaborator: function() {
-                this.$snotify.success(
-                    'Collaborator was removed',
-                    'Success'
+            removeCollaborator: function(index, collaboratorId) {
+                this.axios.post('/collaborators/remove',
+                    {
+                        documentId: this.currentDocument.document.id,
+                        collaboratorId: collaboratorId
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.currentDocument.collaborators.splice(index, 1)
+                        if (this.currentDocument.collaborators.length === 0) {
+                            this.currentDocument.icon = "person"
+                        }
+                        this.$snotify.success(
+                            'Collaborator was removed',
+                            'Success'
+                        );
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
                 );
             },
             addCollaborator: function() {

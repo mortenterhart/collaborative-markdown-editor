@@ -16,6 +16,12 @@
                     v-if="this.$store.state.login.isLoggedIn"
                     @click="drawer = !drawer"/>
             <v-toolbar-title v-text="this.$store.state.app.title"/>
+            <template v-if="this.$store.state.app.currentDocument.repo.owner.id === this.$store.state.login.user.id">
+                <v-subheader>owned by you</v-subheader>
+            </template>
+            <template v-else>
+                <v-subheader>{{ ' owned by ' + this.$store.state.app.currentDocument.repo.owner.name }}</v-subheader>
+            </template>
             <v-spacer/>
             <template v-if="$route.name === 'document' && this.$store.state.app.otherCollaborators.length !== 0">
                 <v-menu offset-y>

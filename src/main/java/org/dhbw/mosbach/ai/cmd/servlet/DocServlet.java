@@ -94,7 +94,7 @@ public class DocServlet extends HttpServlet {
 			
 			//TODO: Update doc to inactive
 			
-			docDao.updateDoc(d, currentUser);
+//			docDao.updateDoc(d, currentUser);
 		} else {
 			log.debug("Doc was not found or the current user is not the owner of the doc");
 		}

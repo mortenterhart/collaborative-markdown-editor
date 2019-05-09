@@ -56,9 +56,9 @@ public class ActiveDocument {
 	public void insert(int i, String msg){
 
 		doc.setContent(new StringBuilder()
-					 	.append(doc.getContent().substring(0, i - 1))
+					 	.append(doc.getContent().substring(0, i))
 					 	.append(msg)
-					 	.append(doc.getContent().substring(i - 1))
+					 	.append(doc.getContent().substring(i))
 					 	.toString());
 		state++;
 	}
@@ -71,22 +71,9 @@ public class ActiveDocument {
 	public void del(int i, int length){
 
 		doc.setContent(new StringBuilder()
-					 	.append(doc.getContent().substring(0, i - 1))
-					 	.append(doc.getContent().substring(i - 1 + length))
+					 	.append(doc.getContent().substring(0, i))
+					 	.append(doc.getContent().substring(i + length))
 					 	.toString());
-		state++;
-	}
-
-	/**
-	 * Replaces a message from a user of a given length at a given index
-	 * @param i Given index
-	 * @param length Given length of how much to delete after the index
-	 * @param msg Given message
-	 */
-	public void replace(int i, int length, String msg){
-		
-		del(i - 1, length - 1);
-		insert(i - 1, msg);	
 		state++;
 	}
 }

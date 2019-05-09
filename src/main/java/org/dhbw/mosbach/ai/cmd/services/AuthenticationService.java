@@ -8,6 +8,8 @@ import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
+import org.dhbw.mosbach.ai.cmd.services.response.LoginUserModel;
+import org.dhbw.mosbach.ai.cmd.services.validation.RegisterValidation;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,7 +32,7 @@ import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_AUTHENTICATION)
-public class AuthenticationService {
+public class AuthenticationService implements RestService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
@@ -39,6 +42,9 @@ public class AuthenticationService {
     @Inject
     private Hashing hashing;
 
+    @Inject
+    private RegisterValidation registerValidation;
+
     @Context
     private HttpServletRequest request;
 
@@ -46,60 +52,63 @@ public class AuthenticationService {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doLogin(LoginModel payload) {
-        String username = payload.getUsername();
-        String password = payload.getPassword();
+    @NotNull
+    public Response doLogin(@NotNull LoginModel loginModel) {
+        String username = loginModel.getUsername();
+        String password = loginModel.getPassword();
 
         if (username == null || username.isEmpty()) {
             log.debug("login: applied username was null or empty");
-            return new BadRequest().create("Username was not specified");
+            return new BadRequest("Username was not specified").buildResponse();
         }
 
         User user = userDao.getUserByName(username);
         if (user == null) {
             log.debug("login: User with username '{}' not defined", username);
-            return new Forbidden().create("Invalid username or password");
+            return new Forbidden("Invalid username or password").buildResponse();
         }
 
         if (!hashing.checkPassword(password, user.getPassword())) {
             log.debug("login: User '{}' inserted wrong password", username);
-            return new Forbidden().create("Invalid username or password");
+            return new Forbidden("Invalid username or password").buildResponse();
         }
 
         request.getSession().setAttribute(CmdConfig.SESSION_USER, user);
+        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, user.getName());
         request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
 
         log.debug("login: User '{}' logged in successfully", username);
-        return new Success().create("Logged in successfully");
+        return new LoginUserModel(new Success("Logged in successfully"), user).buildResponse();
     }
 
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doRegister(RegisterModel payload) {
-        String username = payload.getUsername();
-        String email = payload.getEmail();
-        String password = payload.getPassword();
+    @NotNull
+    public Response doRegister(@NotNull RegisterModel registerModel) {
+        String username = registerModel.getUsername();
+        String email = registerModel.getEmail();
+        String password = registerModel.getPassword();
 
         if (username == null || username.isEmpty()) {
             log.debug("register: applied username was null or empty");
-            return new BadRequest().create("Username was not specified");
+            return new BadRequest("Username was not specified").buildResponse();
         }
 
         if (email == null || email.isEmpty()) {
             log.debug("register: applied email was null or empty");
-            return new BadRequest().create("Email was not specified");
+            return new BadRequest("Email was not specified").buildResponse();
         }
 
         if (password == null || password.isEmpty()) {
             log.debug("register: applied password was null or empty");
-            return new BadRequest().create("Password was not specified");
+            return new BadRequest("Password was not specified").buildResponse();
         }
 
         if (userDao.getUserByName(username) != null) {
             log.debug("register: User '{}' is already registered", username);
-            return new BadRequest().create(String.format("Username \"%s\" is already registered", username));
+            return new BadRequest(String.format("Username \"%s\" is already registered", username)).buildResponse();
         }
 
         User newUser = new User();
@@ -112,6 +121,23 @@ public class AuthenticationService {
         userDao.createUser(newUser);
 
         log.debug("User '{}' was registered successfully", username);
-        return new Success().create("Registration successful");
+        return new Success("Registration successful").buildResponse();
+    }
+
+    @POST
+    @Path("/logout")
+    @Produces(MediaType.APPLICATION_JSON)
+    @NotNull
+    public Response doLogout() {
+        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+            return new Success("You are already logged out").buildResponse();
+        }
+
+        request.getSession().setAttribute(CmdConfig.SESSION_USER, null);
+        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, null);
+        request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, false);
+        request.getSession().invalidate();
+
+        return new Success("Successfully logged out").buildResponse();
     }
 }

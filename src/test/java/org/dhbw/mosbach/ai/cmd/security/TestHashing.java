@@ -19,7 +19,7 @@ public class TestHashing {
 		String hash = hashing.hashPassword(password);
 		
 		String password1 = "blabla12";
-		String hash1 = hashing.hashDocContent(password1);
+		String hash1 = hashing.hashPassword(password1);
 		
 		// Make sure the passwords are different due to salting the hash
 		assertNotEquals(hash, hash1);

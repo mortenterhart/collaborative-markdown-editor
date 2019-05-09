@@ -5,12 +5,11 @@ import org.dhbw.mosbach.ai.cmd.crdt.Message;
 import org.dhbw.mosbach.ai.cmd.crdt.MessageBroker;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
+import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
-
-import com.google.gson.Gson;
+import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 import javax.inject.Inject;
-import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -22,31 +21,16 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Endpoint for the web socket communication between the client and the server
+ * End point for the web socket communication between the client and the server
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}", configurator = Configurator.class)
+@ServerEndpoint(value = "/ws/{docId}/{username}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class Endpoint {
-	
-	/*
-	 * TODO: 
-	 * 
-	 * 		- Notify clients on connecting and disconnecting users via MessageType.UserJoined / UserLeft
-	 * 			- Maybe use onMessage directly after onOpen from JS?
-	 * 		- Figure out how to supply length from deletion method of ActiveDocument from client at MessageBroker.transform
-	 */
-    
-	/**
-	 * Signed in users
-	 */
-    private static Set<Session> users = Collections.synchronizedSet(new HashSet<>());
+
     /**
      * Active docs being worked on by n users
      */
@@ -55,45 +39,63 @@ public class Endpoint {
     @Inject
     private MessageBroker messageBroker;
     
-    @Inject
-    private DocDao docDao;
-    
-    @Inject
-    private UserDao userDao;
-    
-    /**
+	/**
      * Gets triggered once a web socket connection is opened.
-     *
-     * @param docId  Given doc id to access
-     * @param config  Given config from Configurator.java
-     * @param session Current user session
-     */
+	 * @param docId Given document id
+	 * @param username Given user name of current user
+	 * @param session Current user session
+	 */
     @OnOpen
-    public void onOpen(@PathParam("docId") int docId, EndpointConfig config, Session session) {
+    public void onOpen(@PathParam("docId") int docId, @PathParam(CmdConfig.SESSION_USERNAME) String username, Session session) {
 
-        session.getUserProperties().put(CmdConfig.SESSION_USERNAME, config.getUserProperties().get(CmdConfig.SESSION_USERNAME));
-        users.add(session);
+        session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
+
+        Doc doc = null;
         
-        if(docs.get(docId) == null)
-        	docs.put(docId, new ActiveDocument(docDao.getDoc(docId), 0, new ArrayList<>()));
+        if(docs.get(docId) == null) {
+        	doc = new DocDao().getDoc(docId);
+        	docs.put(docId, new ActiveDocument(doc, 0, new ArrayList<>()));
+        }
         	
+        if(doc == null)
+        	doc = docs.get(docId).getDoc();
+        
+        if(doc.getContent() == null)
+        	docs.get(docId).getDoc().setContent("");
+        
         docs.get(docId).getUsers().add(session);
+        
+        Message contentInitMsg = messageBroker.createSystemMessage(docId, doc.getContent(), MessageType.ContentInit);
+        messageBroker.publishToSingleUser(contentInitMsg, session);
+        
+        Message documentTitleMsg = messageBroker.createSystemMessage(docId,  doc.getName(), MessageType.DocumentTitle);
+        messageBroker.publishToSingleUser(documentTitleMsg, session);
+        
+        Message userInitMsg = messageBroker.createSystemMessage(docId, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
+        messageBroker.publishToSingleUser(userInitMsg, session);
+        
+        Message userJoinedMsg = messageBroker.createSystemMessage(docId, username, MessageType.UserJoined);
+        messageBroker.publishToOtherUsers(userJoinedMsg, docs.get(docId), session);
     }
 
     /**
      * Gets triggered once a message is sent from the client.<br>
      *
-     * @param message Given message
+     * @param msg Given message
      * @param session Current user session
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(Message msg, Session session) {
     	
-    	Message msg = new Gson().fromJson(message, Message.class);
+    	System.out.println("In onMessage");
+    	System.out.println(msg.toString());
+
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
+    	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     	messageBroker.transform(msg, currentDoc);
-    	messageBroker.publish(msg, currentDoc);
+  
+    	System.out.println("Message after transform:\n\t" + currentDoc.getDoc().getContent());
     }
 
     /**
@@ -104,19 +106,28 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
-    	
-    	users.remove(session);
-        
+
     	for(int docId : docs.keySet()) {
+    		for(Session singleUserSession : docs.get(docId).getUsers()) {
+    			if(singleUserSession.equals(session)) {
+    				
+    				docs.get(docId).getUsers().remove(singleUserSession);
+    				
+    				String userName = (String)singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERNAME);
+    		        Message userLeftdMsg = messageBroker.createSystemMessage(docId, userName, MessageType.UserLeft);
+    		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
+    		        break;
+    			}	
+    		}	
     		
-    		List<Session> workingUsers = docs.get(docId).getUsers();
-    		
-    		for(Session singleUserSession : workingUsers)
-    			if(singleUserSession.equals(session))
-    				workingUsers.remove(singleUserSession);
-    		
-    		if(workingUsers.isEmpty()) {
-    			docDao.updateDoc(docs.get(docId).getDoc(), userDao.getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    		if(docs.get(docId).getUsers().isEmpty()) {
+    			
+    			Doc activeDoc = docs.get(docId).getDoc();
+    			activeDoc.setUuser(new UserDao().getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    			
+    			DocDao docDao = new DocDao();
+    			docDao.updateDoc(activeDoc);
+    			
     			docs.remove(docId);
     		}
     	}       

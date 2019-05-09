@@ -28,14 +28,14 @@
                             <v-form>
                                 <v-text-field
                                         append-icon="person"
-                                        :rules="usernameRules"
+                                        :rules="[rules.required, rules.username, rules.usernameLength]"
                                         name="username"
                                         label="Username"
                                         type="text"
                                         v-model="regUsername"></v-text-field>
                                 <v-text-field
                                         append-icon="email"
-                                        :rules="emailRules"
+                                        :rules="[rules.required, rules.email]"
                                         name="email"
                                         label="Email"
                                         type="email"
@@ -43,7 +43,7 @@
                                 <v-text-field
                                         :type="hideRegPassword ? 'password' : 'text'"
                                         :append-icon="hideRegPassword ? 'visibility_off' : 'visibility'"
-                                        :rules="passwordRules"
+                                        :rules="[rules.required, rules.passwordLength, rules.passwordLowerChar, rules.passwordOneDigit, rules.passwordUpperChar]"
                                         name="password"
                                         label="Password"
                                         v-model="regPassword"
@@ -69,13 +69,35 @@
                 loginUsername: '',
                 loginPassword: '',
                 regUsername: '',
-                usernameRules: [],
                 regEmail: '',
-                emailRules: [],
                 regPassword: '',
-                passwordRules: [],
                 hideLoginPassword: true,
                 hideRegPassword: true,
+                rules: {
+                    required: value => !!value || 'Required.',
+                    usernameLength: value => value.length >= 4 || 'Username requires at least 4 chars',
+                    username: value => {
+                        const pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
+                        return pattern.test(value) || 'Invalid username'
+                    },
+                    email: value => {
+                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        return pattern.test(value) || 'Invalid e-mail.'
+                    },
+                    passwordOneDigit: value => {
+                        const pattern = /\d/
+                        return pattern.test(value) || 'Password must contain at least one digit'
+                    },
+                    passwordLowerChar: value => {
+                        const pattern = /[a-z]/
+                        return pattern.test(value) || 'Password must contain at least one lowercase char'
+                    },
+                    passwordUpperChar: value => {
+                        const pattern = /[A-Z]/
+                        return pattern.test(value) || 'Password must contain at least one uppercase char'
+                    },
+                    passwordLength: value => value.length >= 8 || 'Password requires at least 8 chars'
+                }
             }
         },
         methods: {
@@ -106,38 +128,23 @@
                     },
                     {
                         headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(() => {
-                        this.hideLoginDialog();
-                        this.$snotify.success(
-                            'You\'re getting logged in',
-                            'Success'
-                    );
-                }).catch((error) => {
-                    this.$snotify.error(
-                        error.response.data.message,
-                        'Error'
-                    );
-                });
-
-                /*
-                this.axios.post('http://localhost:8080/CMD/api/authentication/login',
-                    {
-                        headers: {
-                            Cookie: Cookie.get("JSESSIONID")
-                        },
-                        data: {
-
+                            'Content-Type': 'application/json',
                         }
                     }).then((response) => {
-                        console.log(response.data);
                         this.hideLoginDialog();
                         this.$snotify.success(
                             'You\'re getting logged in',
                             'Success'
                         );
-                });*/
+                        this.$store.commit('login/setIsLoggedIn', true)
+                        this.$store.commit('login/setUser', response.data.user)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                );
             },
             handleRegistration: function() {
                 if (this.regUsername.trim() === '') {
@@ -190,42 +197,6 @@
                             'Error'
                         );
                 });
-            }
-        },
-        watch: {
-            regUsername: function(username) {
-                if (username === '') {
-                    this.usernameRules = []
-                } else if (username.length < 4) {
-                    this.usernameRules = ['Username requires at least 4 chars']
-                } else if (username !== '') {
-                    this.usernameRules = [ v => (v.match(/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/)) || 'Invalid username']
-                }
-            },
-            regEmail: function(mail) {
-                if (mail !== '') {
-                    this.emailRules = [ v => (v.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) || 'Invalid email address']
-                } else if (mail === '') {
-                    this.emailRules = []
-                }
-            },
-            regPassword: function(password) {
-                if (password === '') {
-                    this.passwordRules = [];
-                    return
-                }
-
-                if (!/\d/.test(password)) {
-                    this.passwordRules = ['Password must contain at least one digit']
-                } else if (!/[a-z]/.test(password)) {
-                    this.passwordRules = ['Password must contain at least one lowercase char']
-                } else if (!/[A-Z]/.test(password)) {
-                    this.passwordRules = ['Password must contain at least one uppercase char']
-                } else if (password.length < 8) {
-                    this.passwordRules = ['Password requires at least 8 chars']
-                } else {
-                    this.passwordRules = []
-                }
             }
         },
         computed: {

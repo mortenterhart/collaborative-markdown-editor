@@ -1,16 +1,20 @@
 const exec = require('child_process').exec;
+
 function log(error, stdout, stderr) {
     console.log(stdout);
+    console.log(stderr);
 }
 
 const os = require('os');
-// control OS
-// then run command depending on the OS
+
+const webappPath = "../src/main/webapp";
 
 if (os.type() === 'Darwin') {
-    exec("mv dist/* ../src/main/webapp", log);
+    exec(`rm -r "${webappPath}"/*`, log);
+    exec(`mv dist/* "${webappPath}"`, log);
 } else if (os.type() === 'Windows_NT') {
-    exec("xcopy dist\\* ..\\src\\main\\webapp\\* /s /e /i /Y", log);
+    exec(`del /S /Q "${webappPath}"\\*`, log);
+    exec(`xcopy dist\\* "${webappPath}"\\* /s /e /i /Y`, log);
 } else {
     throw new Error("Unsupported OS found: " + os.type());
 }

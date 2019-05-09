@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -38,6 +39,11 @@ public class Collaborator {
 
     @Column(name = "CTIME")
     private LocalDateTime ctime;
+    
+    @PrePersist
+    private void onInsert() {
+    	this.ctime = LocalDateTime.now();
+    }
 
     public int getId() {
         return id;
@@ -80,6 +86,49 @@ public class Collaborator {
     }
 
     @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ctime == null) ? 0 : ctime.hashCode());
+		result = prime * result + ((doc == null) ? 0 : doc.hashCode());
+		result = prime * result + ((hasAccess == null) ? 0 : hasAccess.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Collaborator other = (Collaborator) obj;
+		if (ctime == null) {
+			if (other.ctime != null)
+				return false;
+		} else if (!ctime.equals(other.ctime))
+			return false;
+		if (doc == null) {
+			if (other.doc != null)
+				return false;
+		} else if (!doc.equals(other.doc))
+			return false;
+		if (hasAccess != other.hasAccess)
+			return false;
+		if (id != other.id)
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		return true;
+	}
+
+	@Override
     public String toString() {
         return new StringBuilder()
             .append("User: \n")

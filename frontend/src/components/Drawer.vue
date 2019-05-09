@@ -4,8 +4,8 @@
             <v-layout pa-2 column fill-height class="lightbox white--text">
                 <v-spacer></v-spacer>
                 <v-flex shrink>
-                    <div class="subheading">Jonathan Lee</div>
-                    <div class="body-1">heyfromjonathan@gmail.com</div>
+                    <div class="subheading">{{ $store.state.login.user.name }}</div>
+                    <div class="body-1">{{ $store.state.login.user.mail }}</div>
                 </v-flex>
             </v-layout>
         </v-img>
@@ -17,15 +17,17 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(doc, i) in docs">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            <v-icon>{{ doc.icon }}</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-title>{{ doc.title }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                        <v-icon @click="showDocumentHistory(doc)">history</v-icon>
-                    </v-list-tile>
+                    <v-hover>
+                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
+                            <v-list-tile-action>
+                                <v-icon>{{ doc.icon }}</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
+                            <v-spacer />
+                            <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
+                            <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
+                        </v-list-tile>
+                    </v-hover>
                 </template>
                 <v-list-tile>
                     <v-text-field
@@ -66,14 +68,16 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(collaborator, i) in currentDocument.collaborators">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            <v-icon>person</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-title>{{ collaborator }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon @click="removeCollaborator">cancel</v-icon>
-                    </v-list-tile>
+                    <v-hover>
+                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
+                            <v-list-tile-action>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-title>{{ collaborator.user.name }}</v-list-tile-title>
+                            <v-spacer />
+                            <v-icon @click="removeCollaborator(index, collaborator.id)">cancel</v-icon>
+                        </v-list-tile>
+                    </v-hover>
                 </template>
                 <v-list-tile>
                     <v-text-field
@@ -99,9 +103,7 @@
             collaboratorName: '',
             currentDocument: {},
             docs: [
-                { icon: 'person', title: 'Studienarbeit', history: ['10.04.2019', '06.04.2019', '05.04.2019'], collaborators: ['Morten Terhart', 'Micha Spahr']},
-                { icon: 'group', title: 'Projektarbeit', history: ['11.04.2019', '01.04.2019'], collaborators: ['Phillip Seitz', 'Jacob Krauth']},
-                { icon: 'group', title: 'Jave EE', history: ['20.04.2019', '16.04.2019', '05.04.2019'], collaborators: ['Fabian Schulz']},
+                { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
             ]
         }),
         methods: {
@@ -124,15 +126,56 @@
                     return;
                 }
 
-                this.$snotify.success(
-                    'Document was created',
-                    'Success'
+                this.axios.post('/document/add',
+                    {
+                        documentName: this.documentName
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.documentName = '';
+                        this.$snotify.success(
+                            'Document was created',
+                            'Success'
+                        );
+                        this.fetchDocuments(false)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
                 );
             },
-            removeCollaborator: function() {
-                this.$snotify.success(
-                    'Collaborator was removed',
-                    'Success'
+            removeCollaborator: function(index, collaboratorId) {
+                this.axios.post('/collaborators/remove',
+                    {
+                        documentId: this.currentDocument.document.id,
+                        collaboratorId: collaboratorId
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.currentDocument.collaborators.splice(index, 1)
+                        if (this.currentDocument.collaborators.length === 0) {
+                            this.currentDocument.icon = "person"
+                        }
+                        this.$snotify.success(
+                            'Collaborator was removed',
+                            'Success'
+                        );
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
                 );
             },
             addCollaborator: function() {
@@ -144,9 +187,29 @@
                     return;
                 }
 
-                this.$snotify.success(
-                    'Collaborator was added',
-                    'Success'
+                this.axios.post('/collaborators/add',
+                    {
+                        collaboratorUsername: this.collaboratorName,
+                        documentId: this.currentDocument.document.id
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.collaboratorName = '';
+                        this.$snotify.success(
+                            'Collaborator was added',
+                            'Success'
+                        );
+                        this.fetchDocuments(true)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
                 );
             },
             revertHistory: function() {
@@ -154,7 +217,30 @@
                     'History was reverted',
                     'Success'
                 );
+            },
+            fetchDocuments: function(setCurrentDocument) {
+                this.axios.get('/document/all',
+                    {
+                        withCredentials: true
+                    }).then((response) => {
+                        this.docs = response.data;
+                        if (setCurrentDocument)
+                            this.currentDocument = this.docs.find(x => x.document.id === this.currentDocument.document.id)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                );
+            },
+            openDocument: function(doc) {
+                this.$router.push(`/doc/${doc.id}`)
+                this.$store.commit('app/incEditorKey')
             }
+        },
+        beforeMount() {
+            this.fetchDocuments(false);
         }
     }
 </script>

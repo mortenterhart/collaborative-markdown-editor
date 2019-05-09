@@ -72,7 +72,7 @@ buildNumber.properties
 *.swp
 
 # Built frontend
-src/main/webapp/
+src/main/webapp/*
 !src/main/webapp/.gitkeep
 
 # Node modules

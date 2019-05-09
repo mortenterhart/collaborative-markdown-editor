@@ -89,8 +89,23 @@
                     <v-icon @click="addCollaborator">person_add</v-icon>
                 </v-list-tile>
             </v-list>
-            <br/>
-
+            <template v-if="$store.state.login.user.id === currentDocument.document.repo.owner.id">
+                <br/>
+                <v-list>
+                    <v-list-tile>
+                        <v-list-tile-title>Transfer Ownership</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider/>
+                    <v-list-tile>
+                        <v-text-field
+                                v-model.trim="transferOwnershipName"
+                                label="Name of collaborator"
+                                single-line
+                        ></v-text-field>
+                        <v-icon @click="transferOwnership">send</v-icon>
+                    </v-list-tile>
+                </v-list>
+            </template>
         </template>
     </div>
 </template>
@@ -104,7 +119,8 @@
             showCollaborators: false,
             documentName: '',
             collaboratorName: '',
-            currentDocument: {},
+            transferOwnershipName: '',
+            currentDocument: { document: { repo: { owner: { id: -1 } } } },
             docs: [
                 { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
             ]
@@ -220,6 +236,22 @@
                             'Error'
                         );
                     }
+                );
+            },
+            transferOwnership: function() {
+                if (this.transferOwnershipName === '') {
+                    this.$snotify.error(
+                        'Enter a collaborator name',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.transferOwnershipName = ''
+                this.currentDocument.document.repo.owner.id = -1
+                this.$snotify.success(
+                    'Ownership was transferred',
+                    'Success'
                 );
             },
             revertHistory: function() {

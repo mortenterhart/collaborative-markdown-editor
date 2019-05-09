@@ -56,13 +56,11 @@
                     "msg": message,
                     "messageType": messageType
                 })
-                console.log(msg)
                 e.socket.send(msg);
 
                 e.lastReceivedContent = e.content
             }, 400),
             handle(data) {
-                console.log(data)
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)

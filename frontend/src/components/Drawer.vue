@@ -25,7 +25,6 @@
                             <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                             <v-spacer />
                             <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                            <!--<v-icon @click="showDocumentHistory(doc.document)">history</v-icon>-->
                             <v-icon @click="removeDocument(doc)">cancel</v-icon>
                         </v-list-tile>
                     </v-hover>
@@ -38,26 +37,6 @@
                     ></v-text-field>
                     <v-icon @click="addDocument">note_add</v-icon>
                 </v-list-tile>
-            </v-list>
-        </template>
-        <template v-if="showHistory">
-            <v-list>
-                <v-list-tile>
-                    <v-list-tile-title>Document History</v-list-tile-title>
-                    <v-spacer/>
-                    <v-icon @click="showOverview = true; showHistory =  false">keyboard_backspace</v-icon>
-                </v-list-tile>
-                <v-divider/>
-                <template v-for="(changes, i) in currentDocument.history">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            {{ currentDocument.history.length - i }}
-                        </v-list-tile-action>
-                        <v-list-tile-title>{{ changes }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon @click="revertHistory">done</v-icon>
-                    </v-list-tile>
-                </template>
             </v-list>
         </template>
         <template v-if="showCollaborators">
@@ -115,22 +94,16 @@
         name: "Drawer",
         data: () => ({
             showOverview: true,
-            showHistory: false,
             showCollaborators: false,
             documentName: '',
             collaboratorName: '',
             transferOwnershipName: '',
             currentDocument: { document: { repo: { owner: { id: -1 } } } },
             docs: [
-                { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
+                { icon: '', document: { name: '', id: 0 }, collaborators: ['']},
             ]
         }),
         methods: {
-            showDocumentHistory: function(doc) {
-                this.showOverview = false;
-                this.showHistory = true;
-                this.currentDocument = doc;
-            },
             showCollaboratorList: function(doc) {
                 this.showOverview = false;
                 this.showCollaborators = true;
@@ -251,12 +224,6 @@
                 this.currentDocument.document.repo.owner.id = -1
                 this.$snotify.success(
                     'Ownership was transferred',
-                    'Success'
-                );
-            },
-            revertHistory: function() {
-                this.$snotify.success(
-                    'History was reverted',
                     'Success'
                 );
             },

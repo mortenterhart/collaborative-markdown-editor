@@ -8,7 +8,7 @@ Vue.use(VueRouter);
 
 const routes = [
     { path: '/', component: Welcome },
-    { path: '/doc/:id', component: Document },
+    { path: '/doc/:id', component: Document, name: 'document' },
     { path: '*', component: ErrorPage }
 ];
 

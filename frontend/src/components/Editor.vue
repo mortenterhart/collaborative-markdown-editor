@@ -56,13 +56,11 @@
                     "msg": message,
                     "messageType": messageType
                 })
-                console.log(msg)
                 e.socket.send(msg);
 
                 e.lastReceivedContent = e.content
             }, 400),
-            handle(data) {
-                console.log(data)
+            handleWebSocketEvents(data) {
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)
@@ -72,6 +70,9 @@
                         this.content = data.msg
                         this.$emit('contentWasChanged', this.content);
                         break;
+                    case "UsersInit":
+                        this.$store.commit('app/setOtherCollaborators', JSON.parse(data.msg))
+                        break;
                     case "Insert":
                         this.lastReceivedContent = this.content.substring(0, data.cursorPos) + data.msg + this.content.substring(data.cursorPos)
                         this.simplemde.codemirror.getDoc().replaceRange(data.msg, this.getCursorFromTotalCursorPos(this.content, data.cursorPos))
@@ -79,6 +80,20 @@
                     case "Delete":
                         this.lastReceivedContent = this.content.substring(0, data.cursorPos) + this.content.substring(data.cursorPos + data.msg.length)
                         this.simplemde.codemirror.getDoc().replaceRange("", this.getCursorFromTotalCursorPos(this.content, data.cursorPos), this.getCursorFromTotalCursorPos(this.content, data.cursorPos + data.msg.length))
+                        break;
+                    case "UserJoined":
+                        this.$store.commit('app/addCollaborator', data.msg)
+                        this.$snotify.info(
+                            data.msg + ' joined the document',
+                            'Info'
+                        );
+                        break;
+                    case "UserLeft":
+                        this.$store.commit('app/removeCollaborator', data.msg)
+                        this.$snotify.info(
+                            data.msg + ' left the document',
+                            'Info'
+                        );
                         break;
                 }
             },
@@ -128,14 +143,14 @@
 
             let vm = this;
             this.socket.onmessage = function (event) {
-                vm.handle(JSON.parse(event.data.toString()));
+                vm.handleWebSocketEvents(JSON.parse(event.data.toString()));
             };
 
             this.simplemde.codemirror.on("change", function(editor, changeObj) {
                 if (changeObj.origin === "setValue")
                     return
 
-                if (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0)) {
+                if ((changeObj.origin !== "+input" || changeObj.removed[0].length === 0) && (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0))) {
                     // Normal insert or delete event
                     vm.$emit('contentWasChanged', vm.content);
                     if (vm.content.length !== vm.lastReceivedContent.length) {

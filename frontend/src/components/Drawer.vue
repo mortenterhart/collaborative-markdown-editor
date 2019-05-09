@@ -25,7 +25,7 @@
                             <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
                             <v-spacer />
                             <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
-                            <v-icon @click="showDocumentHistory(doc.document)">history</v-icon>
+                            <v-icon @click="removeDocument(doc)">cancel</v-icon>
                         </v-list-tile>
                     </v-hover>
                 </template>
@@ -37,26 +37,6 @@
                     ></v-text-field>
                     <v-icon @click="addDocument">note_add</v-icon>
                 </v-list-tile>
-            </v-list>
-        </template>
-        <template v-if="showHistory">
-            <v-list>
-                <v-list-tile>
-                    <v-list-tile-title>Document History</v-list-tile-title>
-                    <v-spacer/>
-                    <v-icon @click="showOverview = true; showHistory =  false">keyboard_backspace</v-icon>
-                </v-list-tile>
-                <v-divider/>
-                <template v-for="(changes, i) in currentDocument.history">
-                    <v-list-tile v-bind:key="i">
-                        <v-list-tile-action>
-                            {{ currentDocument.history.length - i }}
-                        </v-list-tile-action>
-                        <v-list-tile-title>{{ changes }}</v-list-tile-title>
-                        <v-spacer />
-                        <v-icon @click="revertHistory">done</v-icon>
-                    </v-list-tile>
-                </template>
             </v-list>
         </template>
         <template v-if="showCollaborators">
@@ -88,6 +68,23 @@
                     <v-icon @click="addCollaborator">person_add</v-icon>
                 </v-list-tile>
             </v-list>
+            <template v-if="$store.state.login.user.id === currentDocument.document.repo.owner.id">
+                <br/>
+                <v-list>
+                    <v-list-tile>
+                        <v-list-tile-title>Transfer Ownership</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider/>
+                    <v-list-tile>
+                        <v-text-field
+                                v-model.trim="transferOwnershipName"
+                                label="Name of collaborator"
+                                single-line
+                        ></v-text-field>
+                        <v-icon @click="transferOwnership">send</v-icon>
+                    </v-list-tile>
+                </v-list>
+            </template>
         </template>
     </div>
 </template>
@@ -97,21 +94,16 @@
         name: "Drawer",
         data: () => ({
             showOverview: true,
-            showHistory: false,
             showCollaborators: false,
             documentName: '',
             collaboratorName: '',
-            currentDocument: {},
+            transferOwnershipName: '',
+            currentDocument: { document: { repo: { owner: { id: -1 } } } },
             docs: [
-                { icon: '', document: { name: '', id: 0 }, history: [''], collaborators: ['']},
+                { icon: '', document: { name: '', id: 0 }, collaborators: ['']},
             ]
         }),
         methods: {
-            showDocumentHistory: function(doc) {
-                this.showOverview = false;
-                this.showHistory = true;
-                this.currentDocument = doc;
-            },
             showCollaboratorList: function(doc) {
                 this.showOverview = false;
                 this.showCollaborators = true;
@@ -148,6 +140,13 @@
                             'Error'
                         );
                     }
+                );
+            },
+            removeDocument(doc) {
+                this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                this.$snotify.success(
+                    'Document was removed',
+                    'Success'
                 );
             },
             removeCollaborator: function(index, collaboratorId) {
@@ -212,9 +211,19 @@
                     }
                 );
             },
-            revertHistory: function() {
+            transferOwnership: function() {
+                if (this.transferOwnershipName === '') {
+                    this.$snotify.error(
+                        'Enter a collaborator name',
+                        'Error'
+                    );
+                    return;
+                }
+
+                this.transferOwnershipName = ''
+                this.currentDocument.document.repo.owner.id = -1
                 this.$snotify.success(
-                    'History was reverted',
+                    'Ownership was transferred',
                     'Success'
                 );
             },
@@ -237,6 +246,7 @@
             openDocument: function(doc) {
                 this.$router.push(`/doc/${doc.id}`)
                 this.$store.commit('app/incEditorKey')
+                this.$store.commit('app/setCurrentDocument', doc)
             }
         },
         beforeMount() {

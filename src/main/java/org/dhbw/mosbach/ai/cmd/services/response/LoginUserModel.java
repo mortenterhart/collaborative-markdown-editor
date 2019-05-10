@@ -16,7 +16,6 @@ public class LoginUserModel {
         this.status = response.getStatus();
         this.message = response.getMessage();
         this.user = user;
-        this.user.setPassword("");
     }
 
     public Response buildResponse() {

@@ -108,7 +108,7 @@ public class MessageBroker {
 					  Json.createObjectBuilder()
 					    .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
 					    .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
-					    .add("imgurl", "")
+					    .add("imgUrl", "")
 					    .build()
 					    .toString())
 				  .append(",");;

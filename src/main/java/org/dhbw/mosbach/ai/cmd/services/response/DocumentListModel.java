@@ -16,8 +16,6 @@ public class DocumentListModel {
     public DocumentListModel(String icon, Doc document, List<History> history, List<Collaborator> collaborators) {
         this.icon = icon;
         this.document = document;
-        this.document.getCuser().setPassword("");
-        this.document.getUuser().setPassword("");
         this.history = history;
         this.collaborators = collaborators;
     }

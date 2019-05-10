@@ -14,10 +14,13 @@ import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,6 +39,8 @@ import java.util.List;
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
 public class DocumentService implements RestService {
+
+    private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     @Inject
     private DocDao docDao;
@@ -56,7 +61,8 @@ public class DocumentService implements RestService {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addDocument(DocumentInsertionModel documentModel) {
+    @NotNull
+    public Response addDocument(@NotNull DocumentInsertionModel documentModel) {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
@@ -81,6 +87,7 @@ public class DocumentService implements RestService {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
+    @NotNull
     public Response getAllDocuments() {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
             return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();

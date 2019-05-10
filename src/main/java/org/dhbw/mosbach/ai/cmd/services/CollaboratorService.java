@@ -13,6 +13,8 @@ import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +31,8 @@ import javax.ws.rs.core.Response;
 @ApplicationScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
 public class CollaboratorService implements RestService {
+
+    private static final Logger log = LoggerFactory.getLogger(CollaboratorService.class);
 
     @Inject
     private DocDao docDao;

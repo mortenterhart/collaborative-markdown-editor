@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}/{username}/{userid}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
+@ServerEndpoint(value = "/ws/{docId}/{username}/{userId}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class Endpoint {
 
     /**
@@ -75,7 +75,7 @@ public class Endpoint {
         Message userInitMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
         messageBroker.publishToSingleUser(userInitMsg, session);
         
-        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, username, MessageType.UserJoined);
+        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.formatUserMessage(session), MessageType.UserJoined);
         messageBroker.publishToOtherUsers(userJoinedMsg, docs.get(docId), session);
     }
 
@@ -114,10 +114,9 @@ public class Endpoint {
     				
     				docs.get(docId).getUsers().remove(singleUserSession);
     				
-    				String userName = (String)singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERNAME);
     				int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
     				
-    		        Message userLeftdMsg = messageBroker.createSystemMessage(userId,  docId, userName, MessageType.UserLeft);
+    		        Message userLeftdMsg = messageBroker.createSystemMessage(userId,  docId, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
     		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
     		        
     		        break;

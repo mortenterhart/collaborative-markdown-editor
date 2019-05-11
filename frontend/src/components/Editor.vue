@@ -16,9 +16,8 @@
         data: function() {
             return {
                 socket: null,
-                cursorPosition: 0,
-                lastReceivedContent: '',
                 content: '',
+                contentChanges: [],
                 configs: {
                     spellChecker: false
                 }
@@ -33,53 +32,60 @@
             }
         },
         methods: {
-            sendContentDiff: debounce(e => {
-                if (e.content.length === e.lastReceivedContent.length) {
-                    return
-                }
-
-                let pos, message, messageType
-                if (e.content.length > e.lastReceivedContent.length ) {
-                    pos = e.cursorPosition - (e.content.length - e.lastReceivedContent.length)
-                    message = e.content.substring(pos, e.cursorPosition)
-                    messageType = "Insert"
-                } else if (e.content.length < e.lastReceivedContent.length) {
-                    pos = e.getCurrentCursorPos()
-                    message = e.lastReceivedContent.substring(pos, pos + (e.lastReceivedContent.length - e.content.length))
-                    messageType = "Delete"
-                }
-
-                const msg = JSON.stringify({
-                    "userId": e.$store.state.login.user.id,
-                    "docId": Number(e.$route.params.id),
-                    "cursorPos": pos,
-                    "msg": message,
-                    "messageType": messageType
-                })
-                e.socket.send(msg);
-
-                e.lastReceivedContent = e.content
+            sendContentDiffAfterTyping: debounce(e => {
+                e.reduceContentChanges()
+                e.sendWebSocketMessages()
+                e.contentChanges = []
             }, 400),
+            reduceContentChanges: function() {
+                for (let i = 0; i < this.contentChanges.length - 1; i++) {
+                    if (this.contentChanges[i].type === this.contentChanges[i + 1].type) {
+                        if (this.contentChanges[i].type === 'Delete') {
+                            this.contentChanges[i].pos = this.contentChanges[i + 1].pos
+                        }
+                        this.contentChanges[i].msg += this.contentChanges[i + 1].msg
+                        this.contentChanges.splice(i + 1, 1)
+                        i -= 1
+                    }
+                }
+            },
+            sendWebSocketMessages: function() {
+                for (let i = 0; i < this.contentChanges.length; i++) {
+                    const msg = JSON.stringify({
+                        "userId": this.$store.state.login.user.id,
+                        "docId": Number(this.$route.params.id),
+                        "cursorPos": this.contentChanges[i].pos,
+                        "msg": this.contentChanges[i].msg,
+                        "messageType": this.contentChanges[i].type
+                    })
+                    this.socket.send(msg);
+                    console.log(msg)
+                }
+            },
             handleWebSocketEvents(data) {
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)
                         break;
                     case "ContentInit":
-                        this.lastReceivedContent = data.msg
                         this.content = data.msg
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "UsersInit":
-                        this.$store.commit('app/setOtherCollaborators', JSON.parse(data.msg))
+                        let users = JSON.parse(data.msg)
+                        let participants = []
+                        for (let i = 0; i < users.length; i++) {
+                            participants.push({id: String(i), name: users[i], imageUrl: ''})
+                        }
+                        this.$store.commit('app/setOtherCollaborators', participants)
                         break;
                     case "Insert":
-                        this.lastReceivedContent = this.content.substring(0, data.cursorPos) + data.msg + this.content.substring(data.cursorPos)
                         this.simplemde.codemirror.getDoc().replaceRange(data.msg, this.getCursorFromTotalCursorPos(this.content, data.cursorPos))
+                        this.$emit('contentWasChanged', this.content);
                         break;
                     case "Delete":
-                        this.lastReceivedContent = this.content.substring(0, data.cursorPos) + this.content.substring(data.cursorPos + data.msg.length)
                         this.simplemde.codemirror.getDoc().replaceRange("", this.getCursorFromTotalCursorPos(this.content, data.cursorPos), this.getCursorFromTotalCursorPos(this.content, data.cursorPos + data.msg.length))
+                        this.$emit('contentWasChanged', this.content);
                         break;
                     case "UserJoined":
                         this.$store.commit('app/addCollaborator', data.msg)
@@ -133,7 +139,8 @@
                 return msg
             },
             getWebSocketURL() {
-                return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}`;
+                console.log(`ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`)
+                return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`
             }
         },
         mounted() {
@@ -147,39 +154,22 @@
             };
 
             this.simplemde.codemirror.on("change", function(editor, changeObj) {
-                if (changeObj.origin === "setValue")
-                    return
-
-                if ((changeObj.origin !== "+input" || changeObj.removed[0].length === 0) && (changeObj.origin !== "paste" || (changeObj.removed.length === 1 && changeObj.removed[0].length === 0))) {
-                    // Normal insert or delete event
-                    vm.$emit('contentWasChanged', vm.content);
-                    if (vm.content.length !== vm.lastReceivedContent.length) {
-                        vm.sendContentDiff(vm)
-                        vm.cursorPosition = vm.getCurrentCursorPos()
-                    }
+                if (!changeObj.origin || changeObj.origin === "setValue") {
                     return
                 }
 
-                // The remaining function covers the handling of replace operations
-                const deleteMsg = JSON.stringify({
-                    "userId": vm.$store.state.login.user.id,
-                    "docId": Number(vm.$route.params.id),
-                    "cursorPos": vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch),
-                    "msg": vm.buildMessageStringFromArray(changeObj.removed),
-                    "messageType": "Delete"
-                })
-                vm.socket.send(deleteMsg);
+                const deleteMessage = vm.buildMessageStringFromArray(changeObj.removed)
+                if (deleteMessage.length > 0) {
+                    vm.contentChanges = [...vm.contentChanges, {type: 'Delete', msg: deleteMessage, pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)}]
+                }
 
-                const insertMsg = JSON.stringify({
-                    "userId": vm.$store.state.login.user.id,
-                    "docId": Number(vm.$route.params.id),
-                    "cursorPos": vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch),
-                    "msg": vm.buildMessageStringFromArray(changeObj.text),
-                    "messageType": "Insert"
-                })
-                vm.socket.send(insertMsg);
+                const insertMessage = vm.buildMessageStringFromArray(changeObj.text)
+                if (insertMessage.length > 0) {
+                    vm.contentChanges = [...vm.contentChanges, {type: 'Insert', msg: insertMessage, pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)}]
+                }
 
-                vm.lastReceivedContent = vm.content
+                vm.sendContentDiffAfterTyping(vm)
+                vm.$emit('contentWasChanged', vm.content);
             })
         },
         destroyed() {

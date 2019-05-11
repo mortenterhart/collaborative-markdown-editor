@@ -1,25 +1,25 @@
 <template>
     <v-container fluid fill-height>
-        <beautiful-chat
-                :participants="this.$store.state.app.otherCollaborators"
-                :onMessageWasSent="onMessageWasSent"
-                :messageList="messageList"
-                :newMessagesCount="newMessagesCount"
-                :isOpen="isChatOpen"
-                :close="closeChat"
-                :open="openChat"
-                :showEmoji="true"
-                :showFile="false"
-                :showTypingIndicator="showTypingIndicator"
-                :colors="colors"
-                :alwaysScrollToBottom="alwaysScrollToBottom"
-                :messageStyling="messageStyling"
-                @onType="handleOnType" />
         <v-layout row>
-            <v-flex xs6 pr-2>
+            <beautiful-chat
+                    :style="`z-index: 99`"
+                    :participants="this.$store.state.app.otherCollaborators"
+                    :onMessageWasSent="onMessageWasSent"
+                    :messageList="messageList"
+                    :newMessagesCount="newMessagesCount"
+                    :isOpen="isChatOpen"
+                    :close="closeChat"
+                    :open="openChat"
+                    :showEmoji="false"
+                    :showFile="false"
+                    :showTypingIndicator="showTypingIndicator"
+                    :colors="colors"
+                    :alwaysScrollToBottom="alwaysScrollToBottom"
+                    :messageStyling="messageStyling"/>
+            <v-flex d-flex xs12 md6 pr-2>
                 <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event" @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>
             </v-flex>
-            <v-flex xs6 pl-2>
+            <v-flex d-flex xs12 md6 pl-2>
                 <Preview :content="content"/>
             </v-flex>
         </v-layout>
@@ -90,7 +90,7 @@
                 this.socket.onmessage = function (event) {
                     const eventData = JSON.parse(event.data.toString())
                     vm.$refs.editor.handleEditorWebSocketEvents(eventData);
-                    console.log(eventData)
+
                     switch (eventData.messageType) {
                         case "ChatMessage":
                             vm.onMessageWasSent({ author: String(eventData.userId), type: 'text', data: { text: eventData.msg } })
@@ -103,18 +103,17 @@
                             break;
                     }
                 };
+
+                this.onMessageWasSent({ type: 'system', data: { text: 'Welcome to the chat! Try !joke command when you\'re bored :)' } })
             },
             sendWebSocketMessage(msg) {
                 this.socket.send(msg)
             },
-            sendMessage(text) {
-                if (text.length > 0) {
-                    this.newMessagesCount = this.isChatOpen ? this.newMessagesCount : this.newMessagesCount + 1
-                    this.onMessageWasSent({ author: 'support', type: 'text', data: { text } })
-                }
-            },
             onMessageWasSent(message) {
-                // called when the user sends a message
+                if (this.handleUserCommand(message)) {
+                    return
+                }
+
                 this.messageList = [...this.messageList, message]
 
                 if (message.author === 'me') {
@@ -128,21 +127,42 @@
                     this.socket.send(msg);
                 }
             },
+            handleUserCommand(message) {
+                if (!message.data.text || message.type === 'system' || !message.data.text.trim().startsWith('!')) {
+                    return false
+                }
+
+                switch (message.data.text.trim().substring(1).toLowerCase()) {
+                    case 'joke':
+                        this.axios.get('https://sv443.net/jokeapi/category/Programming',
+                            {},
+                            {}).then((response) => {
+                                if (response.data.type === "single") {
+                                    this.onMessageWasSent({ type: 'system', data: { text: response.data.joke } })
+                                } else if (response.data.type === "twopart") {
+                                    this.onMessageWasSent({ type: 'system', data: { text: response.data.setup } })
+                                    let vm = this
+                                    setTimeout(() => {
+                                        vm.onMessageWasSent({ type: 'system', data: { text: response.data.delivery } })
+                                    }, 2000)
+                                }
+                            }).catch(() => {
+                                this.onMessageWasSent({ type: 'system', data: { text: 'Error retrieving a joke'} })
+                            }
+                        )
+                        break;
+                    default:
+                        this.onMessageWasSent({ type: 'system', data: { text: 'Command not found...' } })
+                }
+
+                return true
+            },
             openChat() {
-                // called when the user clicks on the fab button to open the chat
                 this.isChatOpen = true
                 this.newMessagesCount = 0
             },
             closeChat() {
-                // called when the user clicks on the botton to close the chat
                 this.isChatOpen = false
-            },
-            handleScrollToTop() {
-                // called when the user scrolls message list to top
-                // leverage pagination for loading another page of messages
-            },
-            handleOnType() {
-                // Emit typing event
             },
             getWebSocketURL() {
                 return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`

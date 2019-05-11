@@ -61,7 +61,6 @@
                 }
             },
             handleEditorWebSocketEvents(data) {
-                console.log(data)
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)

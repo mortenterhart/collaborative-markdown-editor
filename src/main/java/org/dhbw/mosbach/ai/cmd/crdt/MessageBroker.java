@@ -126,7 +126,7 @@ public class MessageBroker {
 		return Json.createObjectBuilder()
 			       .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
 			       .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
-			       .add("imgUrl", "")
+			       .add("imageUrl", "https://ui-avatars.com/api/?name=" + session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString() + "&background=0D8ABC&color=fff")
 			       .build()
 			       .toString();
 	}

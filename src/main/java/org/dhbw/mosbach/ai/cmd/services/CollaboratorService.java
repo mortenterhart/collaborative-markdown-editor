@@ -13,8 +13,10 @@ import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -26,9 +28,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@ApplicationScoped
+@RequestScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
 public class CollaboratorService implements RestService {
+
+    private static final Logger log = LoggerFactory.getLogger(CollaboratorService.class);
 
     @Inject
     private DocDao docDao;
@@ -55,7 +59,7 @@ public class CollaboratorService implements RestService {
         int documentId = model.getDocumentId();
         String collaboratorUsername = model.getCollaboratorName();
 
-        User user = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
@@ -67,11 +71,11 @@ public class CollaboratorService implements RestService {
             return new BadRequest(String.format("User '%s' does not exist. Please choose a valid username.", collaboratorUsername)).buildResponse();
         }
 
-        if (user.getId() != document.getRepo().getOwner().getId()) {
+        if (currentUser.getId() != document.getRepo().getOwner().getId()) {
             return new BadRequest("You are unauthorized. Only the owner of this document may add collaborators.").buildResponse();
         }
 
-        if (collaborator.getId() == user.getId()) {
+        if (collaborator.getId() == currentUser.getId()) {
             return new BadRequest("The owner cannot be added as collaborator.").buildResponse();
         }
 
@@ -99,7 +103,7 @@ public class CollaboratorService implements RestService {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
 
-        User user = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
 
         int documentId = model.getDocumentId();
         int collaboratorId = model.getCollaboratorId();
@@ -118,7 +122,7 @@ public class CollaboratorService implements RestService {
             return new BadRequest(String.format("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName())).buildResponse();
         }
 
-        if (user.getId() != document.getRepo().getOwner().getId() && user.getId() != collaborator.getUser().getId()) {
+        if (currentUser.getId() != document.getRepo().getOwner().getId() && currentUser.getId() != collaborator.getUser().getId()) {
             return new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators.").buildResponse();
         }
 

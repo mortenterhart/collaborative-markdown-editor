@@ -14,7 +14,7 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * @author 6694964
  */
 
-@ApplicationScoped
+@RequestScoped
 @Path(ServiceEndpoints.PATH_AUTHENTICATION)
 public class AuthenticationService implements RestService {
 

@@ -221,12 +221,34 @@
                     return;
                 }
 
-                this.transferOwnershipName = ''
-                this.currentDocument.document.repo.owner.id = -1
-                this.$snotify.success(
-                    'Ownership was transferred',
-                    'Success'
-                );
+                this.axios.post('/document/transferOwnership',
+                    {
+                        documentId: Number(this.$route.params.id),
+                        newOwnerName: this.transferOwnershipName
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.transferOwnershipName = ''
+                        this.currentDocument.document.repo.owner.id = -1
+                        this.$snotify.success(
+                            'Ownership was transferred',
+                            'Success'
+                        );
+                        this.$router.push('/')
+                        this.showOverview = true
+                        this.showCollaborators = false
+                        this.fetchDocuments(false)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                )
             },
             fetchDocuments: function(setCurrentDocument) {
                 this.axios.get('/document/all',

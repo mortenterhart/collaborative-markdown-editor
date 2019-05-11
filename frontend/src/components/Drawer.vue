@@ -144,11 +144,28 @@
                 );
             },
             removeDocument(doc) {
-                this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
-                this.$snotify.success(
-                    'Document was removed',
-                    'Success'
-                );
+                this.axios.post('/document/remove',
+                    {
+                        documentId: doc.document.id
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                        this.$snotify.success(
+                            'Document was removed',
+                            'Success'
+                        );
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                )
             },
             removeCollaborator: function(index, collaboratorId) {
                 this.axios.post('/collaborators/remove',

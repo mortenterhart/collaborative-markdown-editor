@@ -4,6 +4,7 @@ import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.db.HistoryDao;
 import org.dhbw.mosbach.ai.cmd.db.RepoDao;
+import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.History;
@@ -14,6 +15,7 @@ import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
@@ -43,6 +45,9 @@ import java.util.List;
 public class DocumentService implements RestService {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
+
+    @Inject
+    private UserDao userDao;
 
     @Inject
     private DocDao docDao;
@@ -152,4 +157,43 @@ public class DocumentService implements RestService {
 
         return Response.ok().entity(models).build();
     }
+
+    @POST
+    @Path("/transferOwnership")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @NotNull
+    public Response transferOwnership(@NotNull DocumentTransferModel transferModel) {
+        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+            return new Unauthorized("You have to login to be able to transfer an ownership").buildResponse();
+        }
+
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+
+        int documentId = transferModel.getDocumentId();
+        String newOwnerName = transferModel.getNewOwnerName();
+
+        Doc document = docDao.getDoc(documentId);
+        if (document == null) {
+            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+        }
+
+        if (!currentUser.equals(document.getRepo().getOwner())) {
+            return new BadRequest("You are unauthorized. Only the owner of this document can transfer his ownership.").buildResponse();
+        }
+
+        User newOwner = userDao.getUserByName(newOwnerName);
+        if (newOwner == null) {
+            return new BadRequest(String.format("User '%s' does not exist", newOwnerName)).buildResponse();
+        }
+
+        Repo newRepo = repoDao.getRepo(newOwner);
+
+        document.setRepo(newRepo);
+        document.setUuser(newOwner);
+        docDao.transferRepo(document);
+
+        return new Success(String.format("Ownership was transferred to '%s' successfully", newOwnerName)).buildResponse();
+    }
+
 }

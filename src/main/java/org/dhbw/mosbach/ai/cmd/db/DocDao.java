@@ -51,6 +51,7 @@ public class DocDao {
      * @param id Given document id
      * @return A doc object if one was found, null otherwise
      */
+    @Transactional
     public Doc getDoc(int id) {
 
         Doc doc = null;
@@ -139,11 +140,15 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
+        this.em.getTransaction().begin();
+        int rows = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
                       .setParameter("content", d.getContent())
                       .setParameter("uuser", d.getUuser())
                       .setParameter("id", d.getId())
                       .executeUpdate();
+        this.em.getTransaction().commit();
+
+        return rows;
     }
 
     @Transactional

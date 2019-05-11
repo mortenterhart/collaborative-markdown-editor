@@ -130,7 +130,7 @@ public class AuthenticationService implements RestService {
     @NotNull
     public Response doLogout() {
         if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
-            return new BadRequest("You are already logged out").buildResponse();
+            return new Success("You are already logged out").buildResponse();
         }
 
         request.getSession().setAttribute(CmdConfig.SESSION_USER, null);

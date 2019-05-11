@@ -20,17 +20,18 @@ const mutations = {
     setOtherCollaborators: (state, newValue) => {
         state.otherCollaborators = newValue
     },
-    addCollaborator: (state, name) => {
+    addCollaborator: (state, user) => {
         for (let i = 0; i < state.otherCollaborators.length; i++) {
-            if (state.otherCollaborators[i] === name) {
+            if (state.otherCollaborators[i].name === user.name) {
                 return
             }
         }
-        state.otherCollaborators.push(name)
+
+        state.otherCollaborators = [...state.otherCollaborators, user]
     },
-    removeCollaborator: (state, name) => {
+    removeCollaborator: (state, user) => {
         for (let i = 0; i < state.otherCollaborators.length; i++) {
-            if (state.otherCollaborators[i] === name) {
+            if (state.otherCollaborators[i].name === user.name) {
                 state.otherCollaborators.splice(i, 1)
                 return
             }

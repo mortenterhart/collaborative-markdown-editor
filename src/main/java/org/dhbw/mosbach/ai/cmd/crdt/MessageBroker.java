@@ -104,14 +104,8 @@ public class MessageBroker {
 		
 		for(Session session : users) {
 			if(session != currentUser) {
-				sb.append(
-					  Json.createObjectBuilder()
-					    .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
-					    .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
-					    .add("imgUrl", "")
-					    .build()
-					    .toString())
-				  .append(",");;
+				sb.append(formatUserMessage(session))
+				  .append(",");
 			}
 		}
 		
@@ -121,5 +115,19 @@ public class MessageBroker {
 		System.out.println(sb.toString());
 
 		return sb.toString();
+	}
+	
+	/**
+	 * Takes a single user session and formats a JSON message to provide user details
+	 * @param session Given user session
+	 * @return A JSON object with the id and name of the user
+	 */
+	public String formatUserMessage(Session session) {
+		return Json.createObjectBuilder()
+			       .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
+			       .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
+			       .add("imageUrl", "https://ui-avatars.com/api/?name=" + session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString() + "&background=0D8ABC&color=fff")
+			       .build()
+			       .toString();
 	}
 }

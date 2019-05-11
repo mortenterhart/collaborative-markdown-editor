@@ -14,7 +14,7 @@ public abstract class CmdConfig {
 	/**
 	 * Session attribute name for storing user id
 	 */
-	public static final String SESSION_USERID = "userid";
+	public static final String SESSION_USERID = "userId";
 	/**
 	 * Session attribute to show if a user is logged in or not
 	 */

@@ -108,7 +108,7 @@ public class AuthenticationService implements RestService {
 
         if (userDao.getUserByName(username) != null) {
             log.debug("register: User '{}' is already registered", username);
-            return new BadRequest(String.format("Username \"%s\" is already registered", username)).buildResponse();
+            return new BadRequest(String.format("Username '%s' is already registered", username)).buildResponse();
         }
 
         User newUser = new User();
@@ -130,7 +130,7 @@ public class AuthenticationService implements RestService {
     @NotNull
     public Response doLogout() {
         if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
-            return new Success("You are already logged out").buildResponse();
+            return new BadRequest("You are already logged out").buildResponse();
         }
 
         request.getSession().setAttribute(CmdConfig.SESSION_USER, null);

@@ -139,14 +139,11 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        this.em.getTransaction().begin();
-        int result = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                            .setParameter("content", d.getContent())
-                            .setParameter("uuser", d.getUuser())
-                            .setParameter("id", d.getId())
-                            .executeUpdate();
-        this.em.getTransaction().commit();
-        return result;
+        return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
+                      .setParameter("content", d.getContent())
+                      .setParameter("uuser", d.getUuser())
+                      .setParameter("id", d.getId())
+                      .executeUpdate();
     }
 
     @Transactional
@@ -154,13 +151,10 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        this.em.getTransaction().begin();
-        int result = this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
-                            .setParameter("repo", d.getRepo())
-                            .setParameter("uuser", d.getUuser())
-                            .setParameter("id", d.getId())
-                            .executeUpdate();
-        this.em.getTransaction().commit();
-        return result;
+        return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
+                      .setParameter("repo", d.getRepo())
+                      .setParameter("uuser", d.getUuser())
+                      .setParameter("id", d.getId())
+                      .executeUpdate();
     }
 }

@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,6 +32,7 @@ public class Doc {
     private String name;
 
     @Column(name = "CONTENT")
+    @JsonbTransient
     private String content;
 
     @Column(name = "CTIME")
@@ -50,13 +52,13 @@ public class Doc {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_REPOS")
     private Repo repo;
-    
+
     @PrePersist
     private void onInsert() {
     	this.ctime = LocalDateTime.now();
     	this.utime = this.ctime;
     }
-    
+
     @PreUpdate
     private void onUpdate() {
     	this.utime = LocalDateTime.now();
@@ -101,7 +103,7 @@ public class Doc {
     public void setUtime(LocalDateTime utime) {
         this.utime = utime;
     }
-    
+
     public User getCuser() {
 		return cuser;
 	}

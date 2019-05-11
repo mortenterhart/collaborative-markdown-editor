@@ -17,7 +17,7 @@
                 @onType="handleOnType" />
         <v-layout row>
             <v-flex xs6 pr-2>
-                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"/>
+                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event" @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>
             </v-flex>
             <v-flex xs6 pl-2>
                 <Preview :content="content"/>
@@ -34,6 +34,7 @@
         name: "Document",
         data() {
             return {
+                socket: null,
                 content: '',
                 messageList: [], // the list of the messages to show, can be paginated and adjusted dynamically
                 newMessagesCount: 0,
@@ -71,19 +72,61 @@
             MDE,
             Preview
         },
-        created() {
+        watch: {
+            '$route' () {
+                this.initWebSocketConnection()
+            }
+        },
+        mounted() {
             // TODO: check if user is logged in and if user has access to the doc
+            this.initWebSocketConnection()
         },
         methods: {
+            initWebSocketConnection() {
+                if (this.socket) this.socket.close();
+                this.socket = new WebSocket(this.getWebSocketURL());
+
+                let vm = this;
+                this.socket.onmessage = function (event) {
+                    const eventData = JSON.parse(event.data.toString())
+                    vm.$refs.editor.handleEditorWebSocketEvents(eventData);
+                    console.log(eventData)
+                    switch (eventData.messageType) {
+                        case "ChatMessage":
+                            vm.onMessageWasSent({ author: String(eventData.userId), type: 'text', data: { text: eventData.msg } })
+                            break
+                        case "UserJoined":
+                            vm.onMessageWasSent({ type: 'system', data: { text: JSON.parse(eventData.msg).name + ' joined the chat.' } })
+                            break;
+                        case "UserLeft":
+                            vm.onMessageWasSent({ type: 'system', data: { text: JSON.parse(eventData.msg).name + ' left the chat.' } })
+                            break;
+                    }
+                };
+            },
+            sendWebSocketMessage(msg) {
+                this.socket.send(msg)
+            },
             sendMessage(text) {
                 if (text.length > 0) {
                     this.newMessagesCount = this.isChatOpen ? this.newMessagesCount : this.newMessagesCount + 1
-                    this.onMessageWasSent({author: 'support', type: 'text', data: {text}})
+                    this.onMessageWasSent({ author: 'support', type: 'text', data: { text } })
                 }
             },
             onMessageWasSent(message) {
                 // called when the user sends a message
                 this.messageList = [...this.messageList, message]
+
+                if (message.author === 'me') {
+                    const msg = JSON.stringify({
+                        "userId": this.$store.state.login.user.id,
+                        "docId": Number(this.$route.params.id),
+                        "cursorPos": -1,
+                        "msg": message.data.text,
+                        "messageType": "ChatMessage"
+                    })
+                    this.socket.send(msg);
+                }
             },
             openChat() {
                 // called when the user clicks on the fab button to open the chat
@@ -100,6 +143,9 @@
             },
             handleOnType() {
                 // Emit typing event
+            },
+            getWebSocketURL() {
+                return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`
             }
         }
     }

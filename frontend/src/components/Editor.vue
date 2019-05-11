@@ -15,7 +15,6 @@
         name: "SimpleMDE",
         data: function() {
             return {
-                socket: null,
                 content: '',
                 contentChanges: [],
                 configs: {
@@ -58,11 +57,11 @@
                         "msg": this.contentChanges[i].msg,
                         "messageType": this.contentChanges[i].type
                     })
-                    this.socket.send(msg);
-                    console.log(msg)
+                    this.$emit('sendWebSocketMessage', msg)
                 }
             },
-            handleWebSocketEvents(data) {
+            handleEditorWebSocketEvents(data) {
+                console.log(data)
                 switch (data.messageType) {
                     case "DocumentTitle":
                         this.$store.commit('app/setTitle', data.msg)
@@ -72,12 +71,7 @@
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "UsersInit":
-                        let users = JSON.parse(data.msg)
-                        let participants = []
-                        for (let i = 0; i < users.length; i++) {
-                            participants.push({id: String(i), name: users[i], imageUrl: ''})
-                        }
-                        this.$store.commit('app/setOtherCollaborators', participants)
+                        this.$store.commit('app/setOtherCollaborators', JSON.parse(data.msg))
                         break;
                     case "Insert":
                         this.simplemde.codemirror.getDoc().replaceRange(data.msg, this.getCursorFromTotalCursorPos(this.content, data.cursorPos))
@@ -88,16 +82,16 @@
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "UserJoined":
-                        this.$store.commit('app/addCollaborator', data.msg)
+                        this.$store.commit('app/addCollaborator', JSON.parse(data.msg))
                         this.$snotify.info(
-                            data.msg + ' joined the document',
+                            JSON.parse(data.msg).name + ' joined the document',
                             'Info'
                         );
                         break;
                     case "UserLeft":
-                        this.$store.commit('app/removeCollaborator', data.msg)
+                        this.$store.commit('app/removeCollaborator', JSON.parse(data.msg))
                         this.$snotify.info(
-                            data.msg + ' left the document',
+                            JSON.parse(data.msg).name + ' left the document',
                             'Info'
                         );
                         break;
@@ -137,22 +131,16 @@
                     msg += array[i]
                 }
                 return msg
-            },
-            getWebSocketURL() {
-                console.log(`ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`)
-                return `ws://${location.hostname}:${location.port}/CMD/ws/${this.$route.params.id}/${this.$store.state.login.user.name}/${this.$store.state.login.user.id}`
             }
         },
         mounted() {
             this.$emit('contentWasChanged', this.content);
-            if (this.socket) this.socket.close();
-            this.socket = new WebSocket(this.getWebSocketURL());
 
-            let vm = this;
-            this.socket.onmessage = function (event) {
-                vm.handleWebSocketEvents(JSON.parse(event.data.toString()));
-            };
+            this.$on('webSocketEvent', (eventData) => {
+                this.handleWebSocketEvents(eventData)
+            })
 
+            let vm = this
             this.simplemde.codemirror.on("change", function(editor, changeObj) {
                 if (!changeObj.origin || changeObj.origin === "setValue") {
                     return
@@ -171,9 +159,6 @@
                 vm.sendContentDiffAfterTyping(vm)
                 vm.$emit('contentWasChanged', vm.content);
             })
-        },
-        destroyed() {
-            if (this.socket) this.socket.close();
         }
     }
 </script>

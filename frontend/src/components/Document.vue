@@ -106,7 +106,7 @@
                     }
                 };
 
-                this.onMessageWasSent({ type: 'system', data: { text: 'Welcome to the chat! Try !joke command when you\'re bored :)' } })
+                this.onMessageWasSent({ type: 'system', data: { text: 'Welcome to the chat! Try the !joke command when you\'re bored :)' } })
             },
             sendWebSocketMessage(msg) {
                 this.socket.send(msg)

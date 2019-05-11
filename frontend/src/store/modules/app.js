@@ -22,15 +22,16 @@ const mutations = {
     },
     addCollaborator: (state, name) => {
         for (let i = 0; i < state.otherCollaborators.length; i++) {
-            if (state.otherCollaborators[i] === name) {
+            if (state.otherCollaborators[i].name === name) {
                 return
             }
         }
-        state.otherCollaborators.push(name)
+
+        state.otherCollaborators = [...state.otherCollaborators, {id: String(state.otherCollaborators.length), name: name, imageUrl: ''}]
     },
     removeCollaborator: (state, name) => {
         for (let i = 0; i < state.otherCollaborators.length; i++) {
-            if (state.otherCollaborators[i] === name) {
+            if (state.otherCollaborators[i].name === name) {
                 state.otherCollaborators.splice(i, 1)
                 return
             }

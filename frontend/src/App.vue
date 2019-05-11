@@ -41,7 +41,7 @@
                                 v-for="(item, index) in this.$store.state.app.otherCollaborators"
                                 :key="index"
                         >
-                            <v-list-tile-title>{{ item }}</v-list-tile-title>
+                            <v-list-tile-title>{{ item.name }}</v-list-tile-title>
                         </v-list-tile>
                     </v-list>
                 </v-menu>

@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}/{username}/{userId}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
+@ServerEndpoint(value = "/ws/{docId}/{username}/{userid}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class Endpoint {
 
     /**

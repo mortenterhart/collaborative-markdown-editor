@@ -9,15 +9,17 @@ import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
+import org.dhbw.mosbach.ai.cmd.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -36,7 +38,7 @@ import java.util.List;
  * @author 6694964
  */
 
-@ApplicationScoped
+@RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
 public class DocumentService implements RestService {
 
@@ -62,7 +64,7 @@ public class DocumentService implements RestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response addDocument(@NotNull DocumentInsertionModel documentModel) {
+    public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
         if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
@@ -71,7 +73,7 @@ public class DocumentService implements RestService {
 
         Repo repository = repoDao.getRepo(user);
 
-        String documentName = documentModel.getName();
+        String documentName = insertionModel.getName();
 
         Doc document = new Doc();
         document.setCuser(user);
@@ -82,6 +84,34 @@ public class DocumentService implements RestService {
         docDao.createDoc(document);
 
         return new Success("Document was created successfully").buildResponse();
+    }
+
+    @POST
+    @Path("/remove")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @NotNull
+    public Response removeDocument(@NotNull DocumentRemovalModel removalModel) {
+        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+            return new Unauthorized("You have to login to be able to remove a document").buildResponse();
+        }
+
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+
+        int documentId = removalModel.getDocumentId();
+
+        Doc document = docDao.getDoc(documentId);
+        if (document == null) {
+            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+        }
+
+        if (!currentUser.equals(document.getRepo().getOwner())) {
+            return new BadRequest("You are unauthorized. Only the owner of this document may remove it.").buildResponse();
+        }
+
+        docDao.removeDoc(document);
+
+        return new Success("Document was removed successfully").buildResponse();
     }
 
     @GET

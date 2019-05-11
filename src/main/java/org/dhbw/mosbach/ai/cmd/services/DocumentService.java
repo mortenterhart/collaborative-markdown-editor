@@ -11,8 +11,10 @@ import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.response.Forbidden;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
+import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
@@ -35,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author 6694964
@@ -74,15 +77,15 @@ public class DocumentService implements RestService {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
 
-        User user = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
 
-        Repo repository = repoDao.getRepo(user);
+        Repo repository = repoDao.getRepo(currentUser);
 
         String documentName = insertionModel.getName();
 
         Doc document = new Doc();
-        document.setCuser(user);
-        document.setUuser(user);
+        document.setCuser(currentUser);
+        document.setUuser(currentUser);
         document.setRepo(repository);
         document.setName(documentName);
 
@@ -120,6 +123,46 @@ public class DocumentService implements RestService {
     }
 
     @GET
+    @Path("/hasAccess")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @NotNull
+    public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel) {
+        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+            return new Unauthorized("You have to login to have access to this document").buildResponse();
+        }
+
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+
+        int documentId = accessModel.getDocumentId();
+
+        Doc document = docDao.getDoc(documentId);
+        if (document == null) {
+            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+        }
+
+        boolean hasAccess = false;
+
+        if (currentUser.equals(document.getRepo().getOwner())) {
+            hasAccess = true;
+        }
+
+        List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(document);
+        ListIterator<Collaborator> iterator = collaborators.listIterator();
+        while (iterator.hasNext() && !hasAccess) {
+            Collaborator c = iterator.next();
+
+            hasAccess = c.getUser().equals(currentUser);
+        }
+
+        if (!hasAccess) {
+            return new Forbidden("You do not have the permission to access this document").buildResponse();
+        }
+
+        return new Success("You have granted access to this document").buildResponse();
+    }
+
+    @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
@@ -128,10 +171,10 @@ public class DocumentService implements RestService {
             return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();
         }
 
-        User sessionUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
 
-        List<Doc> ownerDocs = docDao.getDocsOwnedBy(sessionUser);
-        List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(sessionUser);
+        List<Doc> ownerDocs = docDao.getDocsOwnedBy(currentUser);
+        List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(currentUser);
 
         List<DocumentListModel> models = new ArrayList<>();
         for (Doc doc : ownerDocs) {
@@ -195,5 +238,4 @@ public class DocumentService implements RestService {
 
         return new Success(String.format("Ownership was transferred to '%s' successfully", newOwnerName)).buildResponse();
     }
-
 }

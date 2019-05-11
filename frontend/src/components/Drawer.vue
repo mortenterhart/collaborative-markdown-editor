@@ -247,6 +247,7 @@
                 this.$router.push(`/doc/${doc.id}`)
                 this.$store.commit('app/incEditorKey')
                 this.$store.commit('app/setCurrentDocument', doc)
+                this.$store.commit('app/setTitle', doc.name)
             }
         },
         beforeMount() {

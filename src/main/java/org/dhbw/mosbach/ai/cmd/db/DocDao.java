@@ -142,10 +142,10 @@ public class DocDao {
 
         this.em.getTransaction().begin();
         int rows = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                      .setParameter("content", d.getContent())
-                      .setParameter("uuser", d.getUuser())
-                      .setParameter("id", d.getId())
-                      .executeUpdate();
+                          .setParameter("content", d.getContent())
+                          .setParameter("uuser", d.getUuser())
+                          .setParameter("id", d.getId())
+                          .executeUpdate();
         this.em.getTransaction().commit();
 
         return rows;

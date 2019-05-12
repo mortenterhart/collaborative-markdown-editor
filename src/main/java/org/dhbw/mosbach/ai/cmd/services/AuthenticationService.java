@@ -129,7 +129,7 @@ public class AuthenticationService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response doLogout() {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+        if (request.getSession(false) == null || request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
             return new Success("You are already logged out").buildResponse();
         }
 

@@ -8,7 +8,5 @@ public abstract class ServiceEndpoints {
 
     public static final String PATH_DOCUMENT = "/document";
 
-    public static final String PATH_HISTORY = "/history";
-
     public static final String PATH_COLLABORATOR = "/collaborators";
 }

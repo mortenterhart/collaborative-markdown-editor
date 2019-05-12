@@ -22,25 +22,20 @@ public class UserValidation {
     @Inject
     private Hashing hashing;
 
-    public ValidationResult validate(String username) {
+    public ValidationResult checkUsernameSpecified(String username) {
         if (username == null || username.isEmpty()) {
             return new ValidationResult(new BadRequest("Username was not specified"));
         }
 
-        User user = userDao.getUserByName(username);
-        if (user == null) {
-            return new ValidationResult(new Forbidden("Invalid username or password"));
-        }
-
-        return ValidationResult.newValid();
+        return ValidationResult.success("Username has been specified");
     }
 
-    public ValidationResult checkUsernameExists(String username) {
+    private ValidationResult checkUsernameExists(String username) {
         if (userDao.getUserByName(username) == null) {
-            return new ValidationResult(new BadRequest(String.format("Username '%s' already exists", username)));
+            return new ValidationResult(new BadRequest("Username '%s' already exists", username));
         }
 
-        return ValidationResult.newValid();
+        return ValidationResult.success("Username does not exist yet");
     }
 
     public ValidationResult checkCredentialsCorrect(String username, String password) {
@@ -53,6 +48,6 @@ public class UserValidation {
             return new ValidationResult(new Forbidden("Invalid username or password"));
         }
 
-        return ValidationResult.newValid();
+        return ValidationResult.success("");
     }
 }

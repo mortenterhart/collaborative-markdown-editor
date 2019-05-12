@@ -8,6 +8,7 @@ import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.util.regex.Pattern;
 
 @RequestScoped
@@ -27,6 +28,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
 
     private BasicFieldValidation fieldValidation = new BasicFieldValidation();
 
+    @NotNull
     public ValidationResult validate(RegisterModel model) {
         if (model == null) {
             return new ValidationResult(new InternalServerError("Register model is null"));
@@ -54,6 +56,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
         return ValidationResult.success("Registration was successful");
     }
 
+    @NotNull
     private ValidationResult checkUsernameExists(String username) {
         ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
         if (specifiedCheck.isInvalid()) {
@@ -67,6 +70,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
         return ValidationResult.success("Username is not registered yet");
     }
 
+    @NotNull
     private ValidationResult checkPasswordConstraints(String password) {
         ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
         if (specifiedCheck.isInvalid()) {

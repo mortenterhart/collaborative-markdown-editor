@@ -14,7 +14,7 @@ public class LoginValidation implements ModelValidation<LoginModel> {
     @Override
     public ValidationResult validate(LoginModel payload) {
         if (userValidation.checkCredentialsCorrect(payload.getUsername(), payload.getPassword()).isValid()) {
-            return ValidationResult.newValid();
+            return ValidationResult.success("");
         }
         return null;
     }

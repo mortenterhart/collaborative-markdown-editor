@@ -1,27 +1,25 @@
 package org.dhbw.mosbach.ai.cmd.services.validation;
 
 import org.dhbw.mosbach.ai.cmd.response.ResponseObject;
+import org.dhbw.mosbach.ai.cmd.response.Success;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.core.Response;
 
-public class ValidationResult {
+public final class ValidationResult {
 
     private boolean valid;
-    private String errorMessage;
     private ResponseObject response;
 
-    private ValidationResult(boolean valid) {
-        this.valid = valid;
-    }
-
     public ValidationResult(@NotNull ResponseObject response) {
-        this.valid = false;
-        this.errorMessage = response.getMessage();
+        // If the response status is 200 OK, the validation
+        // is successful.
+        this.valid = response.getStatus().getCode() == Response.Status.OK.getStatusCode();
         this.response = response;
     }
 
-    public static ValidationResult newValid() {
-        return new ValidationResult(true);
+    public static ValidationResult success(String message) {
+        return new ValidationResult(new Success(message));
     }
 
     public boolean isValid() {
@@ -30,10 +28,6 @@ public class ValidationResult {
 
     public boolean isInvalid() {
         return !valid;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public ResponseObject getResponse() {

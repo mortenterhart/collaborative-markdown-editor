@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class LoginModel implements Payload {
 
-    @XmlElement(name = JsonParameters.USERNAME)
+    @XmlElement(name = JsonParameters.USERNAME, required = true)
     private String username;
 
-    @XmlElement(name = JsonParameters.PASSWORD)
+    @XmlElement(name = JsonParameters.PASSWORD, required = true)
     private String password;
 
     public String getUsername() {

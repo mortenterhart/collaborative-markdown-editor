@@ -13,9 +13,7 @@ public enum MessageType {
 	ContentInit("ContentInit"),
 	DocumentTitle("DocumentTitle"),
 	UsersInit("UsersInit"),
-	ChatMessage("ChatMessage"),
-	ChatStartTyping("ChatStartTyping"),
-	ChatStopTyping("ChatStartTyping");
+	ChatMessage("ChatMessage");
 	
 	private String messageType;
 	

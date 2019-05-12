@@ -60,7 +60,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
             return specifiedCheck;
         }
 
-        if (userDao.getUserByName(username) == null) {
+        if (userDao.getUserByName(username) != null) {
             return new ValidationResult(new BadRequest("Username '%s' is already registered", username));
         }
 

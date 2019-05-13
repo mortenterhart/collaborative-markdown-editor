@@ -108,6 +108,11 @@
         },
         mounted() {
             this.initWebSocketConnection()
+
+            let vm = this
+            window.addEventListener('unload', function() {
+                if (vm.socket) vm.socket.close()
+            });
         },
         methods: {
             initWebSocketConnection() {

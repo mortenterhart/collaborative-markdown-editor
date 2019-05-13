@@ -4,8 +4,11 @@ import org.dhbw.mosbach.ai.cmd.crdt.ActiveDocument;
 import org.dhbw.mosbach.ai.cmd.crdt.Message;
 import org.dhbw.mosbach.ai.cmd.crdt.MessageBroker;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
+import org.dhbw.mosbach.ai.cmd.db.HistoryDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
+import org.dhbw.mosbach.ai.cmd.model.History;
+import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
@@ -35,9 +38,21 @@ public class Endpoint {
      * Active docs being worked on by n users
      */
     private static Map<Integer, ActiveDocument> docs = Collections.synchronizedMap(new HashMap<>());
+
+    @Inject
+    private DocDao docDao;
+    
+    @Inject
+    private UserDao userDao;
+    
+    @Inject
+    private HistoryDao historyDao;
     
     @Inject
     private MessageBroker messageBroker;
+    
+    @Inject
+    private Hashing hashing;
     
 	/**
      * Gets triggered once a web socket connection is opened.
@@ -54,7 +69,7 @@ public class Endpoint {
         Doc doc = null;
         
         if(docs.get(docId) == null) {
-        	doc = new DocDao().getDoc(docId);
+        	doc = docDao.getDoc(docId);
         	if(doc == null) {
         		Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, String.valueOf(docId), MessageType.WrongDocId);
         		messageBroker.publishToSingleUser(wrongDocIdMsg, session);
@@ -92,16 +107,11 @@ public class Endpoint {
      */
     @OnMessage
     public void onMessage(Message msg, Session session) {
-    	
-    	System.out.println("In onMessage");
-    	System.out.println(msg.toString());
 
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
     	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     	messageBroker.transform(msg, currentDoc);
-  
-    	System.out.println("Message after transform:\n\t" + currentDoc.getDoc().getContent());
     }
 
     /**
@@ -130,10 +140,17 @@ public class Endpoint {
     		
     		if(docs.get(docId).getUsers().isEmpty()) {
     			
-    			Doc activeDoc = docs.get(docId).getDoc();
-    			activeDoc.setUuser(new UserDao().getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+    			// Save current doc from db to history
+    			Doc currentDocState = docDao.getDoc(docId);
+    			History history = new History();
+    			history.setContent(currentDocState.getContent());
+    			history.setDoc(currentDocState);
+    			history.setHash(hashing.hashDocContent(history.getContent()));
+    			historyDao.createHistory(history);
     			
-    			DocDao docDao = new DocDao();
+    			// Save current doc from client to db
+    			Doc activeDoc = docs.get(docId).getDoc();
+    			activeDoc.setUuser(userDao.getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
     			docDao.updateDoc(activeDoc);
     			
     			docs.remove(docId);

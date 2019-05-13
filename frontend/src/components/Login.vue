@@ -157,7 +157,7 @@
                 }
 
                 let pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
-                if (pattern.test(this.regUsername)) {
+                if (!pattern.test(this.regUsername)) {
                     this.$snotify.error(
                         'Invalid username',
                         'Error'
@@ -166,7 +166,7 @@
                 }
 
                 pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                if (pattern.test(value)) {
+                if (!pattern.test(this.regEmail)) {
                     this.$snotify.error(
                         'Invalid e-mail',
                         'Error'
@@ -183,7 +183,7 @@
                 }
 
                 pattern = /\d/
-                if (pattern.test(value)) {
+                if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
                         'Password must contain at least one digit',
                         'Error'
@@ -192,7 +192,7 @@
                 }
 
                 pattern = /[a-z]/
-                if (pattern.test(value)) {
+                if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
                         'Password must contain at least one lowercase char',
                         'Error'
@@ -201,7 +201,7 @@
                 }
 
                 pattern = /[A-Z]/
-                if (pattern.test(value)) {
+                if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
                         'Password must contain at least one uppercase char',
                         'Error'

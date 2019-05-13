@@ -122,7 +122,7 @@ public class DocumentService implements RestService {
         return new Success("Document was removed successfully").buildResponse();
     }
 
-    @GET
+    @POST
     @Path("/hasAccess")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

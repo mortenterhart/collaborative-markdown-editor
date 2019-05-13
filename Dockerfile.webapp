@@ -32,15 +32,11 @@ RUN rm -f ./jboss-configure-datasource.sh
 
 USER root
 
-RUN curl -sL "https://rpm.nodesource.com/setup_10.x" | bash -
-
-RUN yum --assumeyes install nodejs
+RUN yum --assumeyes install git
 
 USER jboss
 
 ADD --chown=jboss:jboss ./ ./collab-down
-
-RUN cd ./collab-down/frontend && npm install && npm run build
 
 RUN cd ./collab-down && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 

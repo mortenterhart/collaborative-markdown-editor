@@ -16,7 +16,7 @@
     "marked": "^0.6.2",
     "vue": "^2.6.6",
     "vue-axios": "^2.1.4",
-    "vue-beautiful-chat": "github:MSkrzypietz/vue-beautiful-chat",
+    "vue-beautiful-chat": "git+https://github.com/MSkrzypietz/vue-beautiful-chat",
     "vue-router": "^3.0.6",
     "vue-simplemde": "^0.5.1",
     "vue-snotify": "^3.2.1",

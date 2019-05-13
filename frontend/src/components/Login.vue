@@ -75,7 +75,7 @@
                 hideLoginPassword: true,
                 hideRegPassword: true,
                 rules: {
-                    required: value => !!value || 'Required.',
+                    required: value => !!value || 'Required',
                     usernameLength: value => value.length >= 4 || 'Username requires at least 4 chars',
                     username: value => {
                         const pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
@@ -83,7 +83,7 @@
                     },
                     email: value => {
                         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                        return pattern.test(value) || 'Invalid e-mail.'
+                        return pattern.test(value) || 'Invalid e-mail'
                     },
                     passwordOneDigit: value => {
                         const pattern = /\d/
@@ -108,7 +108,7 @@
             handleLogin: function() {
                 if (this.loginUsername.trim() === '') {
                     this.$snotify.error(
-                        'Enter your username',
+                        'Enter a username',
                         'Error'
                     );
                     return;
@@ -116,7 +116,7 @@
 
                 if (this.loginPassword.trim() === '') {
                     this.$snotify.error(
-                        'Enter your password',
+                        'Enter a password',
                         'Error'
                     );
                     return;
@@ -148,25 +148,62 @@
                 );
             },
             handleRegistration: function() {
-                if (this.regUsername.trim() === '') {
+                if (this.regUsername.trim().length < 4) {
                     this.$snotify.error(
-                        'Enter a username',
+                        'Username requires at least 4 chars',
                         'Error'
                     );
                     return;
                 }
 
-                if (this.regEmail.trim() === '') {
+                let pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
+                if (!pattern.test(this.regUsername)) {
                     this.$snotify.error(
-                        'Enter an email',
+                        'Invalid username',
                         'Error'
                     );
                     return;
                 }
 
-                if (this.regPassword.trim() === '') {
+                pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                if (!pattern.test(this.regEmail)) {
                     this.$snotify.error(
-                        'Enter a password',
+                        'Invalid e-mail',
+                        'Error'
+                    );
+                    return;
+                }
+
+                if (this.regPassword.trim().length < 8) {
+                    this.$snotify.error(
+                        'Password requires at least 8 chars',
+                        'Error'
+                    );
+                    return;
+                }
+
+                pattern = /\d/
+                if (!pattern.test(this.regPassword)) {
+                    this.$snotify.error(
+                        'Password must contain at least one digit',
+                        'Error'
+                    );
+                    return;
+                }
+
+                pattern = /[a-z]/
+                if (!pattern.test(this.regPassword)) {
+                    this.$snotify.error(
+                        'Password must contain at least one lowercase char',
+                        'Error'
+                    );
+                    return;
+                }
+
+                pattern = /[A-Z]/
+                if (!pattern.test(this.regPassword)) {
+                    this.$snotify.error(
+                        'Password must contain at least one uppercase char',
                         'Error'
                     );
                     return;

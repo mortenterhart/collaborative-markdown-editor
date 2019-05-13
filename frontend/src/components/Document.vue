@@ -78,11 +78,13 @@
             }
         },
         mounted() {
-            // TODO: check if user is logged in and if user has access to the doc
+
+
             this.initWebSocketConnection()
         },
         methods: {
             initWebSocketConnection() {
+                this.messageList = []
                 if (this.socket) this.socket.close();
                 this.socket = new WebSocket(this.getWebSocketURL());
 
@@ -104,7 +106,7 @@
                     }
                 };
 
-                this.onMessageWasSent({ type: 'system', data: { text: 'Welcome to the chat! Try !joke command when you\'re bored :)' } })
+                this.onMessageWasSent({ type: 'system', data: { text: 'Welcome to the chat! Try the !joke command when you\'re bored :)' } })
             },
             sendWebSocketMessage(msg) {
                 this.socket.send(msg)

@@ -3,14 +3,13 @@ package org.dhbw.mosbach.ai.cmd.db;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
-import org.dhbw.mosbach.ai.cmd.util.JpaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -21,17 +20,13 @@ import javax.transaction.Transactional;
  *
  * @author 3040018
  */
-@RequestScoped
+@Dependent
 public class HistoryDao {
 
     private static final Logger log = LoggerFactory.getLogger(HistoryDao.class);
 
     @PersistenceContext(unitName = CmdConfig.JPA_UNIT_NAME)
     private EntityManager em;
-
-    public HistoryDao() {
-        this.em = JpaFactory.getEntityManager();
-    }
 
     /**
      * Add an entry to the history table
@@ -41,13 +36,12 @@ public class HistoryDao {
      * @param h Given history object
      */
     @Transactional
-    @SuppressWarnings("unchecked")
     public void createHistory(History h) {
     	
-    	for(History singleHistory : (List<History>) getLatestHistoryForDoc(h.getDoc())) {
-    		if(singleHistory.getHash().equals(h.getHash()))
-    			return;
-    	}
+    	History latestHistory = getLatestHistoryForDoc(h.getDoc());
+
+    	if(latestHistory != null && latestHistory.getHash().equals(h.getHash()))
+    		return;
     
         this.em.persist(h);
 
@@ -59,21 +53,23 @@ public class HistoryDao {
      * @param d Given doc object
      * @return A history object, if an entry was found, null otherwise
      */
+	@SuppressWarnings("unchecked")
 	public History getLatestHistoryForDoc(Doc d) {
 
-    	History history = null;
+    	List<History> history = null;
 
         try {
-        	history = (History) this.em
+        	history = (List<History>) this.em
                    .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
                    .setParameter("doc_id", d.getId())
-                   .getResultList()
-                   .get(0);
+                   .getResultList();
+           if(history == null || history.isEmpty())
+        	   return null;
         } catch (NoResultException e) {
             return null;
         }
 
-        return history;
+        return history.get(0);
     }
     
 	/**

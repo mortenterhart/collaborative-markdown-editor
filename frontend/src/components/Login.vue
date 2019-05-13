@@ -106,7 +106,7 @@
                 hideLoginDialog: 'login/hideLoginDialog'
             }),
             handleLogin: function() {
-                if (this.regUsername.trim() === '') {
+                if (this.loginUsername.trim() === '') {
                     this.$snotify.error(
                         'Enter a username',
                         'Error'
@@ -114,7 +114,7 @@
                     return;
                 }
 
-                if (this.regPassword.trim() === '') {
+                if (this.loginPassword.trim() === '') {
                     this.$snotify.error(
                         'Enter a password',
                         'Error'

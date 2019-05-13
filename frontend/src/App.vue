@@ -86,19 +86,13 @@
                     {
                         withCredentials: true
                     }
-                ).then(() => {
-                    this.$router.push('/');
-                    this.$store.commit('login/setIsLoggedIn', false);
-                    this.$snotify.success(
-                        'You\'re getting logged out',
-                        'Success'
-                    );
-                }).catch((error) => {
-                    this.$snotify.error(
-                        error.response.data.message,
-                        'Error'
-                    );
-                })
+                )
+                this.$router.push('/');
+                this.$store.commit('login/setIsLoggedIn', false);
+                this.$snotify.success(
+                    'You\'re getting logged out',
+                    'Success'
+                )
             }
         }
     }

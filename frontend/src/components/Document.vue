@@ -89,7 +89,7 @@
             ).then(() => {
                 next()
             }).catch(() => {
-                this.$router.push('/Forbidden');
+                next('/Forbidden')
             })
         },
         beforeRouteUpdate (to, from, next) {
@@ -103,7 +103,7 @@
             ).then(() => {
                 next()
             }).catch(() => {
-                this.$router.push('/Forbidden');
+                next('/Forbidden')
             })
         },
         mounted() {

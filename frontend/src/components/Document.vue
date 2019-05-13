@@ -29,6 +29,7 @@
 <script>
     import MDE from './Editor'
     import Preview from './Preview'
+    import axios from 'axios';
 
     export default {
         name: "Document",
@@ -36,10 +37,10 @@
             return {
                 socket: null,
                 content: '',
-                messageList: [], // the list of the messages to show, can be paginated and adjusted dynamically
+                messageList: [],
                 newMessagesCount: 0,
-                isChatOpen: false, // to determine whether the chat window should be open or closed
-                showTypingIndicator: '', // when set to a value matching the participant.id it shows the typing indicator for the specific user
+                isChatOpen: false,
+                showTypingIndicator: '',
                 colors: {
                     header: {
                         bg: '#4e8cff',
@@ -63,9 +64,9 @@
                         bg: '#f4f7f9',
                         text: '#565867'
                     }
-                }, // specifies the color scheme for the component
-                alwaysScrollToBottom: false, // when set to true always scrolls the chat to the bottom when new events are in (new message, user starts typing...)
-                messageStyling: true // enables *bold* /emph/ _underline_ and such (more info at github.com/mattezza/msgdown)
+                },
+                alwaysScrollToBottom: false,
+                messageStyling: true
             }
         },
         components: {
@@ -77,9 +78,35 @@
                 this.initWebSocketConnection()
             }
         },
+        beforeRouteEnter (to, from, next) {
+            axios.post(window.location.origin + '/CMD/api/document/hasAccess',
+                {
+                    documentId: Number(to.params.id)
+                },
+                {
+                    withCredentials: true
+                }
+            ).then(() => {
+                next()
+            }).catch(() => {
+                this.$router.push('/Forbidden');
+            })
+        },
+        beforeRouteUpdate (to, from, next) {
+            axios.post(window.location.origin + '/CMD/api/document/hasAccess',
+                {
+                    documentId: Number(to.params.id)
+                },
+                {
+                    withCredentials: true
+                }
+            ).then(() => {
+                next()
+            }).catch(() => {
+                this.$router.push('/Forbidden');
+            })
+        },
         mounted() {
-
-
             this.initWebSocketConnection()
         },
         methods: {
@@ -99,10 +126,10 @@
                             break
                         case "UserJoined":
                             vm.onMessageWasSent({ type: 'system', data: { text: JSON.parse(eventData.msg).name + ' joined the chat.' } })
-                            break;
+                            break
                         case "UserLeft":
                             vm.onMessageWasSent({ type: 'system', data: { text: JSON.parse(eventData.msg).name + ' left the chat.' } })
-                            break;
+                            break
                     }
                 };
 

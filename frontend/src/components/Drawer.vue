@@ -18,11 +18,11 @@
                 <v-divider/>
                 <template v-for="(doc, i) in docs">
                     <v-hover>
-                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
+                        <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="{cursor: 'pointer', background: activeIndex === i || hover ? '#D2D2D2' : '#FFFFFF'}">
                             <v-list-tile-action>
                                 <v-icon>{{ doc.icon }}</v-icon>
                             </v-list-tile-action>
-                            <v-list-tile-title @click="openDocument(doc.document)">{{ doc.document.name }}</v-list-tile-title>
+                            <v-list-tile-title @click="openDocument(doc.document, i)">{{ doc.document.name }}</v-list-tile-title>
                             <v-spacer />
                             <v-icon class="mr-2" @click="showCollaboratorList(doc)">list</v-icon>
                             <v-icon @click="removeDocument(doc)">cancel</v-icon>
@@ -93,6 +93,7 @@
     export default {
         name: "Drawer",
         data: () => ({
+            activeIndex: -1,
             showOverview: true,
             showCollaborators: false,
             documentName: '',
@@ -243,10 +244,12 @@
                     }
                 );
             },
-            openDocument: function(doc) {
+            openDocument: function(doc, index) {
+                this.activeIndex = index
                 this.$router.push(`/doc/${doc.id}`)
                 this.$store.commit('app/incEditorKey')
                 this.$store.commit('app/setCurrentDocument', doc)
+                this.$store.commit('app/setTitle', doc.name)
             }
         },
         beforeMount() {

@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.model;
 
 import org.hibernate.annotations.NaturalId;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class User {
     private String name;
 
     @Column(name = "PASSWORD")
+    @JsonbTransient
     private String password;
 
     @Column(name = "MAIL")

@@ -51,6 +51,7 @@ public class DocDao {
      * @param id Given document id
      * @return A doc object if one was found, null otherwise
      */
+    @Transactional
     public Doc getDoc(int id) {
 
         Doc doc = null;
@@ -116,6 +117,19 @@ public class DocDao {
     }
 
     /**
+     * Removes a given document based on the id from the database.
+     *
+     * @param d the document to be removed
+     * @return the number of updated rows
+     */
+    @Transactional
+    public int removeDoc(Doc d) {
+        return this.em.createQuery("DELETE FROM Doc d WHERE d.id = :doc_id")
+                      .setParameter("doc_id", d.getId())
+                      .executeUpdate();
+    }
+
+    /**
      * Update a certain document in the database
      *
      * @param d Given doc object
@@ -126,14 +140,15 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        this.em.getTransaction().begin();	
-        int result = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                      		.setParameter("content", d.getContent())
-                      		.setParameter("uuser", d.getUuser())
-                      		.setParameter("id", d.getId())
-                      		.executeUpdate();
+        this.em.getTransaction().begin();
+        int rows = this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
+                          .setParameter("content", d.getContent())
+                          .setParameter("uuser", d.getUuser())
+                          .setParameter("id", d.getId())
+                          .executeUpdate();
         this.em.getTransaction().commit();
-        return result;
+
+        return rows;
     }
 
     @Transactional
@@ -141,13 +156,10 @@ public class DocDao {
 
         log.debug("Updated document: " + d.getId());
 
-        this.em.getTransaction().begin();	
-        int result = this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
-                			.setParameter("repo", d.getRepo())
-                			.setParameter("uuser", d.getUuser())
-                			.setParameter("id", d.getId())
-                			.executeUpdate();
-        this.em.getTransaction().commit();
-        return result;
+        return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
+                      .setParameter("repo", d.getRepo())
+                      .setParameter("uuser", d.getUuser())
+                      .setParameter("id", d.getId())
+                      .executeUpdate();
     }
 }

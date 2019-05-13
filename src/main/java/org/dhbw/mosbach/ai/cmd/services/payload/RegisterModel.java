@@ -8,13 +8,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class RegisterModel implements Payload {
 
-    @XmlElement(name = JsonParameters.USERNAME)
+    @XmlElement(name = JsonParameters.USERNAME, required = true)
     private String username;
 
-    @XmlElement(name = JsonParameters.EMAIL)
+    @XmlElement(name = JsonParameters.EMAIL, required = true)
     private String email;
 
-    @XmlElement(name = JsonParameters.PASSWORD)
+    @XmlElement(name = JsonParameters.PASSWORD, required = true)
     private String password;
 
     public String getUsername() {

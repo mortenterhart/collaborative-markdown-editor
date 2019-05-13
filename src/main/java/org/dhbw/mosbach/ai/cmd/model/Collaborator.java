@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.model;
 
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,6 +32,7 @@ public class Collaborator {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_DOCS")
+    @JsonbTransient
     private Doc doc;
 
     @Enumerated(EnumType.STRING)

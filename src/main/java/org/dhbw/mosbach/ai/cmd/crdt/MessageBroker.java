@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.crdt;
 
 import java.util.List;
 
+import javax.json.Json;
 import javax.websocket.Session;
 
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
@@ -24,6 +25,12 @@ public class MessageBroker {
 		switch(msg.getMessageType()) {
 			case Insert: 	activeDocument.insert(msg.getCursorPos(), msg.getMsg()); break;
 			case Delete: 	activeDocument.del(msg.getCursorPos(), msg.getMsg().length()); break;
+			case UserJoined: /*No transform needed for these message types*/
+			case UserLeft: 
+			case ContentInit: 
+			case DocumentTitle: 
+			case UsersInit: 
+			case ChatMessage: break;
 			default: throw new RuntimeException("Provided unsupported message type for transform.");
 		}
 	}
@@ -36,7 +43,7 @@ public class MessageBroker {
 	 * @param messageType Given message type
 	 * @return A message object
 	 */
-	public Message createSystemMessage(int docId, String msg, MessageType messageType) {
+	public Message createSystemMessage(int userId, int docId, String msg, MessageType messageType) {
 		
 		Message message = new Message();
 
@@ -44,7 +51,7 @@ public class MessageBroker {
 		message.setDocId(docId);
 		message.setMessageType(messageType);
 		message.setMsg(msg);
-		message.setUserId(-1);
+		message.setUserId(userId);
 		
 		return message;
 	}
@@ -88,22 +95,39 @@ public class MessageBroker {
 	 */
 	public String getActiveUsers(List<Session> users, Session currentUser) {
 		
+		// Return empty array if the user is alone
+		if(users.size() <= 1)
+			return "[]";
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		
 		for(Session session : users) {
 			if(session != currentUser) {
-				sb.append("\"")
-				  .append(session.getUserProperties().get(CmdConfig.SESSION_USERNAME))
-				  .append("\"")
+				sb.append(formatUserMessage(session))
 				  .append(",");
 			}
 		}
 		
-		if(sb.length() > 2)
-			sb.deleteCharAt(sb.length() - 1);
+		sb.deleteCharAt(sb.length() - 1);
 		sb.append("]");
+		
+		System.out.println(sb.toString());
 
 		return sb.toString();
+	}
+	
+	/**
+	 * Takes a single user session and formats a JSON message to provide user details
+	 * @param session Given user session
+	 * @return A JSON object with the id and name of the user
+	 */
+	public String formatUserMessage(Session session) {
+		return Json.createObjectBuilder()
+			       .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
+			       .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
+			       .add("imageUrl", "https://ui-avatars.com/api/?name=" + session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString() + "&background=0D8ABC&color=fff")
+			       .build()
+			       .toString();
 	}
 }

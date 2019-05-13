@@ -55,6 +55,11 @@ public class Endpoint {
         
         if(docs.get(docId) == null) {
         	doc = new DocDao().getDoc(docId);
+        	if(doc == null) {
+        		Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, String.valueOf(docId), MessageType.WrongDocId);
+        		messageBroker.publishToSingleUser(wrongDocIdMsg, session);
+        		return;
+        	}
         	docs.put(docId, new ActiveDocument(doc, 0, new ArrayList<>()));
         }
         	

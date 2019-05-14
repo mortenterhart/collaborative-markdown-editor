@@ -238,7 +238,7 @@
                     return;
                 }
 
-                this.axios.post('/document/transferOwnership',
+                this.axios.patch('/document/transferOwnership',
                     {
                         documentId: this.currentDocument.document.id,
                         newOwnerName: this.transferOwnershipName

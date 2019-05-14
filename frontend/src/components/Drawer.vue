@@ -240,7 +240,7 @@
 
                 this.axios.post('/document/transferOwnership',
                     {
-                        documentId: Number(this.$route.params.id),
+                        documentId: this.currentDocument.document.id,
                         newOwnerName: this.transferOwnershipName
                     },
                     {

@@ -144,11 +144,11 @@
                 );
             },
             removeDocument(doc) {
-                this.axios.post('/document/remove',
+                this.axios.delete('/document/remove',
                     {
-                        documentId: doc.document.id
-                    },
-                    {
+                        data: {
+                            documentId: doc.document.id
+                        },
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -168,12 +168,12 @@
                 )
             },
             removeCollaborator: function(index, collaboratorId) {
-                this.axios.post('/collaborators/remove',
+                this.axios.delete('/collaborators/remove',
                     {
-                        documentId: this.currentDocument.document.id,
-                        collaboratorId: collaboratorId
-                    },
-                    {
+                        data: {
+                            documentId: this.currentDocument.document.id,
+                            collaboratorId: collaboratorId
+                        },
                         headers: {
                             'Content-Type': 'application/json'
                         },

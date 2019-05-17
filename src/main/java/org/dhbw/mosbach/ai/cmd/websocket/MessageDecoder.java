@@ -34,6 +34,7 @@ public class MessageDecoder implements Decoder.Text<Message>{
 		message.setUserId(jsonMsg.getInt("userId"));
 		message.setDocId(jsonMsg.getInt("docId"));
 		message.setCursorPos(jsonMsg.getInt("cursorPos"));
+		message.setDocState(jsonMsg.getInt("docState"));
 		message.setMsg(jsonMsg.getString("msg")  == null ? "" : jsonMsg.getString("msg"));
 		message.setMessageType(MessageType.valueOf(jsonMsg.getString("messageType")));
 		

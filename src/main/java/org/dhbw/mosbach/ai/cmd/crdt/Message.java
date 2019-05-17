@@ -12,20 +12,10 @@ public class Message {
 	private int userId;
 	private int docId;
 	private int cursorPos;
+	private int docState;
 	private String msg;
 	private MessageType messageType;
-	
-	public Message() {
-		
-	}
-	public Message(int userId, int cursorPos, int docId, String msg, MessageType messageType) {
-		super();
-		this.userId = userId;
-		this.docId = docId;
-		this.cursorPos = cursorPos;
-		this.msg = msg;
-		this.messageType = messageType;
-	}
+
 	public int getUserId() {
 		return userId;
 	}
@@ -43,6 +33,12 @@ public class Message {
 	}
 	public void setCursorPos(int cursorPos) {
 		this.cursorPos = cursorPos;
+	}
+	public int getDocState() {
+		return docState;
+	}
+	public void setDocState(int docState) {
+		this.docState = docState;
 	}
 	public String getMsg() {
 		return msg;

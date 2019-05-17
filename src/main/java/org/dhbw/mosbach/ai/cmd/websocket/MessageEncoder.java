@@ -28,6 +28,7 @@ public class MessageEncoder implements Encoder.Text<Message>{
 				.add("userId", message.getUserId())
 				.add("docId", message.getDocId())
 				.add("cursorPos", message.getCursorPos())
+				.add("docState", message.getDocState())
 				.add("msg", message.getMsg() == null ? "" : message.getMsg())
 				.add("messageType", message.getMessageType().toString())
 				.build();

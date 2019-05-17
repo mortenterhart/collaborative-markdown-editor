@@ -22,9 +22,12 @@ public class MessageBroker {
 	 */
 	public void transform(Message msg, ActiveDocument activeDocument) {
 
+		if(msg.getDocState() < activeDocument.getState())
+			activeDocument.makeConsistent(msg, activeDocument.getState());
+		
 		switch(msg.getMessageType()) {
-			case Insert: 	activeDocument.insert(msg.getCursorPos(), msg.getMsg()); break;
-			case Delete: 	activeDocument.del(msg.getCursorPos(), msg.getMsg().length()); break;
+			case Insert: 	activeDocument.insert(msg); break;
+			case Delete: 	activeDocument.del(msg); break;
 			case UserJoined: /*No transform needed for these message types*/
 			case UserLeft: 
 			case ContentInit: 
@@ -43,11 +46,12 @@ public class MessageBroker {
 	 * @param messageType Given message type
 	 * @return A message object
 	 */
-	public Message createSystemMessage(int userId, int docId, String msg, MessageType messageType) {
+	public Message createSystemMessage(int userId, int docId, int docState, String msg, MessageType messageType) {
 		
 		Message message = new Message();
 
 		message.setCursorPos(-1);
+		message.setDocState(docState);
 		message.setDocId(docId);
 		message.setMessageType(messageType);
 		message.setMsg(msg);
@@ -111,8 +115,6 @@ public class MessageBroker {
 		
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append("]");
-		
-		System.out.println(sb.toString());
 
 		return sb.toString();
 	}

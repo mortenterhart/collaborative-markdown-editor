@@ -40,7 +40,7 @@ ADD --chown=jboss:jboss ./ ./collab-down
 
 RUN cd ./collab-down && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
-RUN cp -vf ./collab-down/target/CMD.war ${JBOSS_HOME}/standalone/deployments
+RUN cp -vf ./collab-down/target/CMD.war ${DEPLOYMENT_DIR}
 
 RUN rm -rf ./collab-down
 

@@ -28,7 +28,9 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -94,7 +96,7 @@ public class DocumentService implements RestService {
         return new Success("Document was created successfully").buildResponse();
     }
 
-    @POST
+    @DELETE
     @Path("/remove")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -201,7 +203,7 @@ public class DocumentService implements RestService {
         return Response.ok().entity(models).build();
     }
 
-    @POST
+    @PATCH
     @Path("/transferOwnership")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

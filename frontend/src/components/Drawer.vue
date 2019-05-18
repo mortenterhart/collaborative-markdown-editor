@@ -144,19 +144,36 @@
                 );
             },
             removeDocument(doc) {
-                this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
-                this.$snotify.success(
-                    'Document was removed',
-                    'Success'
-                );
+                this.axios.delete('/document/remove',
+                    {
+                        data: {
+                            documentId: doc.document.id
+                        },
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                        this.$snotify.success(
+                            'Document was removed',
+                            'Success'
+                        );
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                )
             },
             removeCollaborator: function(index, collaboratorId) {
-                this.axios.post('/collaborators/remove',
+                this.axios.delete('/collaborators/remove',
                     {
-                        documentId: this.currentDocument.document.id,
-                        collaboratorId: collaboratorId
-                    },
-                    {
+                        data: {
+                            documentId: this.currentDocument.document.id,
+                            collaboratorId: collaboratorId
+                        },
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -221,12 +238,34 @@
                     return;
                 }
 
-                this.transferOwnershipName = ''
-                this.currentDocument.document.repo.owner.id = -1
-                this.$snotify.success(
-                    'Ownership was transferred',
-                    'Success'
-                );
+                this.axios.patch('/document/transferOwnership',
+                    {
+                        documentId: this.currentDocument.document.id,
+                        newOwnerName: this.transferOwnershipName
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        withCredentials: true
+                    }).then(() => {
+                        this.transferOwnershipName = ''
+                        this.currentDocument.document.repo.owner.id = -1
+                        this.$snotify.success(
+                            'Ownership was transferred',
+                            'Success'
+                        );
+                        this.$router.push('/')
+                        this.showOverview = true
+                        this.showCollaborators = false
+                        this.fetchDocuments(false)
+                    }).catch((error) => {
+                        this.$snotify.error(
+                            error.response.data.message,
+                            'Error'
+                        );
+                    }
+                )
             },
             fetchDocuments: function(setCurrentDocument) {
                 this.axios.get('/document/all',

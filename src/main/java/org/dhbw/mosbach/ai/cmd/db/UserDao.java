@@ -3,11 +3,10 @@ package org.dhbw.mosbach.ai.cmd.db;
 import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
-import org.dhbw.mosbach.ai.cmd.util.JpaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -19,7 +18,7 @@ import javax.transaction.Transactional;
  *
  * @author 3040018
  */
-@RequestScoped
+@Dependent
 public class UserDao {
 
     private static final Logger log = LoggerFactory.getLogger(UserDao.class);
@@ -29,10 +28,6 @@ public class UserDao {
 
     @Inject
     private RepoDao repoDao;
-
-    public UserDao() {
-        this.em = JpaFactory.getEntityManager();
-    }
 
     /**
      * Create a user to register them and also create a repo for them.

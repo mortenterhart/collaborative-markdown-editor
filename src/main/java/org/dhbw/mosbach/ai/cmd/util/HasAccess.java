@@ -1,5 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.util;
 
+/**
+ * Utility enum to set if a collaborator has access to a doc
+ * 
+ * @author spa102716
+ */
 public enum HasAccess {
 
     Y("Y"),

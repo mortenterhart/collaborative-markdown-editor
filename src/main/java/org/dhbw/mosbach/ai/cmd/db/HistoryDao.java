@@ -37,7 +37,6 @@ public class HistoryDao {
      */
     @Transactional
     public void createHistory(History h) {
-    	
     	History latestHistory = getLatestHistoryForDoc(h.getDoc());
 
     	if(latestHistory != null && latestHistory.getHash().equals(h.getHash()))
@@ -55,7 +54,6 @@ public class HistoryDao {
      */
 	@SuppressWarnings("unchecked")
 	public History getLatestHistoryForDoc(Doc d) {
-
     	List<History> history = null;
 
         try {
@@ -80,7 +78,6 @@ public class HistoryDao {
     @SuppressWarnings("unchecked")
     @Transactional
 	public List<History> getFullHistoryForDoc(Doc d) {
-    	
     	List<History> fullHistory = new ArrayList<>();
     	
     	try {

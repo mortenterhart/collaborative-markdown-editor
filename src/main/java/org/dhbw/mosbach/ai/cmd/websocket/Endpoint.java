@@ -21,7 +21,6 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +61,6 @@ public class Endpoint {
 	 */
     @OnOpen
     public void onOpen(@PathParam("docId") int docId, @PathParam(CmdConfig.SESSION_USERNAME) String username, @PathParam(CmdConfig.SESSION_USERID) int userId, Session session) {
-
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
         session.getUserProperties().put(CmdConfig.SESSION_USERID, userId);
 
@@ -71,11 +69,11 @@ public class Endpoint {
         if(docs.get(docId) == null) {
         	doc = docDao.getDoc(docId);
         	if(doc == null) {
-        		Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, String.valueOf(docId), MessageType.WrongDocId);
+        		Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, -1, String.valueOf(docId), MessageType.WrongDocId);
         		messageBroker.publishToSingleUser(wrongDocIdMsg, session);
         		return;
         	}
-        	docs.put(docId, new ActiveDocument(doc, 0, new ArrayList<>()));
+        	docs.put(docId, new ActiveDocument(doc, 0));
         }
         	
         if(doc == null)
@@ -86,16 +84,16 @@ public class Endpoint {
         
         docs.get(docId).getUsers().add(session);
         
-        Message contentInitMsg = messageBroker.createSystemMessage(userId, docId, doc.getContent(), MessageType.ContentInit);
+        Message contentInitMsg = messageBroker.createSystemMessage(userId, docId, docs.get(docId).getState(), doc.getContent(), MessageType.ContentInit);
         messageBroker.publishToSingleUser(contentInitMsg, session);
         
-        Message documentTitleMsg = messageBroker.createSystemMessage(userId, docId,  doc.getName(), MessageType.DocumentTitle);
+        Message documentTitleMsg = messageBroker.createSystemMessage(userId, docId, -1, doc.getName(), MessageType.DocumentTitle);
         messageBroker.publishToSingleUser(documentTitleMsg, session);
         
-        Message userInitMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
+        Message userInitMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
         messageBroker.publishToSingleUser(userInitMsg, session);
         
-        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.formatUserMessage(session), MessageType.UserJoined);
+        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(session), MessageType.UserJoined);
         messageBroker.publishToOtherUsers(userJoinedMsg, docs.get(docId), session);
     }
 
@@ -107,11 +105,10 @@ public class Endpoint {
      */
     @OnMessage
     public void onMessage(Message msg, Session session) {
-
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
-    	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     	messageBroker.transform(msg, currentDoc);
+    	messageBroker.publishToOtherUsers(msg, currentDoc, session);
     }
 
     /**
@@ -122,7 +119,6 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
-
     	for(int docId : docs.keySet()) {
     		for(Session singleUserSession : docs.get(docId).getUsers()) {
     			if(singleUserSession.equals(session)) {
@@ -131,7 +127,7 @@ public class Endpoint {
     				
     				int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
     				
-    		        Message userLeftdMsg = messageBroker.createSystemMessage(userId,  docId, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
+    		        Message userLeftdMsg = messageBroker.createSystemMessage(userId,  docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
     		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
     		        
     		        break;

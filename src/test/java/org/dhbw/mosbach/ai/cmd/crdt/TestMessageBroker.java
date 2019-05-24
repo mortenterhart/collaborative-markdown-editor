@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testing the MessageBroker class
+ * 
  * @author 3040018
  */
 public class TestMessageBroker {
@@ -36,7 +37,6 @@ public class TestMessageBroker {
 	
 	@Test
 	public void testTransformInsert() {
-
 		msg.setMessageType(MessageType.Insert);
 		
 		messageBroker.transform(msg, activeDocument);
@@ -47,7 +47,6 @@ public class TestMessageBroker {
 	
 	@Test
 	public void testTransformDel() {
-
 		msg.setMessageType(MessageType.Delete);
 		
 		messageBroker.transform(msg, activeDocument);
@@ -58,7 +57,6 @@ public class TestMessageBroker {
 	
 	@Test
 	public void testTransformNoTransform() {
-
 		msg.setMessageType(MessageType.ChatMessage);
 		
 		messageBroker.transform(msg, activeDocument);

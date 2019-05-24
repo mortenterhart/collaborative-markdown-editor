@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.util;
 
 /**
  * Message types send via web sockets
+ * 
  * @author 3040018
  */
 public enum MessageType {

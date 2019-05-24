@@ -36,7 +36,6 @@ public class UserDao {
      */
     @Transactional
     public void createUser(User u) {
-
         this.em.persist(u);
 
         Repo repo = new Repo();
@@ -54,7 +53,6 @@ public class UserDao {
      * @return A User object, if one was found with the username, otherwise it returns null
      */
     public User getUserByName(String username) {
-
         User user = null;
 
         try {
@@ -76,7 +74,6 @@ public class UserDao {
      * @return A User object, if one was found with the id, otherwise it returns null
      */
     public User getUserById(int id) {
-
         User user = null;
 
         try {

@@ -34,9 +34,7 @@ public class DocDao {
      */
     @Transactional
     public void createDoc(Doc d) {
-
         this.em.persist(d);
-
         log.debug("Created a new doc in database");
     }
 
@@ -48,7 +46,6 @@ public class DocDao {
      */
     @Transactional
     public Doc getDoc(int id) {
-
         Doc doc = null;
 
         try {
@@ -72,7 +69,6 @@ public class DocDao {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<Doc> getDocsOwnedBy(User u) {
-
         List<Doc> docs = new ArrayList<>();
 
         try {
@@ -96,7 +92,6 @@ public class DocDao {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<Doc> getDocsCollaboratedBy(User u) {
-
         List<Doc> docs = new ArrayList<>();
 
         try {
@@ -132,9 +127,7 @@ public class DocDao {
      */
     @Transactional
     public int updateDoc(Doc d) {
-
         log.debug("Updated document: " + d.getId());
-
         return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
                           .setParameter("content", d.getContent())
                           .setParameter("uuser", d.getUuser())
@@ -142,11 +135,14 @@ public class DocDao {
                           .executeUpdate();
     }
 
+    /**
+     * Transfer the ownership of a doc to another user
+     * @param d Given doc
+     * @return The number of updated rows
+     */
     @Transactional
     public int transferRepo(Doc d) {
-
         log.debug("Updated document: " + d.getId());
-
         return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
                       .setParameter("repo", d.getRepo())
                       .setParameter("uuser", d.getUuser())

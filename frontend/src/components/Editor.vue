@@ -16,6 +16,7 @@
         data: function() {
             return {
                 content: '',
+                currentDocState: -1,
                 contentChanges: [],
                 configs: {
                     spellChecker: false
@@ -54,6 +55,7 @@
                         "userId": this.$store.state.login.user.id,
                         "docId": Number(this.$route.params.id),
                         "cursorPos": this.contentChanges[i].pos,
+                        "docState": this.currentDocState,
                         "msg": this.contentChanges[i].msg,
                         "messageType": this.contentChanges[i].type
                     })
@@ -67,17 +69,28 @@
                         break;
                     case "ContentInit":
                         this.content = data.msg
+                        this.currentDocState = data.docState
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "UsersInit":
                         this.$store.commit('app/setOtherCollaborators', JSON.parse(data.msg))
                         break;
                     case "Insert":
-                        this.simplemde.codemirror.getDoc().replaceRange(data.msg, this.getCursorFromTotalCursorPos(this.content, data.cursorPos))
+                        this.currentDocState = data.docState
+                        const insertPos = this.getCursorFromTotalCursorPos(this.content, data.cursorPos)
+                        this.simplemde.codemirror.getDoc().replaceRange(data.msg, insertPos)
+                        if (this.contentChanges.length > 0) {
+                            this.adjustContentChangesArray(data, insertPos)
+                        }
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "Delete":
-                        this.simplemde.codemirror.getDoc().replaceRange("", this.getCursorFromTotalCursorPos(this.content, data.cursorPos), this.getCursorFromTotalCursorPos(this.content, data.cursorPos + data.msg.length))
+                        this.currentDocState = data.docState
+                        const deletePos = this.getCursorFromTotalCursorPos(this.content, data.cursorPos)
+                        this.simplemde.codemirror.getDoc().replaceRange("", deletePos, this.getCursorFromTotalCursorPos(this.content, data.cursorPos + data.msg.length))
+                        if (this.contentChanges.length > 0) {
+                            this.adjustContentChangesArray(data, deletePos)
+                        }
                         this.$emit('contentWasChanged', this.content);
                         break;
                     case "UserJoined":
@@ -94,6 +107,18 @@
                             'Info'
                         );
                         break;
+                }
+            },
+            adjustContentChangesArray(data, pos) {
+                for (let i = 0; i < this.contentChanges.length; i++) {
+                    if (this.contentChanges[i].pos > pos) {
+                        continue
+                    }
+                    if (this.contentChanges[i].type === 'Insert') {
+                        this.contentChanges[i].pos += data.msg.length
+                    } else {
+                        this.contentChanges[i].pos -= data.msg.length
+                    }
                 }
             },
             getCurrentCursorPos() {

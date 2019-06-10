@@ -155,6 +155,7 @@
                         "userId": this.$store.state.login.user.id,
                         "docId": Number(this.$route.params.id),
                         "cursorPos": -1,
+                        "docState": -1,
                         "msg": message.data.text,
                         "messageType": "ChatMessage"
                     })

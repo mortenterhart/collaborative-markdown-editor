@@ -13,4 +13,4 @@ install:
 
 script:
     - cd frontend/ && npm run test && cd ..
-    - ./mnvw test -B
+    - pwd && ls -la && ./mnvw test -B

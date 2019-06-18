@@ -7,10 +7,11 @@ cache:
     directories:
         - ${HOME}/.m2            # Maven repository
         - frontend/node_modules  # NPM modules
+        - .mvn/wrapper/maven-wrapper.jar
 
 install:
     - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script:
     - cd frontend/ && npm run test && cd ..
-    - pwd && ls -la && ./mnvw test -B
+    - ./mvnw test -B

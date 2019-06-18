@@ -1,0 +1,20 @@
+image: maven:3.6.1-jdk-11
+
+stages:
+    - build
+    - test
+
+build_frontend:
+    stage: build
+    script: cd frontend/ && npm run build
+
+build_backend:
+    stage: build
+    script: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -V
+
+run_tests:
+    stage: test
+    script: ./mvnw package
+    artifacts:
+        paths:
+            - target/CMD.war

@@ -21,7 +21,6 @@ public class MessageBroker {
 	 * @param activeDocument Current active document
 	 */
 	public void transform(Message msg, ActiveDocument activeDocument) {
-
 		if(msg.getDocState() < activeDocument.getState())
 			activeDocument.makeConsistent(msg, activeDocument.getState());
 		
@@ -47,7 +46,6 @@ public class MessageBroker {
 	 * @return A message object
 	 */
 	public Message createSystemMessage(int userId, int docId, int docState, String msg, MessageType messageType) {
-		
 		Message message = new Message();
 
 		message.setCursorPos(-1);
@@ -66,7 +64,6 @@ public class MessageBroker {
 	 * @param activeDocument Current active document
 	 */
 	public void publishToOtherUsers(Message msg, ActiveDocument activeDocument, Session currentUserSession) {
-		
 		for(Session session : activeDocument.getUsers()) {
 			try {
 				if (session != currentUserSession)
@@ -98,9 +95,7 @@ public class MessageBroker {
 	 * @return A list of user names formatted as a JSON array
 	 */
 	public String getActiveUsers(List<Session> users, Session currentUser) {
-		
-		// Return empty array if the user is alone
-		if(users.size() <= 1)
+		if(users.size() <= 1) // Return empty array if the user is alone
 			return "[]";
 
 		StringBuilder sb = new StringBuilder();

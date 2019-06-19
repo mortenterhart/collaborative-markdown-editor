@@ -17,6 +17,11 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
+/**
+ * Model class for the 'collaborators' table.
+ *
+ * @author 3040018
+ */
 @Entity
 @Table(name = "collaborators")
 public class Collaborator {

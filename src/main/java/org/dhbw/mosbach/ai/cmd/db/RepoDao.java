@@ -32,9 +32,7 @@ public class RepoDao {
      */
     @Transactional
     public void createRepo(Repo repo) {
-
         this.em.persist(repo);
-
         log.debug("Created a repo entry");
     }
 
@@ -45,7 +43,6 @@ public class RepoDao {
      * @return A Repo object, if one was found with the user id, otherwise it returns null
      */
     public Repo getRepo(User user) {
-
         Repo repo = null;
 
         try {

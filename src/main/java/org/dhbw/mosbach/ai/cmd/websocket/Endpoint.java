@@ -61,7 +61,6 @@ public class Endpoint {
 	 */
     @OnOpen
     public void onOpen(@PathParam("docId") int docId, @PathParam(CmdConfig.SESSION_USERNAME) String username, @PathParam(CmdConfig.SESSION_USERID) int userId, Session session) {
-
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
         session.getUserProperties().put(CmdConfig.SESSION_USERID, userId);
 
@@ -106,7 +105,6 @@ public class Endpoint {
      */
     @OnMessage
     public void onMessage(Message msg, Session session) {
-
     	ActiveDocument currentDoc = docs.get(msg.getDocId());
     	
     	messageBroker.transform(msg, currentDoc);
@@ -121,7 +119,6 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
-
     	for(int docId : docs.keySet()) {
     		for(Session singleUserSession : docs.get(docId).getUsers()) {
     			if(singleUserSession.equals(session)) {

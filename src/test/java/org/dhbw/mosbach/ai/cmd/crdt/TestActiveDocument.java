@@ -8,18 +8,23 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testing the ActiveDocument class
+ * 
  * @author 3040018
  */
 public class TestActiveDocument {
 	
 	private ActiveDocument activeDocument;
+	private Message msg;
 	
 	@BeforeEach
 	public void init() {
-		
 		Doc doc = new Doc();
 		doc.setId(1);
 		doc.setContent("Test content");
+		
+		msg = new Message();
+		msg.setCursorPos(2);
+		msg.setMsg("abc");
 		
 		activeDocument = new ActiveDocument();
 		activeDocument.setDoc(doc);
@@ -28,8 +33,7 @@ public class TestActiveDocument {
 	
 	@Test
 	public void testInsert() {
-
-		activeDocument.insert(2, "abc");
+		activeDocument.insert(msg);
 		
 		assertEquals(1, activeDocument.getState());
 		assertEquals("Teabcst content", activeDocument.getDoc().getContent());
@@ -37,8 +41,7 @@ public class TestActiveDocument {
 
 	@Test
 	public void testDel() {
-		
-		activeDocument.del(2, 3);
+		activeDocument.del(msg);
 		
 		assertEquals(1, activeDocument.getState());
 		assertEquals("Tecontent", activeDocument.getDoc().getContent());

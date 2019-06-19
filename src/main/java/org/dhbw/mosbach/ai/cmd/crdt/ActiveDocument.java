@@ -56,6 +56,7 @@ public class ActiveDocument {
 	public void setLatestTransforms(List<Message> latestTransforms) {
 		this.latestTransforms = latestTransforms;
 	}
+	
 	/**
 	 * Inserts a message from a user at a given index
 	 * @param msg Given message
@@ -69,12 +70,12 @@ public class ActiveDocument {
 		this.state++;
 		appendTransform(msg);
 	}
+	
 	/**
 	 * Deletes a message from a user of a given length at a given index
 	 * @param msg Given message
 	 */
 	public void del(Message msg){
-
 		this.doc.setContent(new StringBuilder()
 					 	.append(doc.getContent().substring(0, msg.getCursorPos()))
 					 	.append(doc.getContent().substring(msg.getCursorPos() + msg.getMsg().length()))
@@ -83,8 +84,12 @@ public class ActiveDocument {
 		appendTransform(msg);
 	}
 	
+	/**
+	 * Performs the lost operations on a given message
+	 * @param msg Given message
+	 * @param docState Given doc state
+	 */
 	public void makeConsistent(Message msg, int docState) {
-		
 		int delta =  QUEUE_LENGTH - (msg.getDocState() - docState);
 		int cursorPos = msg.getCursorPos();
 		
@@ -105,12 +110,14 @@ public class ActiveDocument {
 				}
 			}
 		}
-		
 		msg.setCursorPos(cursorPos);
 	}
 	
+	/**
+	 * Add a new transform to the list of applied transforms in the active doc
+	 * @param msg Given message to append
+	 */
 	private void appendTransform(Message msg) {
-		
 		msg.setDocState(msg.getDocState() + 1);
 		
 		if(this.latestTransforms.isEmpty())

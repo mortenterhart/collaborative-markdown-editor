@@ -36,9 +36,7 @@ public class CollaboratorDao {
      */
     @Transactional
     public void createCollaborator(Collaborator c) {
-
         this.em.persist(c);
-
         log.debug("Created a new collaborator entry in database");
     }
 
@@ -51,7 +49,6 @@ public class CollaboratorDao {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<Collaborator> getCollaboratorsForDoc(Doc d) {
-
         List<Collaborator> collaborators = new ArrayList<>();
 
         try {
@@ -76,7 +73,6 @@ public class CollaboratorDao {
      */
     @SuppressWarnings("unchecked")
     public List<Collaborator> getCollaborationsForUser(User u) {
-
         List<Collaborator> collaborators = new ArrayList<>();
 
         try {
@@ -101,7 +97,6 @@ public class CollaboratorDao {
      * @return A collaborator object, if one is found, null otherwise
      */
     public Collaborator getCollaborator(User u, Doc d) {
-
         Collaborator collaborator = null;
 
         try {
@@ -118,6 +113,12 @@ public class CollaboratorDao {
         return collaborator;
     }
 
+    /**
+     * Get a certain collaborator entry based on the given doc and user
+     *
+     * @param id Given collaborator id
+     * @return A collaborator object, if one is found, null otherwise
+     */
     public Collaborator getCollaborator(int id) {
         Collaborator collaborator = null;
 
@@ -141,9 +142,7 @@ public class CollaboratorDao {
      */
     @Transactional
     public int updateCollaborator(Collaborator c) {
-
         log.debug("Updating collaborator: " + c.getId());
-
         return this.em.createQuery("UPDATE Collaborator c SET c.hasAccess=:hasAccess WHERE c.doc.id=:doc_id AND c.user.id=:user_id")
                       .setParameter("hasAccess", c.getHasAccess())
                       .setParameter("doc_id", c.getDoc().getId())

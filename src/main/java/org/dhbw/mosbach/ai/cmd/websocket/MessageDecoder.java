@@ -13,8 +13,8 @@ import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 /**
  * Decoder class for messages to use in the web socket endpoint
+ * 
  * @author 3040018
- *
  */
 public class MessageDecoder implements Decoder.Text<Message>{
 
@@ -26,7 +26,6 @@ public class MessageDecoder implements Decoder.Text<Message>{
 
 	@Override
 	public Message decode(String jsonMessage) throws DecodeException {
-
 		JsonObject jsonMsg = Json.createReader(new StringReader(jsonMessage)).readObject();
 		
 		Message message = new Message();

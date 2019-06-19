@@ -14,7 +14,7 @@ public abstract class JpaFactory {
 
     public static EntityManager getEntityManager() {
         if (em == null) {
-            em = Persistence.createEntityManagerFactory(CmdConfig.PERSISTENCE_UNIT_NAME).createEntityManager();
+            em = Persistence.createEntityManagerFactory(CmdConfig.JPA_UNIT_NAME).createEntityManager();
         }
         return em;
     }

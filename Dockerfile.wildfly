@@ -20,6 +20,8 @@ ENV MYSQL_VERSION 8.0.15
 ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh
 ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
 
+ENV APP_DIR ./collaborative-markdown-editor
+
 USER jboss
 
 RUN echo "Build Number: ${buildno}"
@@ -36,13 +38,13 @@ RUN yum --assumeyes install git
 
 USER jboss
 
-ADD --chown=jboss:jboss ./ ./collab-down
+ADD --chown=jboss:jboss .mvn/ frontend/ src/ mvnw pom.xml ${APP_DIR}
 
-RUN cd ./collab-down && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+RUN cd ${APP_DIR} && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
-RUN cp -vf ./collab-down/target/CMD.war ${DEPLOYMENT_DIR}
+RUN cp -vf ${APP_DIR}/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
 
-RUN rm -rf ./collab-down
+RUN rm -rf ${APP_DIR}
 
 EXPOSE ${WEBAPP_PORT}
 

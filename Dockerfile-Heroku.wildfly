@@ -30,7 +30,7 @@ USER jboss
 RUN echo "Build Number: ${buildno}"
 
 # Configure WildFly server
-ADD --chown=jboss:jboss ./jboss-configure-postgresql-datasource.sh
+ADD --chown=jboss:jboss ./jboss-configure-postgresql-datasource.sh .
 RUN ./jboss-configure-postgresql-datasource.sh
 
 RUN rm -f ./jboss-configure-postgresql-datasource.sh

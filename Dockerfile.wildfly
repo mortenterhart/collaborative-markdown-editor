@@ -38,7 +38,7 @@ RUN yum --assumeyes install git
 
 USER jboss
 
-ADD --chown=jboss:jboss .mvn/ frontend/ src/ mvnw pom.xml ${APP_DIR}/
+ADD --chown=jboss:jboss ./ ${APP_DIR}/
 
 RUN cd ${APP_DIR} && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 

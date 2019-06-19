@@ -1,9 +1,13 @@
 build:
     docker:
         web: Dockerfile-Heroku.wildfly
+        #mysql: Dockerfile.mysql
     config:
         buildno: 1
 run:
     web:
         command:
             - /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 -Djboss.http.port=$PORT
+    #mysql:
+    #    command:
+    #        - mysqld

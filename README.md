@@ -1,5 +1,9 @@
 # Collaborative MarkDown Editor
 
+<p align="center">
+  <img src="https://github.com/MSkrzypietz/collaborative-markdown-editor/blob/master/resources/AppExampleDisplay.png?raw=true" alt="Exemplary View of the Application">
+</p>
+
 ## Features
 
 - User Management

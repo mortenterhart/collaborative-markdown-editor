@@ -9,7 +9,7 @@ function info() {
 }
 
 function error() {
-    printf "%s==> ERROR: %s%s\n" "${RED}" "$*" "${RESET}"
+    echo -e "${RED}==> ERROR: $*${RESET}"
 }
 
 function safe_run() {
@@ -46,7 +46,7 @@ safe_run curl --location \
      --output "${POSTGRESQL_CONNECTOR}" \
      --url "${MAVEN_DOWNLOAD_URL}"
 
-info "PostgreSQL Driver downloaded, verifying SHA1 sum"
+info "PostgreSQL Driver downloaded, verifying SHA1 checksum"
 if ! sha1sum "${POSTGRESQL_CONNECTOR}" | grep "${POSTGRESQL_SHA1}" > /dev/null; then
     error "Invalid SHA1 for ${POSTGRESQL_CONNECTOR} downloaded from ${MAVEN_DOWNLOAD_URL}"
     exit 1

@@ -1,0 +1,54 @@
+FROM jboss/wildfly:16.0.0.Final as server
+
+ARG buildno
+
+WORKDIR .
+
+ENV WEBAPP_PORT 8080/tcp
+ENV ADMINISTRATION_PORT 9990/tcp
+
+ENV WILDFLY_VERSION 16.0.0.Final
+ENV WILDFLY_USER wildfly
+ENV WILDFLY_PASSWORD wildfly
+
+ENV DB_NAME cmd
+ENV DB_USER mysqluser
+ENV DB_PASSWORD mysqlpass
+ENV DB_PORT 3306
+ENV DB_URI mysql:${DB_PORT}
+
+ENV POSTGRESQL_VERSION 42.2.1
+ENV POSTGRESQL_SHA1 b7f61848ac43ae9fa6e38935bfd75628b7fc9086
+
+ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh
+ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
+
+ENV APP_DIR ./collaborative-markdown-editor
+
+USER jboss
+
+RUN echo "Build Number: ${buildno}"
+
+# Configure WildFly server
+ADD --chown=jboss:jboss ./jboss-configure-postgresql-datasource.sh
+RUN ./jboss-configure-postgresql-datasource.sh
+
+RUN rm -f ./jboss-configure-postgresql-datasource.sh
+
+USER root
+
+RUN yum --assumeyes install git
+
+USER jboss
+
+ADD --chown=jboss:jboss ./ ${APP_DIR}/
+
+RUN cd ${APP_DIR} && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+RUN cp -vf ${APP_DIR}/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
+
+RUN rm -rf ${APP_DIR}
+
+EXPOSE ${WEBAPP_PORT}
+
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0", "-Djboss.http.port=${PORT}"]

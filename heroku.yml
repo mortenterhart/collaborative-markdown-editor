@@ -1,6 +1,6 @@
 build:
     docker:
-        webapp: Dockerfile.wildfly
+        webapp: Dockerfile-Heroku.wildfly
         mysql: Dockerfile.mysql
     config:
         buildno: 1

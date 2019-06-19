@@ -1,10 +1,6 @@
-setup:
-    addons:
-        - plan: heroku-buildpack-java
-          as: build-tool
 build:
     docker:
-        webapp: Dockerfile.webapp
+        webapp: Dockerfile.wildfly
         mysql: Dockerfile.mysql
     config:
         buildno: 1

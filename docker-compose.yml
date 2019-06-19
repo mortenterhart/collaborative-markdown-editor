@@ -7,7 +7,7 @@ services:
         container_name: "collab-down-instance"
         build:
             context: .
-            dockerfile: Dockerfile.webapp
+            dockerfile: Dockerfile.wildfly
             args:
                 buildno: 1
         ports:

@@ -27,6 +27,8 @@ ENV APP_DIR ./collaborative-markdown-editor
 
 USER jboss
 
+RUN echo "${DATABASE_URL}"
+
 RUN echo "Build Number: ${buildno}"
 
 # Configure WildFly server

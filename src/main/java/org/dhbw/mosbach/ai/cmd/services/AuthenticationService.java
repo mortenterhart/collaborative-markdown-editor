@@ -10,6 +10,7 @@ import org.dhbw.mosbach.ai.cmd.services.response.LoginUserModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.LoginValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.RegisterValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +49,8 @@ public class AuthenticationService implements RestService {
     @Inject
     private RegisterValidation registerValidation;
 
-    @Context
-    private HttpServletRequest request;
+    @Inject
+    private SessionUtil sessionUtil;
 
     @POST
     @Path("/login")
@@ -66,9 +67,9 @@ public class AuthenticationService implements RestService {
 
         User user = userDao.getUserByName(username);
 
-        request.getSession().setAttribute(CmdConfig.SESSION_USER, user);
-        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, user.getName());
-        request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, true);
+        if (sessionUtil.createSession(user)) {
+            log.debug("login: Created new session for user '{}'", username);
+        }
 
         log.debug("login: User '{}' logged in successfully", username);
         return new LoginUserModel(new Success("Logged in successfully"), user).buildResponse();
@@ -98,7 +99,7 @@ public class AuthenticationService implements RestService {
 
         userDao.createUser(newUser);
 
-        log.debug("User '{}' was registered successfully", username);
+        log.debug("register: User '{}' was registered successfully", username);
         return new Success("Registration successful").buildResponse();
     }
 
@@ -107,14 +108,15 @@ public class AuthenticationService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response doLogout() {
-        if (request.getSession(false) == null || request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Success("You are already logged out").buildResponse();
         }
 
-        request.getSession().setAttribute(CmdConfig.SESSION_USER, null);
-        request.getSession().setAttribute(CmdConfig.SESSION_USERNAME, null);
-        request.getSession().setAttribute(CmdConfig.SESSION_IS_LOGGED_IN, false);
-        request.getSession().invalidate();
+        User user = sessionUtil.getUser();
+
+        if (sessionUtil.invalidateSession()) {
+            log.debug("logout: Session of user '{}' was invalidated", user.getName());
+        }
 
         return new Success("Successfully logged out").buildResponse();
     }

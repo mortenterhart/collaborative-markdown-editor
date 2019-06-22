@@ -72,5 +72,8 @@ buildNumber.properties
 *.swp
 
 # Built frontend
-src/main/webapp/
-!src/main/webapp/.gitkeep
+src/main/webapp/css
+src/main/webapp/img
+src/main/webapp/js
+src/main/webapp/favicon.ico
+src/main/webapp/index.html

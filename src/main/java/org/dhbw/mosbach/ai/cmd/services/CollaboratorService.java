@@ -11,6 +11,7 @@ import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
+import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class CollaboratorService implements RestService {
     @Inject
     private CollaboratorDao collaboratorDao;
 
+    @Inject
+    private SessionUtil sessionUtil;
+
     @Context
     private HttpServletRequest request;
 
@@ -53,23 +57,23 @@ public class CollaboratorService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response addCollaborator(@NotNull CollaboratorInsertionModel model) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
 
         int documentId = model.getDocumentId();
         String collaboratorUsername = model.getCollaboratorName();
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
+            return new BadRequest("Document with id '%d' does not exist.", documentId).buildResponse();
         }
 
         User collaborator = userDao.getUserByName(collaboratorUsername);
         if (collaborator == null) {
-            return new BadRequest(String.format("User '%s' does not exist. Please choose a valid username.", collaboratorUsername)).buildResponse();
+            return new BadRequest("User '%s' does not exist. Please choose a valid username.", collaboratorUsername).buildResponse();
         }
 
         if (currentUser.getId() != document.getRepo().getOwner().getId()) {
@@ -81,7 +85,7 @@ public class CollaboratorService implements RestService {
         }
 
         if (collaboratorDao.getCollaborator(collaborator, document) != null) {
-            return new BadRequest(String.format("Collaborator '%s' was already added to this document.", collaboratorUsername)).buildResponse();
+            return new BadRequest("Collaborator '%s' was already added to this document.", collaboratorUsername).buildResponse();
         }
 
         Collaborator newCollaborator = new Collaborator();
@@ -91,7 +95,7 @@ public class CollaboratorService implements RestService {
 
         collaboratorDao.createCollaborator(newCollaborator);
 
-        return new Success(String.format("The collaborator '%s' was successfully added to your document", collaboratorUsername)).buildResponse();
+        return new Success("The collaborator '%s' was successfully added to your document", collaboratorUsername).buildResponse();
     }
 
     @DELETE
@@ -100,27 +104,27 @@ public class CollaboratorService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response removeCollaborator(@NotNull CollaboratorRemovalModel model) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         int documentId = model.getDocumentId();
         int collaboratorId = model.getCollaboratorId();
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
+            return new BadRequest("Document with id '%d' does not exist.", documentId).buildResponse();
         }
 
         Collaborator collaborator = collaboratorDao.getCollaborator(collaboratorId);
         if (collaborator == null) {
-            return new BadRequest(String.format("Collaborator '%d' does not exist.", collaboratorId)).buildResponse();
+            return new BadRequest("Collaborator '%d' does not exist.", collaboratorId).buildResponse();
         }
 
         if (documentId != collaborator.getDoc().getId()) {
-            return new BadRequest(String.format("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName())).buildResponse();
+            return new BadRequest("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName()).buildResponse();
         }
 
         if (currentUser.getId() != document.getRepo().getOwner().getId() && currentUser.getId() != collaborator.getUser().getId()) {
@@ -129,6 +133,6 @@ public class CollaboratorService implements RestService {
 
         collaboratorDao.removeCollaborator(collaborator);
 
-        return new Success(String.format("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName())).buildResponse();
+        return new Success("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName()).buildResponse();
     }
 }

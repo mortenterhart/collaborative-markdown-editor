@@ -19,6 +19,7 @@ import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
+import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,9 @@ public class DocumentService implements RestService {
     @Inject
     private CollaboratorDao collaboratorDao;
 
+    @Inject
+    private SessionUtil sessionUtil;
+
     @Context
     private HttpServletRequest request;
 
@@ -75,11 +79,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         Repo repository = repoDao.getRepo(currentUser);
 
@@ -102,17 +106,17 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response removeDocument(@NotNull DocumentRemovalModel removalModel) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to remove a document").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         int documentId = removalModel.getDocumentId();
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+            return new BadRequest("Document %d does not exist", documentId).buildResponse();
         }
 
         if (!currentUser.equals(document.getRepo().getOwner())) {
@@ -130,17 +134,17 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to have access to this document").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         int documentId = accessModel.getDocumentId();
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+            return new BadRequest("Document %d does not exist", documentId).buildResponse();
         }
 
         boolean hasAccess = false;
@@ -169,11 +173,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response getAllDocuments() {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         List<Doc> ownerDocs = docDao.getDocsOwnedBy(currentUser);
         List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(currentUser);
@@ -209,18 +213,18 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response transferOwnership(@NotNull DocumentTransferModel transferModel) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_IS_LOGGED_IN) == null) {
+        if (!sessionUtil.isLoggedIn(request)) {
             return new Unauthorized("You have to login to be able to transfer an ownership").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
+        User currentUser = sessionUtil.getUser(request);
 
         int documentId = transferModel.getDocumentId();
         String newOwnerName = transferModel.getNewOwnerName();
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
-            return new BadRequest(String.format("Document %d does not exist", documentId)).buildResponse();
+            return new BadRequest("Document %d does not exist", documentId).buildResponse();
         }
 
         if (!currentUser.equals(document.getRepo().getOwner())) {
@@ -229,7 +233,7 @@ public class DocumentService implements RestService {
 
         User newOwner = userDao.getUserByName(newOwnerName);
         if (newOwner == null) {
-            return new BadRequest(String.format("User '%s' does not exist", newOwnerName)).buildResponse();
+            return new BadRequest("User '%s' does not exist", newOwnerName).buildResponse();
         }
 
         Repo newRepo = repoDao.getRepo(newOwner);
@@ -238,6 +242,6 @@ public class DocumentService implements RestService {
         document.setUuser(newOwner);
         docDao.transferRepo(document);
 
-        return new Success(String.format("Ownership was transferred to '%s' successfully", newOwnerName)).buildResponse();
+        return new Success("Ownership was transferred to '%s' successfully", newOwnerName).buildResponse();
     }
 }

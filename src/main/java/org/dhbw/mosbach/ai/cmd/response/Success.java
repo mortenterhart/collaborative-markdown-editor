@@ -7,4 +7,8 @@ public class Success extends ResponseObject {
     public Success(String message) {
         super(Response.Status.OK, message);
     }
+
+    public Success(String format, Object... args) {
+        this(String.format(format, args));
+    }
 }

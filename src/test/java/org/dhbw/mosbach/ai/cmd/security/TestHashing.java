@@ -49,4 +49,18 @@ public class TestHashing {
 
 		assertEquals(expectedHash, hash);
 	}
+	
+	@Test
+	public void testHashDocEmptyContent() {
+		
+		String emptyContent = "";
+		String nullContent = null;
+		String expectedHash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+		
+		String hashEmptyContent = hashing.hashDocContent(emptyContent);
+		String hashNullContent = hashing.hashDocContent(nullContent);
+		
+		assertEquals(expectedHash, hashEmptyContent);
+		assertEquals(expectedHash, hashNullContent);
+	}
 }

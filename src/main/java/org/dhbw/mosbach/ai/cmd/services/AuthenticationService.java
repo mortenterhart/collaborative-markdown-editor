@@ -52,9 +52,6 @@ public class AuthenticationService implements RestService {
     @Inject
     private SessionUtil sessionUtil;
 
-    @Context
-    private HttpServletRequest request;
-
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -70,7 +67,7 @@ public class AuthenticationService implements RestService {
 
         User user = userDao.getUserByName(username);
 
-        if (sessionUtil.createSession(request, user)) {
+        if (sessionUtil.createSession(user)) {
             log.debug("login: Created new session for user '{}'", username);
         }
 
@@ -111,13 +108,13 @@ public class AuthenticationService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response doLogout() {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Success("You are already logged out").buildResponse();
         }
 
-        User user = sessionUtil.getUser(request);
+        User user = sessionUtil.getUser();
 
-        if (sessionUtil.invalidateSession(request)) {
+        if (sessionUtil.invalidateSession()) {
             log.debug("logout: Session of user '{}' was invalidated", user.getName());
         }
 

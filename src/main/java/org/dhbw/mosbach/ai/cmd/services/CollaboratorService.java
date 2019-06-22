@@ -57,14 +57,14 @@ public class CollaboratorService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response addCollaborator(@NotNull CollaboratorInsertionModel model) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
 
         int documentId = model.getDocumentId();
         String collaboratorUsername = model.getCollaboratorName();
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         Doc document = docDao.getDoc(documentId);
         if (document == null) {
@@ -104,11 +104,11 @@ public class CollaboratorService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response removeCollaborator(@NotNull CollaboratorRemovalModel model) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         int documentId = model.getDocumentId();
         int collaboratorId = model.getCollaboratorId();

@@ -79,11 +79,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         Repo repository = repoDao.getRepo(currentUser);
 
@@ -106,11 +106,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response removeDocument(@NotNull DocumentRemovalModel removalModel) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to remove a document").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         int documentId = removalModel.getDocumentId();
 
@@ -134,11 +134,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to have access to this document").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         int documentId = accessModel.getDocumentId();
 
@@ -173,11 +173,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response getAllDocuments() {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         List<Doc> ownerDocs = docDao.getDocsOwnedBy(currentUser);
         List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(currentUser);
@@ -213,11 +213,11 @@ public class DocumentService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response transferOwnership(@NotNull DocumentTransferModel transferModel) {
-        if (!sessionUtil.isLoggedIn(request)) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to transfer an ownership").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser(request);
+        User currentUser = sessionUtil.getUser();
 
         int documentId = transferModel.getDocumentId();
         String newOwnerName = transferModel.getNewOwnerName();

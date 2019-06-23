@@ -4,8 +4,8 @@ import javax.ws.rs.core.Response;
 
 public class ResponseObject {
 
-    private Status status;
-    private String message;
+    private final Status status;
+    private final String message;
 
     public ResponseObject(Response.Status status, String message) {
         this.status = new Status(status);

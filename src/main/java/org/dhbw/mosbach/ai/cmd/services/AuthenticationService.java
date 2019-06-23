@@ -7,23 +7,20 @@ import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
 import org.dhbw.mosbach.ai.cmd.services.response.LoginUserModel;
-import org.dhbw.mosbach.ai.cmd.services.validation.LoginValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.RegisterValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.authentication.LoginValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.authentication.RegisterValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
-import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -58,9 +55,9 @@ public class AuthenticationService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response doLogin(@NotNull LoginModel loginModel) {
-        ValidationResult loginCheck = loginValidation.validate(loginModel);
+        final ValidationResult loginCheck = loginValidation.validate(loginModel);
         if (loginCheck.isInvalid()) {
-            return loginCheck.getResponse().buildResponse();
+            return loginCheck .buildResponse();
         }
 
         String username = loginModel.getUsername();
@@ -81,9 +78,9 @@ public class AuthenticationService implements RestService {
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
     public Response doRegister(@NotNull RegisterModel registerModel) {
-        ValidationResult registerCheck = registerValidation.validate(registerModel);
+        final ValidationResult registerCheck = registerValidation.validate(registerModel);
         if (registerCheck.isInvalid()) {
-            return registerCheck.getResponse().buildResponse();
+            return registerCheck.buildResponse();
         }
 
         String username = registerModel.getUsername();

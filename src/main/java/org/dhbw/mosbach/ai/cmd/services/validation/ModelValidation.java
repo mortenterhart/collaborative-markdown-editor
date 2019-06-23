@@ -7,5 +7,5 @@ import javax.validation.constraints.NotNull;
 public interface ModelValidation<T extends Payload> {
 
     @NotNull
-    public ValidationResult validate(T payload);
+    public ValidationResult validate(@NotNull T payload);
 }

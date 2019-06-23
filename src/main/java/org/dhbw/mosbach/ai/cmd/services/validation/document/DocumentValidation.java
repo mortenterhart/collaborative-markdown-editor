@@ -33,11 +33,11 @@ public class DocumentValidation {
         return document;
     }
 
-    public ValidationResult checkUserIsDocumentOwner(Doc document, User currentUser) {
-        if (currentUser.getId() != document.getRepo().getOwner().getId()) {
-            return ValidationResult.response(new BadRequest("Current user is not the document owner"));
+    public ValidationResult checkUserIsDocumentOwner(Doc document, User user) {
+        if (user.getId() != document.getRepo().getOwner().getId()) {
+            return ValidationResult.response(new BadRequest("Applied user is not the document owner"));
         }
 
-        return ValidationResult.success("Current user is the document owner");
+        return ValidationResult.success("Applied user is the document owner");
     }
 }

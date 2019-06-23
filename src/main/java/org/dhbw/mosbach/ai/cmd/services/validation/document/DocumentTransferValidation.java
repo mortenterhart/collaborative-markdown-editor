@@ -1,5 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.document;
 
+import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
+import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
@@ -9,11 +11,13 @@ import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.authentication.UserValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicFieldValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RequestScoped
 public class DocumentTransferValidation implements ModelValidation<DocumentTransferModel> {
@@ -26,6 +30,9 @@ public class DocumentTransferValidation implements ModelValidation<DocumentTrans
 
     @Inject
     private UserValidation userValidation;
+
+    @Inject
+    private CollaboratorValidation collaboratorValidation;
 
     @Inject
     private SessionUtil sessionUtil;
@@ -66,7 +73,12 @@ public class DocumentTransferValidation implements ModelValidation<DocumentTrans
 
         newOwner = userValidation.getFoundUser();
 
-        return ValidationResult.success("Document ownership may be transferred");
+        final ValidationResult documentCollaboratorCheck = collaboratorValidation.checkCollaboratorExists(newOwner, foundDocument);
+        if (documentCollaboratorCheck.isInvalid()) {
+            return ValidationResult.response(new BadRequest("User '%s' is not a collaborator. Ownership may be only transferred to a document collaborator.", newOwnerName));
+        }
+
+        return ValidationResult.success("Document ownership may be transferred.");
     }
 
     public Doc getFoundDocument() {

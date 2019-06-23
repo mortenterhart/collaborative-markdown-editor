@@ -1,6 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.basic;
 
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 
 import javax.enterprise.context.RequestScoped;

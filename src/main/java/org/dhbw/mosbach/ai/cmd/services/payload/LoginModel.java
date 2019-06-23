@@ -1,17 +1,15 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class LoginModel implements Payload {
 
-    @XmlElement(name = JsonParameters.USERNAME, required = true)
+    @XmlElement(name = PayloadParameters.USERNAME, required = true)
     private String username;
 
-    @XmlElement(name = JsonParameters.PASSWORD, required = true)
+    @XmlElement(name = PayloadParameters.PASSWORD, required = true)
     private String password;
 
     public String getUsername() {

@@ -2,11 +2,11 @@ package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
-import org.dhbw.mosbach.ai.cmd.services.response.LoginUserModel;
+import org.dhbw.mosbach.ai.cmd.services.response.LoginUserResponse;
 import org.dhbw.mosbach.ai.cmd.services.validation.authentication.LoginValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.authentication.RegisterValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
@@ -69,7 +69,7 @@ public class AuthenticationService implements RestService {
         }
 
         log.debug("login: User '{}' logged in successfully", username);
-        return new LoginUserModel(new Success("Logged in successfully"), user).buildResponse();
+        return new LoginUserResponse(user, "Logged in successfully.").buildResponse();
     }
 
     @POST
@@ -97,7 +97,7 @@ public class AuthenticationService implements RestService {
         userDao.createUser(newUser);
 
         log.debug("register: User '{}' was registered successfully", username);
-        return new Success("Registration successful").buildResponse();
+        return new Success("Registration successful.").buildResponse();
     }
 
     @POST
@@ -106,7 +106,7 @@ public class AuthenticationService implements RestService {
     @NotNull
     public Response doLogout() {
         if (!sessionUtil.isLoggedIn()) {
-            return new Success("You are already logged out").buildResponse();
+            return new Success("You are already logged out.").buildResponse();
         }
 
         User user = sessionUtil.getUser();
@@ -115,6 +115,6 @@ public class AuthenticationService implements RestService {
             log.debug("logout: Session of user '{}' was invalidated", user.getName());
         }
 
-        return new Success("Successfully logged out").buildResponse();
+        return new Success("Successfully logged out.").buildResponse();
     }
 }

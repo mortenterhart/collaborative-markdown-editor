@@ -1,6 +1,6 @@
-package org.dhbw.mosbach.ai.cmd.services;
+package org.dhbw.mosbach.ai.cmd.services.payload;
 
-public abstract class JsonParameters {
+public abstract class PayloadParameters {
 
     public static final String USERNAME = "username";
 

@@ -1,11 +1,15 @@
-package org.dhbw.mosbach.ai.cmd.services.validation;
+package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.response.InternalServerError;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
+import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicFieldValidation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -25,16 +29,20 @@ public class LoginValidation implements ModelValidation<LoginModel> {
 
     @Override
     @NotNull
-    public ValidationResult validate(LoginModel model) {
-        String username = model.getUsername();
-        String password = model.getPassword();
+    public ValidationResult validate(@NotNull LoginModel model) {
+        if (model == null) {
+            return new ValidationResult(new InternalServerError("LoginModel is null"));
+        }
 
-        ValidationResult usernameCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
+        final String username = model.getUsername();
+        final String password = model.getPassword();
+
+        final ValidationResult usernameCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
         if (usernameCheck.isInvalid()) {
             return usernameCheck;
         }
 
-        ValidationResult passwordCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
+        final ValidationResult passwordCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
         if (passwordCheck.isInvalid()) {
             return passwordCheck;
         }
@@ -46,11 +54,11 @@ public class LoginValidation implements ModelValidation<LoginModel> {
     private ValidationResult checkCredentialsCorrect(String username, String password) {
         User user = userDao.getUserByName(username);
         if (user == null) {
-            return new ValidationResult(new BadRequest("Invalid username or password"));
+            return ValidationResult.response(new BadRequest("Invalid username or password"));
         }
 
         if (!hashing.checkPassword(password, user.getPassword())) {
-            return new ValidationResult(new BadRequest("Invalid username or password"));
+            return ValidationResult.response(new BadRequest("Invalid username or password"));
         }
 
         return ValidationResult.success("Authentication successful");

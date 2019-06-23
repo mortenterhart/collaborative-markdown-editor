@@ -22,6 +22,14 @@ public final class ValidationResult {
         return new ValidationResult(new Success(message));
     }
 
+    public static ValidationResult success(String format, Object... args) {
+        return success(String.format(format, args));
+    }
+
+    public static ValidationResult response(@NotNull ResponseObject response) {
+        return new ValidationResult(response);
+    }
+
     public boolean isValid() {
         return valid;
     }
@@ -32,5 +40,9 @@ public final class ValidationResult {
 
     public ResponseObject getResponse() {
         return response;
+    }
+
+    public Response buildResponse() {
+        return response.buildResponse();
     }
 }

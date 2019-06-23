@@ -2,17 +2,17 @@ package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
-import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.response.Success;
 import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorRemovalValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
-import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +37,13 @@ public class CollaboratorService implements RestService {
     private static final Logger log = LoggerFactory.getLogger(CollaboratorService.class);
 
     @Inject
-    private DocDao docDao;
-
-    @Inject
-    private UserDao userDao;
-
-    @Inject
     private CollaboratorDao collaboratorDao;
+
+    @Inject
+    private CollaboratorInsertionValidation collaboratorInsertionValidation;
+
+    @Inject
+    private CollaboratorRemovalValidation collaboratorRemovalValidation;
 
     @Inject
     private SessionUtil sessionUtil;
@@ -61,32 +61,16 @@ public class CollaboratorService implements RestService {
             return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
 
+        final ValidationResult collaboratorInsertionCheck = collaboratorInsertionValidation.validate(model);
+        if (collaboratorInsertionCheck.isInvalid()) {
+            return collaboratorInsertionCheck.buildResponse();
+        }
+
         int documentId = model.getDocumentId();
         String collaboratorUsername = model.getCollaboratorName();
 
-        User currentUser = sessionUtil.getUser();
-
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest("Document with id '%d' does not exist.", documentId).buildResponse();
-        }
-
-        User collaborator = userDao.getUserByName(collaboratorUsername);
-        if (collaborator == null) {
-            return new BadRequest("User '%s' does not exist. Please choose a valid username.", collaboratorUsername).buildResponse();
-        }
-
-        if (currentUser.getId() != document.getRepo().getOwner().getId()) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may add collaborators.").buildResponse();
-        }
-
-        if (collaborator.getId() == currentUser.getId()) {
-            return new BadRequest("The owner cannot be added as collaborator.").buildResponse();
-        }
-
-        if (collaboratorDao.getCollaborator(collaborator, document) != null) {
-            return new BadRequest("Collaborator '%s' was already added to this document.", collaboratorUsername).buildResponse();
-        }
+        Doc document = collaboratorInsertionValidation.getDocument();
+        User collaborator = collaboratorInsertionValidation.getCollaborator();
 
         Collaborator newCollaborator = new Collaborator();
         newCollaborator.setDoc(document);
@@ -108,28 +92,12 @@ public class CollaboratorService implements RestService {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser();
-
-        int documentId = model.getDocumentId();
-        int collaboratorId = model.getCollaboratorId();
-
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest("Document with id '%d' does not exist.", documentId).buildResponse();
+        final ValidationResult collaboratorRemovalCheck = collaboratorRemovalValidation.validate(model);
+        if (collaboratorRemovalCheck.isInvalid()) {
+            return collaboratorRemovalCheck.buildResponse();
         }
 
-        Collaborator collaborator = collaboratorDao.getCollaborator(collaboratorId);
-        if (collaborator == null) {
-            return new BadRequest("Collaborator '%d' does not exist.", collaboratorId).buildResponse();
-        }
-
-        if (documentId != collaborator.getDoc().getId()) {
-            return new BadRequest("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName()).buildResponse();
-        }
-
-        if (currentUser.getId() != document.getRepo().getOwner().getId() && currentUser.getId() != collaborator.getUser().getId()) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators.").buildResponse();
-        }
+        Collaborator collaborator = collaboratorRemovalValidation.getCollaborator();
 
         collaboratorDao.removeCollaborator(collaborator);
 

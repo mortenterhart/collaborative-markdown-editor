@@ -1,18 +1,21 @@
-package org.dhbw.mosbach.ai.cmd.services.validation;
+package org.dhbw.mosbach.ai.cmd.services.validation.basic;
 
 import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 
+import javax.enterprise.context.RequestScoped;
 import javax.validation.constraints.NotNull;
 
+@RequestScoped
 public class BasicFieldValidation {
 
     @NotNull
     public ValidationResult checkSpecified(@NotNull String fieldName, String fieldValue) {
         if (fieldValue == null || fieldValue.isEmpty()) {
-            return new ValidationResult(new BadRequest("%s was not specified", capitalize(fieldName)));
+            return ValidationResult.response(new BadRequest("%s was not specified", capitalize(fieldName)));
         }
 
-        return ValidationResult.success(String.format("Field '%s' has been specified", fieldName));
+        return ValidationResult.success("Field '%s' has been specified", fieldName);
     }
 
     @NotNull

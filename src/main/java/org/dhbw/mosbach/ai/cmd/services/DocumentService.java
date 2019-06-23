@@ -19,6 +19,8 @@ import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentInsertionValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
@@ -70,8 +72,8 @@ public class DocumentService implements RestService {
     @Inject
     private SessionUtil sessionUtil;
 
-    @Context
-    private HttpServletRequest request;
+    @Inject
+    private DocumentInsertionValidation documentInsertionValidation;
 
     @POST
     @Path("/add")
@@ -81,6 +83,11 @@ public class DocumentService implements RestService {
     public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to create a new document").buildResponse();
+        }
+
+        final ValidationResult documentInsertionCheck = documentInsertionValidation.validate(insertionModel);
+        if (documentInsertionCheck.isInvalid()) {
+            return documentInsertionCheck.buildResponse();
         }
 
         User currentUser = sessionUtil.getUser();
@@ -93,7 +100,7 @@ public class DocumentService implements RestService {
         document.setCuser(currentUser);
         document.setUuser(currentUser);
         document.setRepo(repository);
-        document.setName(documentName);
+        document.setName(documentName.trim());
 
         docDao.createDoc(document);
 

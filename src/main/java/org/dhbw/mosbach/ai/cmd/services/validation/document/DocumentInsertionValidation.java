@@ -3,8 +3,8 @@ package org.dhbw.mosbach.ai.cmd.services.validation.document;
 import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.payload.PayloadParameters;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
@@ -40,7 +40,7 @@ public class DocumentInsertionValidation implements ModelValidation<DocumentInse
     public ValidationResult validate(@NotNull DocumentInsertionModel model) {
         String documentName = model.getName();
 
-        final ValidationResult nameSpecifiedCheck = basicFieldValidation.checkSpecified(JsonParameters.DOCUMENT_NAME, documentName);
+        final ValidationResult nameSpecifiedCheck = basicFieldValidation.checkSpecified(PayloadParameters.DOCUMENT_NAME, documentName);
         if (nameSpecifiedCheck.isInvalid()) {
             return nameSpecifiedCheck;
         }
@@ -57,7 +57,7 @@ public class DocumentInsertionValidation implements ModelValidation<DocumentInse
             return nameExistenceCheck;
         }
 
-        return ValidationResult.success("Document can be added to the repository");
+        return ValidationResult.success("Document may be added to the repository");
     }
 
     private ValidationResult checkDocumentNameFormat(String documentName) {

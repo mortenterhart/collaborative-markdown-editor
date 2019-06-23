@@ -1,7 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.services.validation;
 
-import org.dhbw.mosbach.ai.cmd.response.ResponseObject;
-import org.dhbw.mosbach.ai.cmd.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.response.ResponseObject;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;

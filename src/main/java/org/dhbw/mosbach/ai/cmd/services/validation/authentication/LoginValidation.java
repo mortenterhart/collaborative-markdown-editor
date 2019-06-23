@@ -2,10 +2,10 @@ package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.response.InternalServerError;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import org.dhbw.mosbach.ai.cmd.services.payload.PayloadParameters;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
@@ -37,12 +37,12 @@ public class LoginValidation implements ModelValidation<LoginModel> {
         final String username = model.getUsername();
         final String password = model.getPassword();
 
-        final ValidationResult usernameCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
+        final ValidationResult usernameCheck = fieldValidation.checkSpecified(PayloadParameters.USERNAME, username);
         if (usernameCheck.isInvalid()) {
             return usernameCheck;
         }
 
-        final ValidationResult passwordCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
+        final ValidationResult passwordCheck = fieldValidation.checkSpecified(PayloadParameters.PASSWORD, password);
         if (passwordCheck.isInvalid()) {
             return passwordCheck;
         }

@@ -3,7 +3,7 @@ package org.dhbw.mosbach.ai.cmd.services.validation.collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
@@ -64,7 +64,7 @@ public class CollaboratorRemovalValidation implements ModelValidation<Collaborat
             return ValidationResult.response(new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators. You can only unsubscribe yourself."));
         }
 
-        return ValidationResult.success("Collaborator can be removed");
+        return ValidationResult.success("Collaborator may be removed");
     }
 
     public Collaborator getCollaborator() {

@@ -1,10 +1,16 @@
-package org.dhbw.mosbach.ai.cmd.response;
+package org.dhbw.mosbach.ai.cmd.services.response;
 
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class ResponseObject {
 
+    @XmlElement(name = ResponseParameters.HTTP_STATUS, required = true)
     private final Status status;
+
+    @XmlElement(name = ResponseParameters.MESSAGE, required = true)
     private final String message;
 
     public ResponseObject(Response.Status status, String message) {

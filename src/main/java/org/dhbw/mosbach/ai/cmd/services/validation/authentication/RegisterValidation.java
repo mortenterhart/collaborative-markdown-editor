@@ -1,9 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.response.InternalServerError;
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
+import org.dhbw.mosbach.ai.cmd.services.payload.PayloadParameters;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
@@ -61,7 +61,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
 
     @NotNull
     private ValidationResult checkUsernameExists(String username) {
-        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.USERNAME, username);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }
@@ -75,7 +75,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
 
     @NotNull
     private ValidationResult checkPasswordConstraints(String password) {
-        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.PASSWORD, password);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }
@@ -100,7 +100,7 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
     }
 
     private ValidationResult validateEmailSyntax(String email) {
-        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.EMAIL, email);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.EMAIL, email);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }

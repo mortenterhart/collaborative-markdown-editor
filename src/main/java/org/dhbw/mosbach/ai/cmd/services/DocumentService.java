@@ -7,28 +7,30 @@ import org.dhbw.mosbach.ai.cmd.db.RepoDao;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
-import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.model.Repo;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.response.Forbidden;
-import org.dhbw.mosbach.ai.cmd.response.Success;
-import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
-import org.dhbw.mosbach.ai.cmd.services.response.DocumentListModel;
+import org.dhbw.mosbach.ai.cmd.services.response.DocumentListResponse;
+import org.dhbw.mosbach.ai.cmd.services.response.Forbidden;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
+import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentIcon;
+import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentAccessValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentInsertionValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentRemovalValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentTransferValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
-import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -37,7 +39,6 @@ import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -73,7 +74,19 @@ public class DocumentService implements RestService {
     private SessionUtil sessionUtil;
 
     @Inject
+    private DocumentValidation documentValidation;
+
+    @Inject
     private DocumentInsertionValidation documentInsertionValidation;
+
+    @Inject
+    private DocumentRemovalValidation documentRemovalValidation;
+
+    @Inject
+    private DocumentAccessValidation documentAccessValidation;
+
+    @Inject
+    private DocumentTransferValidation documentTransferValidation;
 
     @POST
     @Path("/add")
@@ -82,7 +95,7 @@ public class DocumentService implements RestService {
     @NotNull
     public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
         if (!sessionUtil.isLoggedIn()) {
-            return new Unauthorized("You have to login to be able to create a new document").buildResponse();
+            return new Unauthorized("You have to login to be able to create a new document.").buildResponse();
         }
 
         final ValidationResult documentInsertionCheck = documentInsertionValidation.validate(insertionModel);
@@ -114,23 +127,21 @@ public class DocumentService implements RestService {
     @NotNull
     public Response removeDocument(@NotNull DocumentRemovalModel removalModel) {
         if (!sessionUtil.isLoggedIn()) {
-            return new Unauthorized("You have to login to be able to remove a document").buildResponse();
+            return new Unauthorized("You have to login to be able to remove a document.").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser();
+        final ValidationResult documentRemovalCheck = documentRemovalValidation.validate(removalModel);
+        if (documentRemovalCheck.isInvalid()) {
+            return documentRemovalCheck.buildResponse();
+        }
 
         int documentId = removalModel.getDocumentId();
-
         Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest("Document %d does not exist", documentId).buildResponse();
-        }
-
-        if (!currentUser.equals(document.getRepo().getOwner())) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may remove it.").buildResponse();
-        }
 
         docDao.removeDoc(document);
+        for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
+            collaboratorDao.removeCollaborator(collaborator);
+        }
 
         return new Success("Document was removed successfully").buildResponse();
     }
@@ -142,21 +153,22 @@ public class DocumentService implements RestService {
     @NotNull
     public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel) {
         if (!sessionUtil.isLoggedIn()) {
-            return new Unauthorized("You have to login to have access to this document").buildResponse();
+            return new Unauthorized("You have to login to have access to this document.").buildResponse();
+        }
+
+        final ValidationResult documentAccessCheck = documentAccessValidation.validate(accessModel);
+        if (documentAccessCheck.isInvalid()) {
+            return documentAccessCheck.buildResponse();
         }
 
         User currentUser = sessionUtil.getUser();
 
-        int documentId = accessModel.getDocumentId();
-
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest("Document %d does not exist", documentId).buildResponse();
-        }
+        Doc document = documentAccessValidation.getFoundDocument();
 
         boolean hasAccess = false;
 
-        if (currentUser.equals(document.getRepo().getOwner())) {
+        final ValidationResult ownerCheck = documentValidation.checkUserIsDocumentOwner(document, currentUser);
+        if (ownerCheck.isValid()) {
             hasAccess = true;
         }
 
@@ -164,7 +176,6 @@ public class DocumentService implements RestService {
         ListIterator<Collaborator> iterator = collaborators.listIterator();
         while (iterator.hasNext() && !hasAccess) {
             Collaborator c = iterator.next();
-
             hasAccess = c.getUser().equals(currentUser);
         }
 
@@ -181,37 +192,38 @@ public class DocumentService implements RestService {
     @NotNull
     public Response getAllDocuments() {
         if (!sessionUtil.isLoggedIn()) {
-            return new Unauthorized("You have to login to be able to fetch all documents").buildResponse();
+            return new Unauthorized("You have to login to be able to fetch all documents.").buildResponse();
         }
 
         User currentUser = sessionUtil.getUser();
 
-        List<Doc> ownerDocs = docDao.getDocsOwnedBy(currentUser);
-        List<Doc> collaboratorDocs = docDao.getDocsCollaboratedBy(currentUser);
+        List<Doc> ownedDocuments = docDao.getDocsOwnedBy(currentUser);
+        List<Doc> collaboratorDocuments = docDao.getDocsCollaboratedBy(currentUser);
 
-        List<DocumentListModel> models = new ArrayList<>();
-        for (Doc doc : ownerDocs) {
-            List<History> history = historyDao.getFullHistoryForDoc(doc);
-            List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(doc);
-            String icon = "person";
+        List<DocumentListEntity> documentEntities = new ArrayList<>();
 
-            if (collaborators != null && !collaborators.isEmpty()) {
-                icon = "group";
-            }
+        if (ownedDocuments != null) {
+            for (Doc document : ownedDocuments) {
+                DocumentIcon listIcon = DocumentIcon.PERSON;
+                List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(document);
 
-            models.add(new DocumentListModel(icon, doc, history, collaborators));
-        }
+                if (collaborators != null && !collaborators.isEmpty()) {
+                    listIcon = DocumentIcon.GROUP;
+                }
 
-        if (collaboratorDocs != null) {
-            for (Doc collabDoc : collaboratorDocs) {
-                List<History> history = historyDao.getFullHistoryForDoc(collabDoc);
-                List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(collabDoc);
-
-                models.add(new DocumentListModel("group", collabDoc, history, collaborators));
+                documentEntities.add(new DocumentListEntity(listIcon, document, collaborators));
             }
         }
 
-        return Response.ok().entity(models).build();
+        if (collaboratorDocuments != null) {
+            for (Doc collaboratedDocument : collaboratorDocuments) {
+                List<Collaborator> collaborators = collaboratorDao.getCollaboratorsForDoc(collaboratedDocument);
+
+                documentEntities.add(new DocumentListEntity(DocumentIcon.GROUP, collaboratedDocument, collaborators));
+            }
+        }
+
+        return new DocumentListResponse(documentEntities, "Documents loaded successfully").buildResponse();
     }
 
     @PATCH
@@ -221,27 +233,18 @@ public class DocumentService implements RestService {
     @NotNull
     public Response transferOwnership(@NotNull DocumentTransferModel transferModel) {
         if (!sessionUtil.isLoggedIn()) {
-            return new Unauthorized("You have to login to be able to transfer an ownership").buildResponse();
+            return new Unauthorized("You have to login to be able to transfer an ownership.").buildResponse();
         }
 
-        User currentUser = sessionUtil.getUser();
+        final ValidationResult transferOwnershipCheck = documentTransferValidation.validate(transferModel);
+        if (transferOwnershipCheck.isInvalid()) {
+            return transferOwnershipCheck.buildResponse();
+        }
 
-        int documentId = transferModel.getDocumentId();
         String newOwnerName = transferModel.getNewOwnerName();
 
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest("Document %d does not exist", documentId).buildResponse();
-        }
-
-        if (!currentUser.equals(document.getRepo().getOwner())) {
-            return new BadRequest("You are unauthorized. Only the owner of this document can transfer his ownership.").buildResponse();
-        }
-
-        User newOwner = userDao.getUserByName(newOwnerName);
-        if (newOwner == null) {
-            return new BadRequest("User '%s' does not exist", newOwnerName).buildResponse();
-        }
+        Doc document = documentTransferValidation.getFoundDocument();
+        User newOwner = documentTransferValidation.getNewOwner();
 
         Repo newRepo = repoDao.getRepo(newOwner);
 

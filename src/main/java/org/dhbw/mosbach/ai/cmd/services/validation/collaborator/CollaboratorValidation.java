@@ -4,7 +4,7 @@ import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 
 import javax.enterprise.context.RequestScoped;
@@ -40,16 +40,10 @@ public class CollaboratorValidation {
 
     public ValidationResult checkUserEqualsCollaborator(User currentUser, Collaborator collaborator) {
         if (currentUser.getId() != collaborator.getUser().getId()) {
-            return ValidationResult.response(new BadRequest("Current user is not collaborator"));
+            return ValidationResult.response(new BadRequest("Current user is not this collaborator"));
         }
 
-        return ValidationResult.success("Current user is the ");
-    }
-
-    public Collaborator getFoundCollaborator() {
-        Collaborator collaborator = foundCollaborator;
-        foundCollaborator = null;
-        return collaborator;
+        return ValidationResult.success("Current user is equal to this collaborator");
     }
 
     public ValidationResult checkCollaboratorBelongsToDocument(Collaborator collaborator, int documentId) {
@@ -57,6 +51,12 @@ public class CollaboratorValidation {
             return ValidationResult.response(new BadRequest("Collaborator '%s' does not belong to document '%d'", collaborator.getUser().getName(), documentId));
         }
 
-        return ValidationResult.success("");
+        return ValidationResult.success("Collaborator '%s' is attached to document '%d'", collaborator.getUser().getName(), documentId);
+    }
+
+    public Collaborator getFoundCollaborator() {
+        Collaborator collaborator = foundCollaborator;
+        foundCollaborator = null;
+        return collaborator;
     }
 }

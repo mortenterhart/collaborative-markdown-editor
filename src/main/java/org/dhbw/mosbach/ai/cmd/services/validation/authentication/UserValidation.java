@@ -2,7 +2,7 @@ package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.slf4j.Logger;
@@ -19,19 +19,16 @@ public class UserValidation {
     @Inject
     private UserDao userDao;
 
-    @Inject
-    private Hashing hashing;
-
     private User foundUser;
 
     public ValidationResult checkUserExists(String username) {
         User user = userDao.getUserByName(username);
         if (user == null) {
-            return ValidationResult.response(new BadRequest("Username '%s' already exists", username));
+            return ValidationResult.response(new BadRequest("User '%s' does not exist", username));
         }
 
         foundUser = user;
-        return ValidationResult.success("Username does not exist yet");
+        return ValidationResult.success("Username '%s' already exists", username);
     }
 
     public User getFoundUser() {

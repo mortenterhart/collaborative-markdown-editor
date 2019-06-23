@@ -272,7 +272,7 @@
                     {
                         withCredentials: true
                     }).then((response) => {
-                        this.docs = response.data;
+                        this.docs = response.data.documents;
                         if (setCurrentDocument)
                             this.currentDocument = this.docs.find(x => x.document.id === this.currentDocument.document.id)
                     }).catch((error) => {

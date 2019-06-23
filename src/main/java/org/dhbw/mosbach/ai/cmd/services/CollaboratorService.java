@@ -1,12 +1,11 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
-import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.Success;
-import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
@@ -79,7 +78,7 @@ public class CollaboratorService implements RestService {
 
         collaboratorDao.createCollaborator(newCollaborator);
 
-        return new Success("The collaborator '%s' was successfully added to your document", collaboratorUsername).buildResponse();
+        return new Success("The collaborator '%s' was successfully added to your document.", collaboratorUsername).buildResponse();
     }
 
     @DELETE

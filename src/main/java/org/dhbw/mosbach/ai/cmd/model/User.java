@@ -1,9 +1,21 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 import org.hibernate.annotations.NaturalId;
 
-import javax.json.bind.annotation.JsonbTransient;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
@@ -25,16 +37,20 @@ public class User {
     private String name;
 
     @Column(name = "PASSWORD")
-    @JsonbTransient
+    @JsonIgnore
     private String password;
 
     @Column(name = "MAIL")
     private String mail;
 
     @Column(name = "CTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @Column(name = "UTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime utime;
 
     @PrePersist

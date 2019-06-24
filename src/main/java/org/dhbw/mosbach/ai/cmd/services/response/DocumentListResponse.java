@@ -1,15 +1,13 @@
 package org.dhbw.mosbach.ai.cmd.services.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
 public class DocumentListResponse extends Success {
 
-    @XmlElement(name = ResponseParameters.DOCUMENT_LIST, required = true)
+    @JsonProperty(value = ResponseParameters.DOCUMENT_LIST, required = true)
     private List<DocumentListEntity> documents;
 
     public DocumentListResponse(List<DocumentListEntity> documents, String message) {

@@ -1,14 +1,11 @@
 package org.dhbw.mosbach.ai.cmd.services.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dhbw.mosbach.ai.cmd.model.User;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class LoginUserResponse extends Success {
 
-    @XmlElement(name = ResponseParameters.USER, required = true)
+    @JsonProperty(value = ResponseParameters.USER, required = true)
     private User user;
 
     public LoginUserResponse(User user, String message) {

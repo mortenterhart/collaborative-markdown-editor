@@ -1,9 +1,24 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 
-import javax.json.bind.annotation.JsonbTransient;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
@@ -26,7 +41,7 @@ public class Collaborator {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FK_DOCS")
-    @JsonbTransient
+    @JsonIgnore
     private Doc doc;
 
     @Enumerated(EnumType.STRING)
@@ -34,6 +49,8 @@ public class Collaborator {
     private HasAccess hasAccess;
 
     @Column(name = "CTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @PrePersist
@@ -131,7 +148,7 @@ public class Collaborator {
                 .append("\tid: " + this.id + "\n")
                 .append("\tUser: " + this.user.getName() + "\n")
                 .append("\tDocument: " + this.doc.getId() + "\n")
-                .append("\tHas access: " + this.hasAccess.getHasAccess() + "\n")
+                .append("\tHas access: " + this.hasAccess.getHasAccessString() + "\n")
                 .append("\tCreated: " + this.ctime + "\n")
                 .toString();
     }

@@ -6,6 +6,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Utility to hash passwords using the BCrypt algorithm
@@ -21,7 +22,7 @@ public class Hashing {
      * @return The hashed password
      */
     public String hashPassword(String password) {
-        return (password != null && !password.isEmpty()) ?
+        return password != null && !password.isEmpty() ?
                 BCrypt.hashpw(password, BCrypt.gensalt(12)) : null;
     }
 
@@ -33,9 +34,9 @@ public class Hashing {
      * @return True, if the password matches the hashed password, false otherwise
      */
     public boolean checkPassword(String password, String hash) {
-        return (password != null && !password.isEmpty()) &&
-                (hash != null && !hash.isEmpty()) ?
-                BCrypt.checkpw(password, hash) : false;
+        return password != null && !password.isEmpty() &&
+                hash != null && !hash.isEmpty() &&
+                BCrypt.checkpw(password, hash);
     }
 
     /**
@@ -48,15 +49,16 @@ public class Hashing {
      * given String is null or empty it returns the SHA-1 hash for an empty input
      */
     public String hashDocContent(String content) {
-
         try {
             MessageDigest md = MessageDigest.getInstance(CmdConfig.HASH_DOC_CONTENT);
 
-            if (content != null && !content.isEmpty())
+            if (content != null && !content.isEmpty()) {
                 return new BigInteger(1, md.digest(content.getBytes(StandardCharsets.UTF_8))).toString(16);
-            else
-                return "da39a3ee5e6b4b0d3255bfef95601890afd80709"; //SHA-1 hash for input of ""
-        } catch (Exception e) {
+            } else {
+                // SHA-1 hash for input of ""
+                return "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+            }
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }

@@ -1,8 +1,5 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.collaborator;
 
-import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
-import org.dhbw.mosbach.ai.cmd.db.DocDao;
-import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
@@ -22,15 +19,6 @@ import javax.validation.constraints.NotNull;
 
 @RequestScoped
 public class CollaboratorInsertionValidation implements ModelValidation<CollaboratorInsertionModel> {
-
-    @Inject
-    private DocDao docDao;
-
-    @Inject
-    private CollaboratorDao collaboratorDao;
-
-    @Inject
-    private UserDao userDao;
 
     @Inject
     private BasicFieldValidation basicFieldValidation;

@@ -1,7 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
 /**
- * The {@code RestService} is an abstraction of a REST compliant endpoint and
+ * The {@code RestEndpoint} is an abstraction of a REST compliant endpoint and
  * facilitates user interactions with the backend of the application.
  *
  * Implementations of this interface can provide several services which are
@@ -24,5 +24,5 @@ package org.dhbw.mosbach.ai.cmd.services;
  * @see DocumentService
  * @see org.dhbw.mosbach.ai.cmd.session.SessionUtil
  */
-public interface RestService {
+public interface RestEndpoint {
 }

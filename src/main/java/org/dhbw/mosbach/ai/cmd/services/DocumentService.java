@@ -61,7 +61,7 @@ import java.util.ListIterator;
  *
  * @author 6694964
  * @version 1.3
- * @see RestService
+ * @see RestEndpoint
  * @see DocumentValidation
  * @see DocumentInsertionValidation
  * @see DocumentRemovalValidation
@@ -69,7 +69,7 @@ import java.util.ListIterator;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService extends RootService implements RestService {
+public class DocumentService extends RootService implements RestEndpoint {
 
     /**
      * Private logger instance for logging important service operations

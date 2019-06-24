@@ -56,14 +56,14 @@ import javax.ws.rs.core.Response;
  *
  * @author 6694964
  * @version 1.3
- * @see RestService
+ * @see RestEndpoint
  * @see CollaboratorValidation
  * @see CollaboratorInsertionValidation
  * @see CollaboratorRemovalValidation
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
-public class CollaboratorService extends RootService implements RestService {
+public class CollaboratorService extends RootService implements RestEndpoint {
 
     /**
      * Private logger instance for logging service operations

@@ -3,11 +3,11 @@ package org.dhbw.mosbach.ai.cmd.services.validation.collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
-import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentValidation;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 
 import javax.enterprise.context.RequestScoped;

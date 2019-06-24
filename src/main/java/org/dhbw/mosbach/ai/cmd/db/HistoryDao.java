@@ -59,9 +59,9 @@ public class HistoryDao {
 
         try {
             history = (List<History>) this.em
-                .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
-                .setParameter("doc_id", d.getId())
-                .getResultList();
+                    .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                    .setParameter("doc_id", d.getId())
+                    .getResultList();
             if (history == null || history.isEmpty()) {
                 return null;
             }
@@ -85,9 +85,9 @@ public class HistoryDao {
 
         try {
             fullHistory = (List<History>) this.em
-                .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
-                .setParameter("doc_id", d.getId())
-                .getResultList();
+                    .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                    .setParameter("doc_id", d.getId())
+                    .getResultList();
         } catch (NoResultException e) {
             return null;
         }

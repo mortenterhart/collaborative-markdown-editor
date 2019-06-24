@@ -13,11 +13,7 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 import javax.inject.Inject;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Collections;
@@ -129,8 +125,8 @@ public class Endpoint {
 
                     int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
 
-                    Message userLeftdMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
-                    messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
+                    Message userLeftMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
+                    messageBroker.publishToOtherUsers(userLeftMsg, docs.get(docId), session);
 
                     break;
                 }

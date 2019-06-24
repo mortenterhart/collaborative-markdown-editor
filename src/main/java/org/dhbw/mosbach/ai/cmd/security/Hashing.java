@@ -1,11 +1,11 @@
 package org.dhbw.mosbach.ai.cmd.security;
 
+import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-
-import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
-import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * Utility to hash passwords using the BCrypt algorithm
@@ -22,7 +22,7 @@ public class Hashing {
      */
     public String hashPassword(String password) {
         return (password != null && !password.isEmpty()) ?
-            BCrypt.hashpw(password, BCrypt.gensalt(12)) : null;
+                BCrypt.hashpw(password, BCrypt.gensalt(12)) : null;
     }
 
     /**
@@ -34,30 +34,31 @@ public class Hashing {
      */
     public boolean checkPassword(String password, String hash) {
         return (password != null && !password.isEmpty()) &&
-               (hash != null && !hash.isEmpty()) ?
-            BCrypt.checkpw(password, hash) : false;
+                (hash != null && !hash.isEmpty()) ?
+                BCrypt.checkpw(password, hash) : false;
     }
-    
+
     /**
      * Hash the content of a doc for comparison purposes.
      * SHA-1 is used since it does not have to be cryptographically secure
      * but instead needs to be quite fast.
+     *
      * @param content Given content
-     * @return A hex representation of the SHA-1 hash of the content, if the 
+     * @return A hex representation of the SHA-1 hash of the content, if the
      * given String is null or empty it returns the SHA-1 hash for an empty input
      */
     public String hashDocContent(String content) {
-    	
-    	try {
-    		MessageDigest md = MessageDigest.getInstance(CmdConfig.HASH_DOC_CONTENT);
 
-    		if(content != null && !content.isEmpty())
-    			return new BigInteger(1, md.digest(content.getBytes(StandardCharsets.UTF_8))).toString(16);
-    		else
-    			return "da39a3ee5e6b4b0d3255bfef95601890afd80709"; //SHA-1 hash for input of ""
-    	} catch(Exception e) {
-    		e.printStackTrace();
-    		return null;
-    	}
+        try {
+            MessageDigest md = MessageDigest.getInstance(CmdConfig.HASH_DOC_CONTENT);
+
+            if (content != null && !content.isEmpty())
+                return new BigInteger(1, md.digest(content.getBytes(StandardCharsets.UTF_8))).toString(16);
+            else
+                return "da39a3ee5e6b4b0d3255bfef95601890afd80709"; //SHA-1 hash for input of ""
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

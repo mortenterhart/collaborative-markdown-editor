@@ -2,8 +2,8 @@ package org.dhbw.mosbach.ai.cmd.services.validation.document;
 
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;

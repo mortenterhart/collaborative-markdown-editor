@@ -1,23 +1,18 @@
-
 const state = {
-    user: {id: 0, name: "", mail: ""},
+    user: { id: 0, name: "", mail: "" },
     showLoginDialog: false,
     isLoggedIn: false,
 };
 
-const getters = {
+const getters = {};
 
-};
-
-const actions = {
-
-};
+const actions = {};
 
 const mutations = {
-    showLoginDialog (state) {
+    showLoginDialog(state) {
         state.showLoginDialog = true;
     },
-    hideLoginDialog (state) {
+    hideLoginDialog(state) {
         state.showLoginDialog = false;
     },
     setIsLoggedIn: (state, newValue) => {

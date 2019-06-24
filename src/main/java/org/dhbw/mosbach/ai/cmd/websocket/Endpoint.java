@@ -129,8 +129,8 @@ public class Endpoint {
 
                     int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
 
-                    Message userLeftdMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
-                    messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
+                    Message userLeftMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
+                    messageBroker.publishToOtherUsers(userLeftMsg, docs.get(docId), session);
 
                     break;
                 }

@@ -169,10 +169,6 @@
         mounted() {
             this.$emit('contentWasChanged', this.content);
 
-            this.$on('webSocketEvent', (eventData) => {
-                this.handleWebSocketEvents(eventData);
-            });
-
             let vm = this;
             this.simplemde.codemirror.on("change", function(editor, changeObj) {
                 if (!changeObj.origin || changeObj.origin === "setValue") {

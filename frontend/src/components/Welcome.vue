@@ -6,7 +6,7 @@
                     <h1 class="white--text mb-2 display-1 text-xs-center"
                         style="font-weight: 900; text-shadow: 3px 2px #000000">The Markdown Editor you share with your friends</h1>
                     <div class="white--text subheading mb-3 text-xs-center"
-                         style="font-weight: 900; text-shadow: 2px 2px #000000">Unlesh your creativity without
+                         style="font-weight: 900; text-shadow: 2px 2px #000000">Unleash your creativity without
                         limitations
                     </div>
                     <template v-if="!this.$store.state.login.isLoggedIn">
@@ -19,18 +19,13 @@
         </section>
 
         <section>
-            <v-layout
-                    column
-                    wrap
-                    class="my-5"
-                    align-center
-            >
+            <v-layout column wrap class="my-5" align-center>
                 <v-flex xs12 sm4 class="my-3">
                     <div class="text-xs-center">
                         <h2 class="headline">The best way to share your amazing writing</h2>
                         <span class="subheading">
-                No more restrictions, no more limits
-              </span>
+                            No more restrictions, no more limits
+                        </span>
                     </div>
                 </v-flex>
                 <v-flex xs12>
@@ -132,7 +127,7 @@
             <v-container>
                 <v-layout>
                     <v-flex xs12 class="text-xs-center">
-                        <img height="200px" :src="imageLink.logo">
+                        <img alt="Welcome Logo" height="200px" :src="imageLink.logo"/>
                     </v-flex>
                 </v-layout>
             </v-container>

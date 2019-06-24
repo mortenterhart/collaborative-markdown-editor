@@ -1,6 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 
 import javax.persistence.Column;
@@ -45,6 +49,8 @@ public class Collaborator {
     private HasAccess hasAccess;
 
     @Column(name = "CTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @PrePersist

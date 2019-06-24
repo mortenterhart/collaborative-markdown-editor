@@ -1,6 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,9 +41,13 @@ public class Doc {
     private String content;
 
     @Column(name = "CTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @Column(name = "UTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime utime;
 
     @ManyToOne(fetch = FetchType.EAGER)

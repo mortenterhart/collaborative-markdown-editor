@@ -10,7 +10,7 @@ import java.util.List;
 public class DocumentListEntity {
 
     @JsonProperty(value = ResponseParameters.DOCUMENT_ICON, required = true)
-    private String icon;
+    private DocumentIcon icon;
 
     @JsonProperty(value = ResponseParameters.DOCUMENT, required = true)
     private Doc document;
@@ -19,12 +19,12 @@ public class DocumentListEntity {
     private List<Collaborator> collaborators;
 
     public DocumentListEntity(DocumentIcon icon, Doc document, List<Collaborator> collaborators) {
-        this.icon = icon.getIdentifier();
+        this.icon = icon;
         this.document = document;
         this.collaborators = collaborators;
     }
 
-    public String getIcon() {
+    public DocumentIcon getIcon() {
         return icon;
     }
 

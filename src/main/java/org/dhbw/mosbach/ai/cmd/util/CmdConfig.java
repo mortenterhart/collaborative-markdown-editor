@@ -1,5 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.util;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * Configuration for certain globally reused variables
  *
@@ -36,4 +38,9 @@ public abstract class CmdConfig {
      * Hashing algorithm for the doc content and history database table
      */
     public static final String HASH_DOC_CONTENT = "SHA-1";
+
+    /**
+     * Date Formatter used to format dates in date fields of API responses
+     */
+    public static final DateTimeFormatter API_DATE_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 }

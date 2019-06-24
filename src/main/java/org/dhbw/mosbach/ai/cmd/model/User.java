@@ -1,6 +1,11 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.Column;
@@ -39,11 +44,13 @@ public class User {
     private String mail;
 
     @Column(name = "CTIME")
-    @JsonIgnore
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @Column(name = "UTIME")
-    @JsonIgnore
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime utime;
 
     @PrePersist

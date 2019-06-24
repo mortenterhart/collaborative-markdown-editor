@@ -1,8 +1,7 @@
 package org.dhbw.mosbach.ai.cmd.services.response.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum DocumentIcon {
 
     PERSON("person"),
@@ -19,6 +18,7 @@ public enum DocumentIcon {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return identifier;
     }

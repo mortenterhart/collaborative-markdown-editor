@@ -1,11 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.document;
 
-import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
-import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -16,12 +14,6 @@ public class DocumentAccessValidation implements ModelValidation<DocumentAccessM
 
     @Inject
     private DocumentValidation documentValidation;
-
-    @Inject
-    private CollaboratorDao collaboratorDao;
-
-    @Inject
-    private SessionUtil sessionUtil;
 
     private Doc foundDocument;
 

@@ -25,6 +25,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
+ * The {@code AuthenticationService} provides a RESTful endpoint
+ *
  * @author 6694964
  */
 

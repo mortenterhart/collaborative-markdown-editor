@@ -63,7 +63,7 @@ import javax.ws.rs.core.Response;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
-public class CollaboratorService implements RestService {
+public class CollaboratorService extends RootService implements RestService {
 
     /**
      * Private logger instance for logging service operations

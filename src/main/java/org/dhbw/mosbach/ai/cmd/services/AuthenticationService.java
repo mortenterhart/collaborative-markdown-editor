@@ -56,7 +56,7 @@ import javax.ws.rs.core.Response;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_AUTHENTICATION)
-public class AuthenticationService implements RestService {
+public class AuthenticationService extends RootService implements RestService {
 
     /**
      * Private instance of logging engine

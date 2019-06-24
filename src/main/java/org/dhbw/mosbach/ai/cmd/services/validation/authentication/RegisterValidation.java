@@ -67,11 +67,11 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
         }
 
         if (!USERNAME_FORMAT.matcher(username).matches()) {
-            return ValidationResult.response(new BadRequest("Username has invalid formatting. Allowed are: A-Z a-z 0-9 Space _ -"));
+            return ValidationResult.response(new BadRequest("Username has invalid formatting. Allowed characters include: A-Z a-z 0-9 Space _ -"));
         }
 
         final ValidationResult userExistenceCheck = userValidation.checkUserExists(username);
-        if (userExistenceCheck.isInvalid()) {
+        if (userExistenceCheck.isValid()) {
             return ValidationResult.response(new BadRequest("Username '%s' is already registered", username));
         }
 

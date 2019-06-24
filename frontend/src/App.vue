@@ -86,13 +86,13 @@
                     {
                         withCredentials: true
                     }
-                )
+                );
                 this.$router.push('/');
                 this.$store.commit('login/setIsLoggedIn', false);
                 this.$snotify.success(
                     'You\'re getting logged out',
                     'Success'
-                )
+                );
             }
         }
     }

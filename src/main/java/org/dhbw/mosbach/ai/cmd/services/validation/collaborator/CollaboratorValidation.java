@@ -9,6 +9,7 @@ import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 @RequestScoped
 public class CollaboratorValidation {
@@ -18,6 +19,7 @@ public class CollaboratorValidation {
 
     private Collaborator foundCollaborator;
 
+    @NotNull
     public ValidationResult checkCollaboratorExists(User user, Doc document) {
         Collaborator collaborator = collaboratorDao.getCollaborator(user, document);
         if (collaborator == null) {
@@ -28,6 +30,7 @@ public class CollaboratorValidation {
         return ValidationResult.success("Collaborator '%s' exists for document '%d'.", user.getName(), document.getId());
     }
 
+    @NotNull
     public ValidationResult checkCollaboratorExists(int collaboratorId) {
         Collaborator collaborator = collaboratorDao.getCollaborator(collaboratorId);
         if (collaborator == null) {
@@ -38,6 +41,7 @@ public class CollaboratorValidation {
         return ValidationResult.success("Collaborator '%d' exists.", collaboratorId);
     }
 
+    @NotNull
     public ValidationResult checkUserEqualsCollaborator(User currentUser, Collaborator collaborator) {
         if (currentUser.getId() != collaborator.getUser().getId()) {
             return ValidationResult.response(new BadRequest("Current user is not this collaborator"));
@@ -46,6 +50,7 @@ public class CollaboratorValidation {
         return ValidationResult.success("Current user is equal to this collaborator");
     }
 
+    @NotNull
     public ValidationResult checkCollaboratorBelongsToDocument(Collaborator collaborator, int documentId) {
         if (documentId != collaborator.getDoc().getId()) {
             return ValidationResult.response(new BadRequest("Collaborator '%s' does not belong to document '%d'", collaborator.getUser().getName(), documentId));

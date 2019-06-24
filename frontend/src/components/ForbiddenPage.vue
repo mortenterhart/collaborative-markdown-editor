@@ -7,7 +7,7 @@
 <script>
     export default {
         name: "ForbiddenPage"
-    }
+    };
 </script>
 
 <style scoped>

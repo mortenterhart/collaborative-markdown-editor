@@ -43,7 +43,7 @@ public class UserDao {
 
         repoDao.createRepo(repo);
 
-        log.debug("Created a new user in database");
+        log.debug("Created new user '{}' in database", u.getName());
     }
 
     /**

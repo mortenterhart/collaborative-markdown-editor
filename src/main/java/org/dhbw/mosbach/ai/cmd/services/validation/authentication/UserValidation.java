@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 @RequestScoped
 public class UserValidation {
@@ -21,6 +22,7 @@ public class UserValidation {
 
     private User foundUser;
 
+    @NotNull
     public ValidationResult checkUserExists(String username) {
         User user = userDao.getUserByName(username);
         if (user == null) {

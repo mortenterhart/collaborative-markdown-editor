@@ -15,16 +15,16 @@ const actions = {
 
 const mutations = {
     showLoginDialog (state) {
-        state.showLoginDialog = true
+        state.showLoginDialog = true;
     },
     hideLoginDialog (state) {
-        state.showLoginDialog = false
+        state.showLoginDialog = false;
     },
     setIsLoggedIn: (state, newValue) => {
-        state.isLoggedIn = newValue
+        state.isLoggedIn = newValue;
     },
     setUser: (state, newValue) => {
-        state.user = newValue
+        state.user = newValue;
     }
 };
 
@@ -34,4 +34,4 @@ export default {
     getters,
     actions,
     mutations
-}
+};

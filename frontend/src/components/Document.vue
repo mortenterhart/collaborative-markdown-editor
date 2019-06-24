@@ -79,7 +79,7 @@
             }
         },
         beforeRouteEnter(to, from, next) {
-            axios.post('/document/hasAccess',
+            axios.post(location.origin + location.pathname.replace(/\/?$/, "") + '/api/document/hasAccess',
                 {
                     documentId: Number(to.params.id)
                 },
@@ -93,7 +93,7 @@
             });
         },
         beforeRouteUpdate(to, from, next) {
-            axios.post('/document/hasAccess',
+            axios.post(location.origin + location.pathname.replace(/\/?$/, "") + '/api/document/hasAccess',
                 {
                     documentId: Number(to.params.id)
                 },

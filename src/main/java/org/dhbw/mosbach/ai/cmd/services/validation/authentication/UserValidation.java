@@ -3,7 +3,6 @@ package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

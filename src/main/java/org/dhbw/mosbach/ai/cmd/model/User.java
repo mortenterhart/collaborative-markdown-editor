@@ -3,14 +3,7 @@ package org.dhbw.mosbach.ai.cmd.model;
 import org.hibernate.annotations.NaturalId;
 
 import javax.json.bind.annotation.JsonbTransient;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -43,16 +36,16 @@ public class User {
 
     @Column(name = "UTIME")
     private LocalDateTime utime;
-    
+
     @PrePersist
     private void onInsert() {
-    	this.ctime = LocalDateTime.now();
-    	this.utime = this.ctime;
+        this.ctime = LocalDateTime.now();
+        this.utime = this.ctime;
     }
-    
+
     @PreUpdate
     private void onUpdate() {
-    	this.utime = LocalDateTime.now();
+        this.utime = LocalDateTime.now();
     }
 
     public int getId() {
@@ -104,67 +97,67 @@ public class User {
     }
 
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((ctime == null) ? 0 : ctime.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((mail == null) ? 0 : mail.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((utime == null) ? 0 : utime.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ctime == null) ? 0 : ctime.hashCode());
+        result = prime * result + id;
+        result = prime * result + ((mail == null) ? 0 : mail.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((utime == null) ? 0 : utime.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (ctime == null) {
-			if (other.ctime != null)
-				return false;
-		} else if (!ctime.equals(other.ctime))
-			return false;
-		if (id != other.id)
-			return false;
-		if (mail == null) {
-			if (other.mail != null)
-				return false;
-		} else if (!mail.equals(other.mail))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		if (utime == null) {
-			if (other.utime != null)
-				return false;
-		} else if (!utime.equals(other.utime))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        if (ctime == null) {
+            if (other.ctime != null)
+                return false;
+        } else if (!ctime.equals(other.ctime))
+            return false;
+        if (id != other.id)
+            return false;
+        if (mail == null) {
+            if (other.mail != null)
+                return false;
+        } else if (!mail.equals(other.mail))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (password == null) {
+            if (other.password != null)
+                return false;
+        } else if (!password.equals(other.password))
+            return false;
+        if (utime == null) {
+            if (other.utime != null)
+                return false;
+        } else if (!utime.equals(other.utime))
+            return false;
+        return true;
+    }
 
-	@Override
+    @Override
     public String toString() {
         return new StringBuilder()
-            .append("User: \n")
-            .append("\tid: " + this.id + "\n")
-            .append("\tName: " + this.name + "\n")
-            .append("\tHash: " + this.password + "\n")
-            .append("\tMAIL: " + this.mail + "\n")
-            .append("\tCreated: " + this.ctime + "\n")
-            .append("\tLast updated: " + this.utime + "\n")
-            .toString();
+                .append("User: \n")
+                .append("\tid: " + this.id + "\n")
+                .append("\tName: " + this.name + "\n")
+                .append("\tHash: " + this.password + "\n")
+                .append("\tMAIL: " + this.mail + "\n")
+                .append("\tCreated: " + this.ctime + "\n")
+                .append("\tLast updated: " + this.utime + "\n")
+                .toString();
     }
 }

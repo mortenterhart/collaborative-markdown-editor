@@ -2,14 +2,14 @@ package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.services.response.Success;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
 import org.dhbw.mosbach.ai.cmd.services.response.LoginUserResponse;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.authentication.LoginValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.authentication.RegisterValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +25,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
- *
  * @author 6694964
  */
 
@@ -59,7 +57,7 @@ public class AuthenticationService implements RestService {
     public Response doLogin(@NotNull LoginModel loginModel) {
         final ValidationResult loginCheck = loginValidation.validate(loginModel);
         if (loginCheck.isInvalid()) {
-            return loginCheck .buildResponse();
+            return loginCheck.buildResponse();
         }
 
         String username = loginModel.getUsername();

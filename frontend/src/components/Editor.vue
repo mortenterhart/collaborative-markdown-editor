@@ -27,7 +27,7 @@
             markdownEditor
         },
         computed: {
-            simplemde () {
+            simplemde() {
                 return this.$refs.markdownEditor.simplemde;
             }
         },
@@ -177,12 +177,20 @@
 
                 const deleteMessage = vm.buildMessageStringFromArray(changeObj.removed);
                 if (deleteMessage.length > 0) {
-                    vm.contentChanges = [...vm.contentChanges, {type: 'Delete', msg: deleteMessage, pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)}];
+                    vm.contentChanges = [...vm.contentChanges, {
+                        type: 'Delete',
+                        msg: deleteMessage,
+                        pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)
+                    }];
                 }
 
                 const insertMessage = vm.buildMessageStringFromArray(changeObj.text);
                 if (insertMessage.length > 0) {
-                    vm.contentChanges = [...vm.contentChanges, {type: 'Insert', msg: insertMessage, pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)}];
+                    vm.contentChanges = [...vm.contentChanges, {
+                        type: 'Insert',
+                        msg: insertMessage,
+                        pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)
+                    }];
                 }
 
                 vm.sendContentDiffAfterTyping(vm);
@@ -195,7 +203,7 @@
 <style>
     @import '~simplemde/dist/simplemde.min.css';
 
-    .markdown-editor  {
+    .markdown-editor {
         height: 95% !important;
     }
 

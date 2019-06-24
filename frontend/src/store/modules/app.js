@@ -5,13 +5,9 @@ const state = {
     otherCollaborators: []
 };
 
-const getters = {
+const getters = {};
 
-};
-
-const actions = {
-
-};
+const actions = {};
 
 const mutations = {
     setTitle: (state, newValue) => {

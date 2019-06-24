@@ -1,7 +1,5 @@
 package org.dhbw.mosbach.ai.cmd.services.validation.document;
 
-import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
-import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentTransferModel;
@@ -17,7 +15,6 @@ import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @RequestScoped
 public class DocumentTransferValidation implements ModelValidation<DocumentTransferModel> {

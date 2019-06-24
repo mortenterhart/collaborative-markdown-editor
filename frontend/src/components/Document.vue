@@ -17,7 +17,8 @@
                     :alwaysScrollToBottom="alwaysScrollToBottom"
                     :messageStyling="messageStyling"/>
             <v-flex d-flex xs12 md6 pr-2>
-                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event" @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>
+                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"
+                     @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>
             </v-flex>
             <v-flex d-flex xs12 md6 pl-2>
                 <Preview :content="content"/>
@@ -110,7 +111,7 @@
             this.initWebSocketConnection();
 
             let vm = this;
-            window.addEventListener('unload', function () {
+            window.addEventListener('unload', function() {
                 if (vm.socket) {
                     vm.socket.close();
                 }
@@ -125,27 +126,40 @@
                 this.socket = new WebSocket(this.getWebSocketURL());
 
                 let vm = this;
-                this.socket.onmessage = function (event) {
+                this.socket.onmessage = function(event) {
                     const eventData = JSON.parse(event.data.toString());
                     vm.$refs.editor.handleEditorWebSocketEvents(eventData);
 
                     switch (eventData.messageType) {
                         case "ChatMessage": {
-                            vm.onMessageWasSent({author: String(eventData.userId), type: 'text', data: {text: eventData.msg}});
+                            vm.onMessageWasSent({
+                                author: String(eventData.userId),
+                                type: 'text',
+                                data: { text: eventData.msg }
+                            });
                             break;
                         }
                         case "UserJoined": {
-                            vm.onMessageWasSent({type: 'system', data: {text: JSON.parse(eventData.msg).name + ' joined the chat.'}});
+                            vm.onMessageWasSent({
+                                type: 'system',
+                                data: { text: JSON.parse(eventData.msg).name + ' joined the chat.' }
+                            });
                             break;
                         }
                         case "UserLeft": {
-                            vm.onMessageWasSent({type: 'system', data: {text: JSON.parse(eventData.msg).name + ' left the chat.'}});
+                            vm.onMessageWasSent({
+                                type: 'system',
+                                data: { text: JSON.parse(eventData.msg).name + ' left the chat.' }
+                            });
                             break;
                         }
                     }
                 };
 
-                this.onMessageWasSent({type: 'system', data: {text: 'Welcome to the chat! Try the !joke command if you\'re bored :)'}});
+                this.onMessageWasSent({
+                    type: 'system',
+                    data: { text: 'Welcome to the chat! Try the !joke command if you\'re bored :)' }
+                });
             },
             sendWebSocketMessage(msg) {
                 this.socket.send(msg);
@@ -181,23 +195,22 @@
                             {},
                             {}).then((response) => {
                             if (response.data.type === "single") {
-                                this.onMessageWasSent({type: 'system', data: {text: response.data.joke}});
-                            }
-                            else if (response.data.type === "twopart") {
-                                this.onMessageWasSent({type: 'system', data: {text: response.data.setup}});
+                                this.onMessageWasSent({ type: 'system', data: { text: response.data.joke } });
+                            } else if (response.data.type === "twopart") {
+                                this.onMessageWasSent({ type: 'system', data: { text: response.data.setup } });
                                 let vm = this;
                                 setTimeout(() => {
-                                    vm.onMessageWasSent({type: 'system', data: {text: response.data.delivery}});
+                                    vm.onMessageWasSent({ type: 'system', data: { text: response.data.delivery } });
                                 }, 2000)
                             }
                         }).catch(() => {
-                                this.onMessageWasSent({type: 'system', data: {text: 'Error retrieving a joke'}});
+                                this.onMessageWasSent({ type: 'system', data: { text: 'Error retrieving a joke' } });
                             }
                         );
                         break;
                     }
                     default: {
-                        this.onMessageWasSent({type: 'system', data: {text: `Command not found: !${command}`}});
+                        this.onMessageWasSent({ type: 'system', data: { text: `Command not found: !${command}` } });
                         break;
                     }
                 }

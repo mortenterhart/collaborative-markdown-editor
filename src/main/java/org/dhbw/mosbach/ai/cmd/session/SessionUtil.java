@@ -14,7 +14,8 @@ public class SessionUtil {
 
     private HttpServletRequest request;
 
-    public SessionUtil() {}
+    public SessionUtil() {
+    }
 
     @Inject
     public SessionUtil(@Context HttpServletRequest request) {

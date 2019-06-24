@@ -1,5 +1,8 @@
 package org.dhbw.mosbach.ai.cmd.services.response.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum DocumentIcon {
 
     PERSON("person"),

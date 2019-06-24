@@ -12,5 +12,5 @@ install:
     - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script:
-    - cd frontend/ && npm run test
-    - ./mnvw test -B
+    - cd frontend/ && npm run test && cd ..
+    - ./mvnw test -B

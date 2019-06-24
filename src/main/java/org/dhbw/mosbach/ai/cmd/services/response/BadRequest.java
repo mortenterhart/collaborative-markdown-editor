@@ -1,8 +1,10 @@
-package org.dhbw.mosbach.ai.cmd.response;
+package org.dhbw.mosbach.ai.cmd.services.response;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class BadRequest extends ResponseObject {
 
     public BadRequest(String message) {

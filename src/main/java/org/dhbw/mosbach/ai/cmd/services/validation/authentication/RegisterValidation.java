@@ -1,10 +1,13 @@
-package org.dhbw.mosbach.ai.cmd.services.validation;
+package org.dhbw.mosbach.ai.cmd.services.validation.authentication;
 
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.response.InternalServerError;
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
+import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
+import org.dhbw.mosbach.ai.cmd.services.payload.PayloadParameters;
 import org.dhbw.mosbach.ai.cmd.services.payload.RegisterModel;
+import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicFieldValidation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -29,26 +32,26 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
     private BasicFieldValidation fieldValidation = new BasicFieldValidation();
 
     @NotNull
-    public ValidationResult validate(RegisterModel model) {
+    public ValidationResult validate(@NotNull RegisterModel model) {
         if (model == null) {
-            return new ValidationResult(new InternalServerError("Register model is null"));
+            return ValidationResult.response(new InternalServerError("RegisterModel is null"));
         }
 
-        String username = model.getUsername();
-        String email = model.getEmail();
-        String password = model.getPassword();
+        final String username = model.getUsername();
+        final String email = model.getEmail();
+        final String password = model.getPassword();
 
-        ValidationResult usernameCheck = checkUsernameExists(username);
+        final ValidationResult usernameCheck = checkUsernameExists(username);
         if (usernameCheck.isInvalid()) {
             return usernameCheck;
         }
 
-        ValidationResult emailCheck = validateEmailSyntax(email);
+        final ValidationResult emailCheck = validateEmailSyntax(email);
         if (emailCheck.isInvalid()) {
             return emailCheck;
         }
 
-        ValidationResult passwordCheck = checkPasswordConstraints(password);
+        final ValidationResult passwordCheck = checkPasswordConstraints(password);
         if (passwordCheck.isInvalid()) {
             return passwordCheck;
         }
@@ -58,13 +61,13 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
 
     @NotNull
     private ValidationResult checkUsernameExists(String username) {
-        ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.USERNAME, username);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.USERNAME, username);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }
 
         if (userDao.getUserByName(username) != null) {
-            return new ValidationResult(new BadRequest("Username '%s' is already registered", username));
+            return ValidationResult.response(new BadRequest("Username '%s' is already registered", username));
         }
 
         return ValidationResult.success("Username is not registered yet");
@@ -72,38 +75,38 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
 
     @NotNull
     private ValidationResult checkPasswordConstraints(String password) {
-        ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.PASSWORD, password);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.PASSWORD, password);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }
 
         if (password.length() < MIN_PASSWORD_LENGTH) {
-            return new ValidationResult(new BadRequest("Password requires at least %d characters", MIN_PASSWORD_LENGTH));
+            return ValidationResult.response(new BadRequest("Password requires at least %d characters", MIN_PASSWORD_LENGTH));
         }
 
         if (!CONTAINS_UPPERCASE_LETTERS.matcher(password).matches()) {
-            return new ValidationResult(new BadRequest("Password must contain uppercase letters"));
+            return ValidationResult.response(new BadRequest("Password must contain uppercase letters"));
         }
 
         if (!CONTAINS_LOWERCASE_LETTERS.matcher(password).matches()) {
-            return new ValidationResult(new BadRequest("Password must contain lowercase letters"));
+            return ValidationResult.response(new BadRequest("Password must contain lowercase letters"));
         }
 
         if (!CONTAINS_DIGITS.matcher(password).matches()) {
-            return new ValidationResult(new BadRequest("Password must contain digits"));
+            return ValidationResult.response(new BadRequest("Password must contain digits"));
         }
 
         return ValidationResult.success("Password constraints match");
     }
 
     private ValidationResult validateEmailSyntax(String email) {
-        ValidationResult specifiedCheck = fieldValidation.checkSpecified(JsonParameters.EMAIL, email);
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.EMAIL, email);
         if (specifiedCheck.isInvalid()) {
             return specifiedCheck;
         }
 
         if (!VALID_EMAIL_FORMAT.matcher(email).matches()) {
-            return new ValidationResult(new BadRequest("Invalid email syntax"));
+            return ValidationResult.response(new BadRequest("Invalid email syntax"));
         }
 
         return ValidationResult.success("Email syntax is valid");

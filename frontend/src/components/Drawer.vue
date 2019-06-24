@@ -17,7 +17,7 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(doc, i) in docs">
-                    <v-hover>
+                    <v-hover v-bind:key="doc.document.id">
                         <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="{cursor: 'pointer', background: activeIndex === i || hover ? '#D2D2D2' : '#FFFFFF'}">
                             <v-list-tile-action>
                                 <v-icon>{{ doc.icon }}</v-icon>
@@ -48,7 +48,7 @@
                 </v-list-tile>
                 <v-divider/>
                 <template v-for="(collaborator, i) in currentDocument.collaborators">
-                    <v-hover>
+                    <v-hover v-bind:key="collaborator.id">
                         <v-list-tile v-bind:key="i" slot-scope="{ hover }" :class="`elevation-${hover ? 8 : 0}`" :style="`cursor: ${hover ? 'pointer' : 'default'}`">
                             <v-list-tile-action>
                                 <v-icon>person</v-icon>
@@ -154,7 +154,7 @@
                         },
                         withCredentials: true
                     }).then(() => {
-                        this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1)
+                        this.docs.splice(this.docs.findIndex(x => x.document.id === doc.document.id), 1);
                         this.$snotify.success(
                             'Document was removed',
                             'Success'
@@ -165,7 +165,7 @@
                             'Error'
                         );
                     }
-                )
+                );
             },
             removeCollaborator: function(index, collaboratorId) {
                 this.axios.delete('/collaborators/remove',
@@ -179,7 +179,7 @@
                         },
                         withCredentials: true
                     }).then(() => {
-                        this.currentDocument.collaborators.splice(index, 1)
+                        this.currentDocument.collaborators.splice(index, 1);
                         if (this.currentDocument.collaborators.length === 0) {
                             this.currentDocument.icon = "person"
                         }
@@ -220,7 +220,7 @@
                             'Collaborator was added',
                             'Success'
                         );
-                        this.fetchDocuments(true)
+                        this.fetchDocuments(true);
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
@@ -249,23 +249,23 @@
                         },
                         withCredentials: true
                     }).then(() => {
-                        this.transferOwnershipName = ''
-                        this.currentDocument.document.repo.owner.id = -1
+                        this.transferOwnershipName = '';
+                        this.currentDocument.document.repo.owner.id = -1;
                         this.$snotify.success(
                             'Ownership was transferred',
                             'Success'
                         );
-                        this.$router.push('/')
-                        this.showOverview = true
-                        this.showCollaborators = false
-                        this.fetchDocuments(false)
+                        this.$router.push('/');
+                        this.showOverview = true;
+                        this.showCollaborators = false;
+                        this.fetchDocuments(false);
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
                             'Error'
                         );
                     }
-                )
+                );
             },
             fetchDocuments: function(setCurrentDocument) {
                 this.axios.get('/document/all',
@@ -273,8 +273,9 @@
                         withCredentials: true
                     }).then((response) => {
                         this.docs = response.data.documents;
-                        if (setCurrentDocument)
-                            this.currentDocument = this.docs.find(x => x.document.id === this.currentDocument.document.id)
+                        if (setCurrentDocument) {
+                            this.currentDocument = this.docs.find(x => x.document.id === this.currentDocument.document.id);
+                        }
                     }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
@@ -284,17 +285,17 @@
                 );
             },
             openDocument: function(doc, index) {
-                this.activeIndex = index
-                this.$router.push(`/doc/${doc.id}`)
-                this.$store.commit('app/incEditorKey')
-                this.$store.commit('app/setCurrentDocument', doc)
-                this.$store.commit('app/setTitle', doc.name)
+                this.activeIndex = index;
+                this.$router.push(`/doc/${doc.id}`);
+                this.$store.commit('app/incEditorKey');
+                this.$store.commit('app/setCurrentDocument', doc);
+                this.$store.commit('app/setTitle', doc.name);
             }
         },
         beforeMount() {
             this.fetchDocuments(false);
         }
-    }
+    };
 </script>
 
 <style scoped>

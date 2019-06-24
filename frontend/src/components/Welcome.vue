@@ -137,9 +137,9 @@
             };
         },
         beforeMount() {
-            this.$store.commit('app/setTitle', 'Collaborative Markdown Editor')
+            this.$store.commit('app/setTitle', 'Collaborative Markdown Editor');
         }
-    }
+    };
 </script>
 
 <style scoped>

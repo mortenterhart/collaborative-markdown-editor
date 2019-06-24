@@ -25,6 +25,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
+ *
+ *
  * @author 6694964
  */
 
@@ -68,7 +70,7 @@ public class AuthenticationService implements RestService {
             log.debug("login: Created new session for user '{}'", username);
         }
 
-        log.debug("login: User '{}' logged in successfully", username);
+        log.info("login: User '{}' logged in successfully", username);
         return new LoginUserResponse(user, "Logged in successfully.").buildResponse();
     }
 
@@ -96,7 +98,7 @@ public class AuthenticationService implements RestService {
 
         userDao.createUser(newUser);
 
-        log.debug("register: User '{}' was registered successfully", username);
+        log.info("register: User '{}' was registered successfully", username);
         return new Success("Registration successful.").buildResponse();
     }
 
@@ -112,7 +114,7 @@ public class AuthenticationService implements RestService {
         User user = sessionUtil.getUser();
 
         if (sessionUtil.invalidateSession()) {
-            log.debug("logout: Session of user '{}' was invalidated", user.getName());
+            log.info("logout: Session of user '{}' was invalidated", user.getName());
         }
 
         return new Success("Successfully logged out.").buildResponse();

@@ -33,7 +33,7 @@ public class RepoDao {
     @Transactional
     public void createRepo(Repo repo) {
         this.em.persist(repo);
-        log.debug("Created a repo entry");
+        log.debug("Created repository for user '{}'", repo.getOwner().getName());
     }
 
     /**

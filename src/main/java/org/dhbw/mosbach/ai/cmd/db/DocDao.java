@@ -35,7 +35,7 @@ public class DocDao {
     @Transactional
     public void createDoc(Doc d) {
         this.em.persist(d);
-        log.debug("Created a new doc in database");
+        log.debug("Created new document '{}' in database", d.getName());
     }
 
     /**
@@ -114,6 +114,7 @@ public class DocDao {
      */
     @Transactional
     public int removeDoc(Doc d) {
+        log.debug("Removed document '{}' from database", d.getId());
         return this.em.createQuery("DELETE FROM Doc d WHERE d.id = :doc_id")
                       .setParameter("doc_id", d.getId())
                       .executeUpdate();
@@ -127,22 +128,23 @@ public class DocDao {
      */
     @Transactional
     public int updateDoc(Doc d) {
-        log.debug("Updated document: " + d.getId());
+        log.debug("Updated document '{}' with new content", d.getId());
         return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                          .setParameter("content", d.getContent())
-                          .setParameter("uuser", d.getUuser())
-                          .setParameter("id", d.getId())
-                          .executeUpdate();
+                      .setParameter("content", d.getContent())
+                      .setParameter("uuser", d.getUuser())
+                      .setParameter("id", d.getId())
+                      .executeUpdate();
     }
 
     /**
      * Transfer the ownership of a doc to another user
+     *
      * @param d Given doc
      * @return The number of updated rows
      */
     @Transactional
     public int transferRepo(Doc d) {
-        log.debug("Updated document: " + d.getId());
+        log.debug("Transferred ownership of document '{}' to user '{}'", d.getId(), d.getRepo().getOwner().getName());
         return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
                       .setParameter("repo", d.getRepo())
                       .setParameter("uuser", d.getUuser())

@@ -56,16 +56,10 @@ public class DocumentService implements RestService {
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     @Inject
-    private UserDao userDao;
-
-    @Inject
     private DocDao docDao;
 
     @Inject
     private RepoDao repoDao;
-
-    @Inject
-    private HistoryDao historyDao;
 
     @Inject
     private CollaboratorDao collaboratorDao;
@@ -116,6 +110,7 @@ public class DocumentService implements RestService {
         document.setName(documentName.trim());
 
         docDao.createDoc(document);
+        log.info("Document '{}' was created for user '{}'", documentName, currentUser.getName());
 
         return new Success("Document was created successfully").buildResponse();
     }

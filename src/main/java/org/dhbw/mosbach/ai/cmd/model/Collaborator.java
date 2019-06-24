@@ -148,7 +148,7 @@ public class Collaborator {
                 .append("\tid: " + this.id + "\n")
                 .append("\tUser: " + this.user.getName() + "\n")
                 .append("\tDocument: " + this.doc.getId() + "\n")
-                .append("\tHas access: " + this.hasAccess.getHasAccess() + "\n")
+                .append("\tHas access: " + this.hasAccess.getHasAccessString() + "\n")
                 .append("\tCreated: " + this.ctime + "\n")
                 .toString();
     }

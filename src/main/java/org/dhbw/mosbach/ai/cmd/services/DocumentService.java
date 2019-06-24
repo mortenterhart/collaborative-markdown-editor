@@ -265,11 +265,20 @@ public class DocumentService implements RestService {
      * the class {@link DocumentListEntity}.
      *
      * This service may probably return a large response with partly redundant information such as
+     * duplicated users in document creation users and repository owners. Therefore it is advised
+     * not to invoke this service too often in order to reduce overhead and performance decrease.
+     *
+     * The information provided in the response of this service are formatted according to some
+     * default constraints. Each date field such as creation or update times are formatted as
+     * ISO 8601 date strings. Unlike the enum used in the model, the {@code hasAccess} field of
+     * collaborators is supplied as boolean value. Sensitive information such as user passwords
+     * are omitted in the response as well as unused information like the document content.
      *
      * This operation can only be performed if the user is authenticated. An invocation without
      * valid session will result in {@code 401 Unauthorized}.
      *
-     * @return
+     * @return a {@code 200 OK} response with all documents if the user is authenticated, otherwise
+     * a {@code 401 Unauthorized} because the user needs to authenticate.
      */
     @GET
     @Path("/all")
@@ -311,6 +320,22 @@ public class DocumentService implements RestService {
         return new DocumentListResponse(documentEntities, "Documents loaded successfully").buildResponse();
     }
 
+    /**
+     * Transfers the ownership of a certain document to another user by requiring the document
+     * id and the name of the new owner. The validation includes checks for the existence of
+     * the document and the user designated by the supplied username. Furthermore, it is checked
+     * whether the requesting user is the current owner of the document as only he preserves the
+     * privileged right to transfer his ownership to another user. Also, he can only transfer
+     * the ownership to a user who is an active collaborator of the document.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param transferModel the request model containing the document id and the name of the
+     *                      new owner
+     * @return a {@code 200 OK} response if the ownership was transferred, otherwise a
+     * {@code 400 Bad Request} if the
+     */
     @PATCH
     @Path("/transferOwnership")
     @Consumes(MediaType.APPLICATION_JSON)

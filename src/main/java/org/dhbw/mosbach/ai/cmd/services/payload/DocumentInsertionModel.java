@@ -1,12 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@XmlRootElement
 public class DocumentInsertionModel implements Payload {
 
-    @XmlElement(name = PayloadParameters.DOCUMENT_NAME, required = true)
+    @JsonProperty(value = PayloadParameters.DOCUMENT_NAME, required = true)
     private String name;
 
     public String getName() {

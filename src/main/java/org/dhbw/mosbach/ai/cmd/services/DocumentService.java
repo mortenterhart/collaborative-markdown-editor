@@ -34,15 +34,52 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
+ * The {@code DocumentService} provides a REST compliant endpoint implementation
+ * for creation, manipulation and retrieval of documents. A document is a shared
+ * resource among multiple users which are able to edit the contents in the editor.
+ * The document has a modifiable state which is kept consistent between the users
+ * using the Websocket endpoint implementation in {@link org.dhbw.mosbach.ai.cmd.websocket.Endpoint}.
+ *
+ * All incoming requests are accurately validated by self-reliant validation functions
+ * residing in the package {@link org.dhbw.mosbach.ai.cmd.services.validation.document}
+ * and cause a corresponding response to be sent back to the client. Request and response
+ * payloads are serialized and deserialized using JAX-RS annotations and their implementations
+ * and are provided using special payload and response models. Based on the applied request
+ * and the service conditions, the endpoint may return one of the following status codes:
+ *
+ * <ul>
+ * <li>{@code 200 OK}: The request was processed successfully and the desired operation
+ * was done.</li>
+ * <li>{@code 400 Bad Request}: The request contained invalid fields or some conditions were
+ * not met. The operation was aborted.</li>
+ * <li>{@code 401 Unauthorized}: The client is not authorized to perform some operation
+ * because he is not authenticated. He has to login first before proceeding.</li>
+ * <li>{@code 403 Forbidden}: The client is not permitted to access a specific document.</li>
+ * </ul>
+ *
+ * Both request and response are provided as JSON formatted fields.
+ *
  * @author 6694964
+ * @version 1.3
+ * @see RestService
+ * @see DocumentValidation
+ * @see DocumentInsertionValidation
+ * @see DocumentRemovalValidation
+ * @see DocumentAccessValidation
  */
-
 @RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
 public class DocumentService implements RestService {
 
+    /**
+     * Private logger instance for logging important service operations
+     */
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
+    /*
+     * Injected fields for creation and manipulation of documents in the database
+     * and request validation
+     */
     @Inject
     private DocDao docDao;
 
@@ -51,9 +88,6 @@ public class DocumentService implements RestService {
 
     @Inject
     private CollaboratorDao collaboratorDao;
-
-    @Inject
-    private SessionUtil sessionUtil;
 
     @Inject
     private DocumentValidation documentValidation;
@@ -70,6 +104,29 @@ public class DocumentService implements RestService {
     @Inject
     private DocumentTransferValidation documentTransferValidation;
 
+    /**
+     * The session utility is used to enable and simplify access to the user session.
+     */
+    @Inject
+    private SessionUtil sessionUtil;
+
+    /**
+     * Creates a new document in the repository of the currently logged in user by specifying
+     * the name of the new document inside the request model. It is examined if the document name
+     * conforms to the naming requirements for documents which can be further explored in
+     * {@link DocumentInsertionValidation}. In short, the name needs to consist of printable
+     * characters not to be empty and may only contain a small subset of common characters. All
+     * other combinations will result in a {@code 400 Bad Request} status to be returned.
+     *
+     * On the other hand, the name of the new document has to be unique inside the repository.
+     * A document with a duplicated name is not permitted to be created.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param insertionModel the request model containing the name of the new document
+     * @return a {@code 200 OK} response if the document was created, otherwise
+     */
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -103,6 +160,20 @@ public class DocumentService implements RestService {
         return new Success("Document was created successfully").buildResponse();
     }
 
+    /**
+     * Removes a document from the user's repository by supplying the id of the document to
+     * be removed. The service checks if the id designating the document exists and whether
+     * the requesting user has the appropriate right to remove this document. Only the owner
+     * may remove his document. Other users requesting the removal will be denied.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param removalModel the request model containing the id of the document to be removed
+     * @return a {@code 200 OK} response if the document was removed, otherwise
+     * {@code 400 Bad Request} if the document does not exist or the user is not authorized
+     * to remove the document.
+     */
     @DELETE
     @Path("/remove")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -129,6 +200,21 @@ public class DocumentService implements RestService {
         return new Success("Document was removed successfully").buildResponse();
     }
 
+    /**
+     * Investigates if the requesting user has the right to access a specific document referenced
+     * by a supplied document id. The validation includes the check for the existence of the document.
+     *
+     * The user is granted access to the document if he is the owner or a named collaborator of the
+     * document. Users which are outside of this group will be refused to access the document by
+     * a {@code 403 Forbidden} response status.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param accessModel the requesting model containing the document id to be checked for access
+     * @return a {@code 200 OK} response if the user is permitted to access the document, otherwise
+     * a {@code 403 Forbidden} response if the user is not allowed.
+     */
     @POST
     @Path("/hasAccess")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -169,6 +255,22 @@ public class DocumentService implements RestService {
         return new Success("You have granted access to this document").buildResponse();
     }
 
+    /**
+     * Retrieves all documents which are owned or collaborated by the current user. The response
+     * includes a message and the HTTP status, as every other service too, but also an entire list
+     * of document list entities. A document list entity is a response model specifically designed
+     * for this service and summarizes the document metadata and content, the list of collaborators
+     * for a document as well as an icon used inside the frontend to distinguish documents with
+     * a single contributor from those with multiple collaborators. For more information, consult
+     * the class {@link DocumentListEntity}.
+     *
+     * This service may probably return a large response with partly redundant information such as
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @return
+     */
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)

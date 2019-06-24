@@ -50,13 +50,13 @@ import javax.ws.rs.core.Response;
  *
  * @author 6694964
  * @version 1.3
- * @see RestService
+ * @see RestEndpoint
  * @see LoginValidation
  * @see RegisterValidation
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_AUTHENTICATION)
-public class AuthenticationService implements RestService {
+public class AuthenticationService extends RootService implements RestEndpoint {
 
     /**
      * Private instance of logging engine

@@ -61,7 +61,7 @@ import java.util.ListIterator;
  *
  * @author 6694964
  * @version 1.3
- * @see RestService
+ * @see RestEndpoint
  * @see DocumentValidation
  * @see DocumentInsertionValidation
  * @see DocumentRemovalValidation
@@ -69,7 +69,7 @@ import java.util.ListIterator;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService implements RestService {
+public class DocumentService extends RootService implements RestEndpoint {
 
     /**
      * Private logger instance for logging important service operations
@@ -164,7 +164,8 @@ public class DocumentService implements RestService {
      * Removes a document from the user's repository by supplying the id of the document to
      * be removed. The service checks if the id designating the document exists and whether
      * the requesting user has the appropriate right to remove this document. Only the owner
-     * may remove his document. Other users requesting the removal will be denied.
+     * may remove his document. Other users requesting the removal will be denied. Next to
+     * the document all collaborators attached to that document will also be removed.
      *
      * This operation can only be performed if the user is authenticated. An invocation without
      * valid session will result in {@code 401 Unauthorized}.
@@ -193,8 +194,10 @@ public class DocumentService implements RestService {
         Doc document = docDao.getDoc(documentId);
 
         docDao.removeDoc(document);
+        log.info("Removed document '{}' from repository of user '{}'", documentId, sessionUtil.getUser().getName());
         for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
             collaboratorDao.removeCollaborator(collaborator);
+            log.info("Removed collaborator '{}' from document '{}'", collaborator.getId(), documentId);
         }
 
         return new Success("Document was removed successfully").buildResponse();

@@ -77,3 +77,6 @@ src/main/webapp/img
 src/main/webapp/js
 src/main/webapp/favicon.ico
 src/main/webapp/index.html
+
+# Node modules
+frontend/node_modules/

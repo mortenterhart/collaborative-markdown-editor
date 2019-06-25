@@ -2,12 +2,20 @@ package org.dhbw.mosbach.ai.cmd.services.validation.basic;
 
 import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.validation.constraints.NotNull;
+import java.awt.*;
 
 @RequestScoped
 public class BasicFieldValidation {
+
+    /**
+     * Private logging instance to log validation operations
+     */
+    private static final Logger log = LoggerFactory.getLogger(BasicFieldValidation.class);
 
     @NotNull
     public ValidationResult checkSpecified(@NotNull String fieldName, String fieldValue) {

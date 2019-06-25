@@ -2,9 +2,13 @@ package org.dhbw.mosbach.ai.cmd.services.validation.document;
 
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicDocumentValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -12,6 +16,11 @@ import javax.validation.constraints.NotNull;
 
 @RequestScoped
 public class DocumentAccessValidation implements ModelValidation<DocumentAccessModel> {
+
+    /**
+     * Private logging instance to log validation operations
+     */
+    private static final Logger log = LoggerFactory.getLogger(DocumentAccessValidation.class);
 
     @Inject
     private BasicDocumentValidation basicDocumentValidation;
@@ -46,6 +55,7 @@ public class DocumentAccessValidation implements ModelValidation<DocumentAccessM
      * @param model the provided non-null document access model from the document service
      * @return a non-null validation result indicating if the document access validation
      * was successful or not
+     * @see ModelValidation#validate(Payload)
      * @see org.dhbw.mosbach.ai.cmd.services.DocumentService
      */
     @Override

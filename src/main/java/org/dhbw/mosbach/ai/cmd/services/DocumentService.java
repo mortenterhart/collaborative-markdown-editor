@@ -18,6 +18,7 @@ import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentIcon;
 import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicDocumentValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.document.*;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.slf4j.Logger;

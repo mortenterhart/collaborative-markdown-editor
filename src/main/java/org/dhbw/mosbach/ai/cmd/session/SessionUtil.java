@@ -96,6 +96,7 @@ public class SessionUtil {
      *
      * @param request the HTTP servlet request of the user containing a reference to the
      *                user session
+     * @see Context
      */
     @Inject
     public SessionUtil(@NotNull @Context HttpServletRequest request) {

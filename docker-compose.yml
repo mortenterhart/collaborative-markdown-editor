@@ -1,10 +1,16 @@
+# Docker-Compose file for the Collaborative Markdown Editor
+#
+# This compose file defines the 'webapp' and 'mysql' services
+# which are automatically built using the Dockerfiles and
+# configured using external scripts from the repository.
+
 version: "3.6"
 
 services:
     webapp:
-        image: "collab-down:latest"
-        hostname: collab-down
-        container_name: "collab-down-instance"
+        image: "cmd-wildfly-webapp:latest"
+        hostname: cmd-wildfly-instance
+        container_name: cmd-wildfly-webapp
         build:
             context: .
             dockerfile: Dockerfile.wildfly
@@ -13,17 +19,17 @@ services:
         ports:
             - "8080:8080"
         links:
-            - "mysql:mysql-server"
+            - "mysql:mysql-instance"
         networks:
-          - service_network
+          - cmd_network
         restart: on-failure
         depends_on:
             - mysql
 
     mysql:
-        image: "mysql-initialized:latest"
-        hostname: mysql-server
-        container_name: mysql-instance
+        image: "cmd-mysql-db:latest"
+        hostname: mysql-instance
+        container_name: cmd-mysql-instance
         build:
             context: .
             dockerfile: Dockerfile.mysql
@@ -41,17 +47,17 @@ services:
               volume:
                   nocopy: true
         networks:
-          - service_network
+          - cmd_network
         ports:
             - "3306:3306"
         restart: on-failure
 
 volumes:
     mysql_data:
-        name: collab-down-data
+        name: cmd-mysql-data
         labels:
             org.dhbw.mosbach.cmd.license: LGPL 3.0
 
 networks:
-  service_network:
+    cmd_network:
       name: collab-down-network

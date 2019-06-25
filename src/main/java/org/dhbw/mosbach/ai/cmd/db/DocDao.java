@@ -34,10 +34,8 @@ public class DocDao {
      */
     @Transactional
     public void createDoc(Doc d) {
-
         this.em.persist(d);
-
-        log.debug("Created a new doc in database");
+        log.debug("Created new document '{}' in database", d.getName());
     }
 
     /**
@@ -48,14 +46,13 @@ public class DocDao {
      */
     @Transactional
     public Doc getDoc(int id) {
-
         Doc doc = null;
 
         try {
             doc = (Doc) this.em
-                .createQuery("SELECT d FROM Doc d WHERE d.id=:doc_id")
-                .setParameter("doc_id", id)
-                .getSingleResult();
+                    .createQuery("SELECT d FROM Doc d WHERE d.id=:doc_id")
+                    .setParameter("doc_id", id)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -72,14 +69,13 @@ public class DocDao {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<Doc> getDocsOwnedBy(User u) {
-
         List<Doc> docs = new ArrayList<>();
 
         try {
             docs = (List<Doc>) this.em
-                .createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id=:user_id ORDER BY d.ctime DESC")
-                .setParameter("user_id", u.getId())
-                .getResultList();
+                    .createQuery("SELECT d FROM Doc d WHERE d.repo.owner.id=:user_id ORDER BY d.ctime DESC")
+                    .setParameter("user_id", u.getId())
+                    .getResultList();
         } catch (NoResultException e) {
             return null;
         }
@@ -96,14 +92,13 @@ public class DocDao {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<Doc> getDocsCollaboratedBy(User u) {
-
         List<Doc> docs = new ArrayList<>();
 
         try {
             docs = (List<Doc>) this.em
-                .createQuery("SELECT d FROM Doc d, Collaborator c WHERE d.id = c.doc.id AND c.user.id = :userId ORDER BY d.ctime DESC")
-                .setParameter("userId", u.getId())
-                .getResultList();
+                    .createQuery("SELECT d FROM Doc d, Collaborator c WHERE d.id = c.doc.id AND c.user.id = :userId ORDER BY d.ctime DESC")
+                    .setParameter("userId", u.getId())
+                    .getResultList();
         } catch (NoResultException e) {
             return null;
         }
@@ -119,9 +114,10 @@ public class DocDao {
      */
     @Transactional
     public int removeDoc(Doc d) {
+        log.debug("Removed document '{}' from database", d.getId());
         return this.em.createQuery("DELETE FROM Doc d WHERE d.id = :doc_id")
-                      .setParameter("doc_id", d.getId())
-                      .executeUpdate();
+                .setParameter("doc_id", d.getId())
+                .executeUpdate();
     }
 
     /**
@@ -132,25 +128,27 @@ public class DocDao {
      */
     @Transactional
     public int updateDoc(Doc d) {
-
-        log.debug("Updated document: " + d.getId());
-
+        log.debug("Updated document '{}' with new content", d.getId());
         return this.em.createQuery("UPDATE Doc d SET d.content=:content, d.uuser=:uuser WHERE d.id=:id")
-                          .setParameter("content", d.getContent())
-                          .setParameter("uuser", d.getUuser())
-                          .setParameter("id", d.getId())
-                          .executeUpdate();
+                .setParameter("content", d.getContent())
+                .setParameter("uuser", d.getUuser())
+                .setParameter("id", d.getId())
+                .executeUpdate();
     }
 
+    /**
+     * Transfer the ownership of a doc to another user
+     *
+     * @param d Given doc
+     * @return The number of updated rows
+     */
     @Transactional
     public int transferRepo(Doc d) {
-
-        log.debug("Updated document: " + d.getId());
-
+        log.debug("Transferred ownership of document '{}' to user '{}'", d.getId(), d.getRepo().getOwner().getName());
         return this.em.createQuery("UPDATE Doc d SET d.repo=:repo, d.uuser=:uuser WHERE d.id=:id")
-                      .setParameter("repo", d.getRepo())
-                      .setParameter("uuser", d.getUuser())
-                      .setParameter("id", d.getId())
-                      .executeUpdate();
+                .setParameter("repo", d.getRepo())
+                .setParameter("uuser", d.getUuser())
+                .setParameter("id", d.getId())
+                .executeUpdate();
     }
 }

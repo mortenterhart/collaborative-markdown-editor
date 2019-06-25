@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
 Vue.use(VueAxios, axios.create({
-    baseURL: window.location.origin + '/CMD/api'
+    baseURL: location.origin + location.pathname.replace(/\/?$/, "") + '/api'
 }));

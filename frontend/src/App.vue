@@ -5,7 +5,7 @@
                 v-model="drawer"
                 fixed
                 app
-            >
+        >
             <Drawer/>
         </v-navigation-drawer>
         <v-toolbar
@@ -17,11 +17,13 @@
                     @click="drawer = !drawer"/>
             <v-toolbar-title v-text="this.$store.state.app.title"/>
             <template v-if="$route.name === 'document'">
-                <template v-if="this.$store.state.app.currentDocument.repo.owner.id === this.$store.state.login.user.id">
+                <template
+                        v-if="this.$store.state.app.currentDocument.repo.owner.id === this.$store.state.login.user.id">
                     <v-subheader>owned by you</v-subheader>
                 </template>
                 <template v-else>
-                    <v-subheader>{{ ' owned by ' + this.$store.state.app.currentDocument.repo.owner.name }}</v-subheader>
+                    <v-subheader>{{ ' owned by ' + this.$store.state.app.currentDocument.repo.owner.name }}
+                    </v-subheader>
                 </template>
             </template>
             <v-spacer/>
@@ -86,13 +88,13 @@
                     {
                         withCredentials: true
                     }
-                )
+                );
                 this.$router.push('/');
                 this.$store.commit('login/setIsLoggedIn', false);
                 this.$snotify.success(
                     'You\'re getting logged out',
                     'Success'
-                )
+                );
             }
         }
     }

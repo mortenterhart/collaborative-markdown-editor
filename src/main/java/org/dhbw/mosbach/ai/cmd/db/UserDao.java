@@ -36,7 +36,6 @@ public class UserDao {
      */
     @Transactional
     public void createUser(User u) {
-
         this.em.persist(u);
 
         Repo repo = new Repo();
@@ -44,7 +43,7 @@ public class UserDao {
 
         repoDao.createRepo(repo);
 
-        log.debug("Created a new user in database");
+        log.debug("Created new user '{}' in database", u.getName());
     }
 
     /**
@@ -54,21 +53,20 @@ public class UserDao {
      * @return A User object, if one was found with the username, otherwise it returns null
      */
     public User getUserByName(String username) {
-
         User user = null;
 
         try {
             user = (User) this.em
-                .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
-                .setParameter("username", username.toLowerCase())
-                .getSingleResult();
+                    .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
+                    .setParameter("username", username.toLowerCase())
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
 
         return user;
     }
-    
+
     /**
      * Get a user entry from the database based on the provided id.
      *
@@ -76,14 +74,13 @@ public class UserDao {
      * @return A User object, if one was found with the id, otherwise it returns null
      */
     public User getUserById(int id) {
-
         User user = null;
 
         try {
             user = (User) this.em
-                .createQuery("SELECT u FROM User u WHERE u.id=:id")
-                .setParameter("id", id)
-                .getSingleResult();
+                    .createQuery("SELECT u FROM User u WHERE u.id=:id")
+                    .setParameter("id", id)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

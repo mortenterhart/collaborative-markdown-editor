@@ -59,8 +59,7 @@
 </template>
 
 <script>
-    import { mapMutations } from 'vuex';
-    import Cookie from "js-cookie";
+    import {mapMutations} from 'vuex';
 
     export default {
         name: "Login",
@@ -75,29 +74,29 @@
                 hideLoginPassword: true,
                 hideRegPassword: true,
                 rules: {
-                    required: value => !!value || 'Required',
-                    usernameLength: value => value.length >= 4 || 'Username requires at least 4 chars',
+                    required: value => !!value || 'This field is required',
+                    usernameLength: value => value.length >= 4 || 'Username requires at least 4 characters',
                     username: value => {
-                        const pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
-                        return pattern.test(value) || 'Invalid username'
+                        const pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/;
+                        return pattern.test(value) || 'Invalid username';
                     },
                     email: value => {
-                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                        return pattern.test(value) || 'Invalid e-mail'
+                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        return pattern.test(value) || 'Invalid email syntax';
                     },
                     passwordOneDigit: value => {
-                        const pattern = /\d/
-                        return pattern.test(value) || 'Password must contain at least one digit'
+                        const pattern = /\d/;
+                        return pattern.test(value) || 'Password must contain at least one digit';
                     },
                     passwordLowerChar: value => {
-                        const pattern = /[a-z]/
-                        return pattern.test(value) || 'Password must contain at least one lowercase char'
+                        const pattern = /[a-z]/;
+                        return pattern.test(value) || 'Password must contain at least one lowercase character';
                     },
                     passwordUpperChar: value => {
-                        const pattern = /[A-Z]/
-                        return pattern.test(value) || 'Password must contain at least one uppercase char'
+                        const pattern = /[A-Z]/;
+                        return pattern.test(value) || 'Password must contain at least one uppercase character';
                     },
-                    passwordLength: value => value.length >= 8 || 'Password requires at least 8 chars'
+                    passwordLength: value => value.length >= 8 || 'Password requires at least 8 characters'
                 }
             }
         },
@@ -132,14 +131,14 @@
                             'Content-Type': 'application/json',
                         }
                     }).then((response) => {
-                        this.hideLoginDialog();
-                        this.$snotify.success(
-                            'You\'re getting logged in',
-                            'Success'
-                        );
-                        this.$store.commit('login/setIsLoggedIn', true)
-                        this.$store.commit('login/setUser', response.data.user)
-                    }).catch((error) => {
+                    this.hideLoginDialog();
+                    this.$snotify.success(
+                        'You\'re getting logged in',
+                        'Success'
+                    );
+                    this.$store.commit('login/setIsLoggedIn', true);
+                    this.$store.commit('login/setUser', response.data.user);
+                }).catch((error) => {
                         this.$snotify.error(
                             error.response.data.message,
                             'Error'
@@ -150,13 +149,13 @@
             handleRegistration: function() {
                 if (this.regUsername.trim().length < 4) {
                     this.$snotify.error(
-                        'Username requires at least 4 chars',
+                        'Username requires at least 4 characters',
                         'Error'
                     );
                     return;
                 }
 
-                let pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
+                let pattern = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/;
                 if (!pattern.test(this.regUsername)) {
                     this.$snotify.error(
                         'Invalid username',
@@ -165,10 +164,10 @@
                     return;
                 }
 
-                pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if (!pattern.test(this.regEmail)) {
                     this.$snotify.error(
-                        'Invalid e-mail',
+                        'Invalid email syntax',
                         'Error'
                     );
                     return;
@@ -176,13 +175,13 @@
 
                 if (this.regPassword.trim().length < 8) {
                     this.$snotify.error(
-                        'Password requires at least 8 chars',
+                        'Password requires at least 8 characters',
                         'Error'
                     );
                     return;
                 }
 
-                pattern = /\d/
+                pattern = /\d/;
                 if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
                         'Password must contain at least one digit',
@@ -191,19 +190,19 @@
                     return;
                 }
 
-                pattern = /[a-z]/
+                pattern = /[a-z]/;
                 if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
-                        'Password must contain at least one lowercase char',
+                        'Password must contain at least one lowercase character',
                         'Error'
                     );
                     return;
                 }
 
-                pattern = /[A-Z]/
+                pattern = /[A-Z]/;
                 if (!pattern.test(this.regPassword)) {
                     this.$snotify.error(
-                        'Password must contain at least one uppercase char',
+                        'Password must contain at least one uppercase character',
                         'Error'
                     );
                     return;
@@ -220,52 +219,52 @@
                             'Content-Type': 'application/json'
                         }
                     }).then(() => {
-                        this.hideLoginDialog();
-                        this.$snotify.success(
-                            'You\'ve created an account',
-                            'Success'
-                        );
+                    this.hideLoginDialog();
+                    this.$snotify.success(
+                        'You\'ve created an account',
+                        'Success'
+                    );
 
-                        this.loginUsername = this.regUsername;
-                        this.loginPassword = this.regPassword;
-                        this.handleLogin();
-                    }).catch((error) => {
-                        this.$snotify.error(
-                            error.response.data.message,
-                            'Error'
-                        );
+                    this.loginUsername = this.regUsername;
+                    this.loginPassword = this.regPassword;
+                    this.handleLogin();
+                }).catch((error) => {
+                    this.$snotify.error(
+                        error.response.data.message,
+                        'Error'
+                    );
                 });
             }
         },
         computed: {
-            dialog : {
+            dialog: {
                 get: function() {
-                    return this.$store.state.login.showLoginDialog
+                    return this.$store.state.login.showLoginDialog;
                 },
                 set: function(val) {
                     if (val) {
-                        this.$store.commit('login/showLoginDialog')
+                        this.$store.commit('login/showLoginDialog');
                     } else {
-                        this.$store.commit('login/hideLoginDialog')
+                        this.$store.commit('login/hideLoginDialog');
                     }
                 }
             }
         },
         created() {
-            let vm = this
-            window.addEventListener('keyup', function (e) {
+            let vm = this;
+            window.addEventListener('keyup', function(e) {
                 if (!vm.dialog || e.keyCode !== 13) {
-                    return
+                    return;
                 }
 
                 if (vm.dialogTabs === 0) {
-                    vm.handleLogin()
+                    vm.handleLogin();
                 } else {
-                    vm.handleRegistration()
+                    vm.handleRegistration();
                 }
             })
         }
-    }
+    };
 </script>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import Vue from 'vue'
-import Chat from 'vue-beautiful-chat'
+import Vue from 'vue';
+import Chat from 'vue-beautiful-chat';
 
-Vue.use(Chat)
+Vue.use(Chat);

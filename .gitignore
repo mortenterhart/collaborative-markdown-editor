@@ -35,7 +35,7 @@ hs_err_pid*
 .project
 .settings/
 
-# IntelliJ project files
+# IntelliJ project files 
 *.iml
 *.iws
 *.ipr
@@ -72,8 +72,8 @@ buildNumber.properties
 *.swp
 
 # Built frontend
-src/main/webapp/*
-!src/main/webapp/.gitkeep
-
-# Node modules
-frontend/node_modules/
+src/main/webapp/css
+src/main/webapp/img
+src/main/webapp/js
+src/main/webapp/favicon.ico
+src/main/webapp/index.html

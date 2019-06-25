@@ -1,17 +1,13 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class DocumentTransferModel implements Payload {
 
-@XmlRootElement
-public class DocumentTransferModel {
-
-    @XmlElement(name = JsonParameters.DOCUMENT_ID, required = true)
+    @JsonProperty(value = PayloadParameters.DOCUMENT_ID, required = true)
     private int documentId;
 
-    @XmlElement(name = JsonParameters.NEW_OWNER_NAME, required = true)
+    @JsonProperty(value = PayloadParameters.NEW_OWNER_NAME, required = true)
     private String newOwnerName;
 
     public int getDocumentId() {

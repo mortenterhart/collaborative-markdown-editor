@@ -32,10 +32,8 @@ public class RepoDao {
      */
     @Transactional
     public void createRepo(Repo repo) {
-
         this.em.persist(repo);
-
-        log.debug("Created a repo entry");
+        log.debug("Created repository for user '{}'", repo.getOwner().getName());
     }
 
     /**
@@ -45,14 +43,13 @@ public class RepoDao {
      * @return A Repo object, if one was found with the user id, otherwise it returns null
      */
     public Repo getRepo(User user) {
-
         Repo repo = null;
 
         try {
             repo = (Repo) this.em
-                .createQuery("SELECT r FROM Repo r WHERE r.owner.id=:userid")
-                .setParameter("userid", user.getId())
-                .getSingleResult();
+                    .createQuery("SELECT r FROM Repo r WHERE r.owner.id=:userid")
+                    .setParameter("userid", user.getId())
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

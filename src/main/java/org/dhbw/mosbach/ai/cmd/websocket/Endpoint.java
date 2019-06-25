@@ -13,15 +13,9 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 import javax.inject.Inject;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +25,7 @@ import java.util.Map;
  *
  * @author 3040018
  */
-@ServerEndpoint(value = "/ws/{docId}/{username}/{userId}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
+@ServerEndpoint(value = "/ws/{docId}/{username}/{userId}", encoders = { MessageEncoder.class }, decoders = { MessageDecoder.class })
 public class Endpoint {
 
     /**
@@ -41,77 +35,78 @@ public class Endpoint {
 
     @Inject
     private DocDao docDao;
-    
+
     @Inject
     private UserDao userDao;
-    
+
     @Inject
     private HistoryDao historyDao;
-    
+
     @Inject
     private MessageBroker messageBroker;
-    
+
     @Inject
     private Hashing hashing;
-    
-	/**
+
+    /**
      * Gets triggered once a web socket connection is opened.
-	 * @param docId Given document id
-	 * @param username Given user name of current user
-	 * @param session Current user session
-	 */
+     *
+     * @param docId    Given document id
+     * @param username Given user name of current user
+     * @param session  Current user session
+     */
     @OnOpen
     public void onOpen(@PathParam("docId") int docId, @PathParam(CmdConfig.SESSION_USERNAME) String username, @PathParam(CmdConfig.SESSION_USERID) int userId, Session session) {
-
         session.getUserProperties().put(CmdConfig.SESSION_USERNAME, username);
         session.getUserProperties().put(CmdConfig.SESSION_USERID, userId);
 
         Doc doc = null;
-        
-        if(docs.get(docId) == null) {
-        	doc = docDao.getDoc(docId);
-        	if(doc == null) {
-        		Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, String.valueOf(docId), MessageType.WrongDocId);
-        		messageBroker.publishToSingleUser(wrongDocIdMsg, session);
-        		return;
-        	}
-        	docs.put(docId, new ActiveDocument(doc, 0, new ArrayList<>()));
+
+        if (docs.get(docId) == null) {
+            doc = docDao.getDoc(docId);
+            if (doc == null) {
+                Message wrongDocIdMsg = messageBroker.createSystemMessage(userId, docId, -1, String.valueOf(docId), MessageType.WrongDocId);
+                messageBroker.publishToSingleUser(wrongDocIdMsg, session);
+                return;
+            }
+            docs.put(docId, new ActiveDocument(doc, 0));
         }
-        	
-        if(doc == null)
-        	doc = docs.get(docId).getDoc();
-        
-        if(doc.getContent() == null)
-        	docs.get(docId).getDoc().setContent("");
-        
+
+        if (doc == null) {
+            doc = docs.get(docId).getDoc();
+        }
+
+        if (doc.getContent() == null) {
+            docs.get(docId).getDoc().setContent("");
+        }
+
         docs.get(docId).getUsers().add(session);
-        
-        Message contentInitMsg = messageBroker.createSystemMessage(userId, docId, doc.getContent(), MessageType.ContentInit);
+
+        Message contentInitMsg = messageBroker.createSystemMessage(userId, docId, docs.get(docId).getState(), doc.getContent(), MessageType.ContentInit);
         messageBroker.publishToSingleUser(contentInitMsg, session);
-        
-        Message documentTitleMsg = messageBroker.createSystemMessage(userId, docId,  doc.getName(), MessageType.DocumentTitle);
+
+        Message documentTitleMsg = messageBroker.createSystemMessage(userId, docId, -1, doc.getName(), MessageType.DocumentTitle);
         messageBroker.publishToSingleUser(documentTitleMsg, session);
-        
-        Message userInitMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
+
+        Message userInitMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.getActiveUsers(docs.get(docId).getUsers(), session), MessageType.UsersInit);
         messageBroker.publishToSingleUser(userInitMsg, session);
-        
-        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, messageBroker.formatUserMessage(session), MessageType.UserJoined);
+
+        Message userJoinedMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(session), MessageType.UserJoined);
         messageBroker.publishToOtherUsers(userJoinedMsg, docs.get(docId), session);
     }
 
     /**
      * Gets triggered once a message is sent from the client.<br>
      *
-     * @param msg Given message
+     * @param msg     Given message
      * @param session Current user session
      */
     @OnMessage
     public void onMessage(Message msg, Session session) {
+        ActiveDocument currentDoc = docs.get(msg.getDocId());
 
-    	ActiveDocument currentDoc = docs.get(msg.getDocId());
-    	
-    	messageBroker.publishToOtherUsers(msg, currentDoc, session);
-    	messageBroker.transform(msg, currentDoc);
+        messageBroker.transform(msg, currentDoc);
+        messageBroker.publishToOtherUsers(msg, currentDoc, session);
     }
 
     /**
@@ -122,40 +117,39 @@ public class Endpoint {
      */
     @OnClose
     public void onClose(Session session) {
+        for (int docId : docs.keySet()) {
+            for (Session singleUserSession : docs.get(docId).getUsers()) {
+                if (singleUserSession.equals(session)) {
 
-    	for(int docId : docs.keySet()) {
-    		for(Session singleUserSession : docs.get(docId).getUsers()) {
-    			if(singleUserSession.equals(session)) {
-    				
-    				docs.get(docId).getUsers().remove(singleUserSession);
-    				
-    				int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
-    				
-    		        Message userLeftdMsg = messageBroker.createSystemMessage(userId,  docId, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
-    		        messageBroker.publishToOtherUsers(userLeftdMsg, docs.get(docId), session);
-    		        
-    		        break;
-    			}	
-    		}	
-    		
-    		if(docs.get(docId).getUsers().isEmpty()) {
-    			
-    			// Save current doc from db to history
-    			Doc currentDocState = docDao.getDoc(docId);
-    			History history = new History();
-    			history.setContent(currentDocState.getContent());
-    			history.setDoc(currentDocState);
-    			history.setHash(hashing.hashDocContent(history.getContent()));
-    			historyDao.createHistory(history);
-    			
-    			// Save current doc from client to db
-    			Doc activeDoc = docs.get(docId).getDoc();
-    			activeDoc.setUuser(userDao.getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
-    			docDao.updateDoc(activeDoc);
-    			
-    			docs.remove(docId);
-    		}
-    	}       
+                    docs.get(docId).getUsers().remove(singleUserSession);
+
+                    int userId = (int) singleUserSession.getUserProperties().get(CmdConfig.SESSION_USERID);
+
+                    Message userLeftMsg = messageBroker.createSystemMessage(userId, docId, -1, messageBroker.formatUserMessage(singleUserSession), MessageType.UserLeft);
+                    messageBroker.publishToOtherUsers(userLeftMsg, docs.get(docId), session);
+
+                    break;
+                }
+            }
+
+            if (docs.get(docId).getUsers().isEmpty()) {
+
+                // Save current doc from db to history
+                Doc currentDocState = docDao.getDoc(docId);
+                History history = new History();
+                history.setContent(currentDocState.getContent());
+                history.setDoc(currentDocState);
+                history.setHash(hashing.hashDocContent(history.getContent()));
+                historyDao.createHistory(history);
+
+                // Save current doc from client to db
+                Doc activeDoc = docs.get(docId).getDoc();
+                activeDoc.setUuser(userDao.getUserByName(session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString()));
+                docDao.updateDoc(activeDoc);
+
+                docs.remove(docId);
+            }
+        }
     }
 
     /**

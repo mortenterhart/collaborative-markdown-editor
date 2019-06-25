@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Welcome from '../components/Welcome'
-import Document from '../components/Document'
-import ErrorPage from '../components/ErrorPage'
-import ForbiddenPage from '../components/ForbiddenPage'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Welcome from '../components/Welcome';
+import Document from '../components/Document';
+import ErrorPage from '../components/ErrorPage';
+import ForbiddenPage from '../components/ForbiddenPage';
 
 Vue.use(VueRouter);
 
@@ -15,6 +15,6 @@ const routes = [
 ];
 
 export default new VueRouter({
-    base: '/CMD/',
+    base: location.pathname,
     routes
-})
+});

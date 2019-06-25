@@ -1,3 +1,19 @@
+### Dockerignore List
+
+# Git Files
+.git/
+.gitignore
+.gitattributes
+
+# Travis File
+.travis.yml
+
+# README file
+README.md
+
+# Maven Wrapper JAR
+.mvn/wrapper/maven-wrapper.jar
+
 # Compiled class file
 *.class
 
@@ -12,7 +28,6 @@
 
 # Package Files #
 *.jar
-*.war
 *.nar
 *.ear
 *.zip
@@ -35,7 +50,7 @@ hs_err_pid*
 .project
 .settings/
 
-# IntelliJ project files 
+# IntelliJ project files
 *.iml
 *.iws
 *.ipr
@@ -57,7 +72,6 @@ ehthumbs_vista.db
 
 # Maven
 log/
-target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -66,17 +80,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
 
 # Vim Temporary Files
 *.swp
-
-# Built frontend
-src/main/webapp/css
-src/main/webapp/img
-src/main/webapp/js
-src/main/webapp/favicon.ico
-src/main/webapp/index.html
 
 # Node modules
 frontend/node_modules/

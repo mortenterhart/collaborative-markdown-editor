@@ -1,0 +1,19 @@
+FROM mysql:8.0.15 as database
+
+ARG buildno
+
+# Configure MySQL root user
+ENV MYSQL_ROOT_PASSWORD mysqlroot
+
+# Configure MySQL database user
+ENV MYSQL_USER mysqluser
+ENV MYSQL_PASSWORD mysqlpass
+
+# Configure MySQL database
+ENV MYSQL_DATABASE cmd
+ENV MYSQL_PORT 3306
+
+RUN echo "Build Number: ${buildno}"
+
+# Expose the standard MySQL port
+EXPOSE ${MYSQL_PORT}

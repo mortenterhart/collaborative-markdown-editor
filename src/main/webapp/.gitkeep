@@ -1,0 +1,4 @@
+Keep this file here to keep the directory being tracked by Git.
+
+This directory is required by Vue Frontend builds that are run by Maven because
+the output files will be copied here to be packed into the WAR file for Wildfly.

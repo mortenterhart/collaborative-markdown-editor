@@ -3,17 +3,17 @@
 </template>
 
 <script>
-    import marked from "marked"
+    import marked from "marked";
 
     export default {
         name: "Preview",
         props: ['content'],
         computed: {
             compileMarkdown: function() {
-                return marked(this.content, { sanitize: true, breaks: true })
+                return marked(this.content, { sanitize: true, breaks: true });
             }
         }
-    }
+    };
 </script>
 
 <style scoped>

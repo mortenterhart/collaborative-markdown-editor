@@ -1,11 +1,18 @@
-package org.dhbw.mosbach.ai.cmd.response;
+package org.dhbw.mosbach.ai.cmd.services.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 public class ResponseObject {
 
-    private Status status;
-    private String message;
+    @JsonProperty(value = ResponseParameters.HTTP_STATUS, required = true)
+    private final Status status;
+
+    @JsonProperty(value = ResponseParameters.MESSAGE, required = true)
+    private final String message;
 
     public ResponseObject(Response.Status status, String message) {
         this.status = new Status(status);

@@ -1,6 +1,11 @@
 package org.dhbw.mosbach.ai.cmd.model;
 
-import javax.json.bind.annotation.JsonbTransient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
+import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,13 +37,17 @@ public class Doc {
     private String name;
 
     @Column(name = "CONTENT")
-    @JsonbTransient
+    @JsonIgnore
     private String content;
 
     @Column(name = "CTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
     @Column(name = "UTIME")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime utime;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -55,13 +64,13 @@ public class Doc {
 
     @PrePersist
     private void onInsert() {
-    	this.ctime = LocalDateTime.now();
-    	this.utime = this.ctime;
+        this.ctime = LocalDateTime.now();
+        this.utime = this.ctime;
     }
 
     @PreUpdate
     private void onUpdate() {
-    	this.utime = LocalDateTime.now();
+        this.utime = LocalDateTime.now();
     }
 
     public int getId() {
@@ -105,22 +114,22 @@ public class Doc {
     }
 
     public User getCuser() {
-		return cuser;
-	}
+        return cuser;
+    }
 
-	public void setCuser(User cuser) {
-		this.cuser = cuser;
-	}
+    public void setCuser(User cuser) {
+        this.cuser = cuser;
+    }
 
-	public User getUuser() {
-		return uuser;
-	}
+    public User getUuser() {
+        return uuser;
+    }
 
-	public void setUuser(User uuser) {
-		this.uuser = uuser;
-	}
+    public void setUuser(User uuser) {
+        this.uuser = uuser;
+    }
 
-	public Repo getRepo() {
+    public Repo getRepo() {
         return repo;
     }
 
@@ -129,80 +138,80 @@ public class Doc {
     }
 
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((content == null) ? 0 : content.hashCode());
-		result = prime * result + ((ctime == null) ? 0 : ctime.hashCode());
-		result = prime * result + ((cuser == null) ? 0 : cuser.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((repo == null) ? 0 : repo.hashCode());
-		result = prime * result + ((utime == null) ? 0 : utime.hashCode());
-		result = prime * result + ((uuser == null) ? 0 : uuser.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((content == null) ? 0 : content.hashCode());
+        result = prime * result + ((ctime == null) ? 0 : ctime.hashCode());
+        result = prime * result + ((cuser == null) ? 0 : cuser.hashCode());
+        result = prime * result + id;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((repo == null) ? 0 : repo.hashCode());
+        result = prime * result + ((utime == null) ? 0 : utime.hashCode());
+        result = prime * result + ((uuser == null) ? 0 : uuser.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Doc other = (Doc) obj;
-		if (content == null) {
-			if (other.content != null)
-				return false;
-		} else if (!content.equals(other.content))
-			return false;
-		if (ctime == null) {
-			if (other.ctime != null)
-				return false;
-		} else if (!ctime.equals(other.ctime))
-			return false;
-		if (cuser == null) {
-			if (other.cuser != null)
-				return false;
-		} else if (!cuser.equals(other.cuser))
-			return false;
-		if (id != other.id)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (repo == null) {
-			if (other.repo != null)
-				return false;
-		} else if (!repo.equals(other.repo))
-			return false;
-		if (utime == null) {
-			if (other.utime != null)
-				return false;
-		} else if (!utime.equals(other.utime))
-			return false;
-		if (uuser == null) {
-			if (other.uuser != null)
-				return false;
-		} else if (!uuser.equals(other.uuser))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Doc other = (Doc) obj;
+        if (content == null) {
+            if (other.content != null)
+                return false;
+        } else if (!content.equals(other.content))
+            return false;
+        if (ctime == null) {
+            if (other.ctime != null)
+                return false;
+        } else if (!ctime.equals(other.ctime))
+            return false;
+        if (cuser == null) {
+            if (other.cuser != null)
+                return false;
+        } else if (!cuser.equals(other.cuser))
+            return false;
+        if (id != other.id)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (repo == null) {
+            if (other.repo != null)
+                return false;
+        } else if (!repo.equals(other.repo))
+            return false;
+        if (utime == null) {
+            if (other.utime != null)
+                return false;
+        } else if (!utime.equals(other.utime))
+            return false;
+        if (uuser == null) {
+            if (other.uuser != null)
+                return false;
+        } else if (!uuser.equals(other.uuser))
+            return false;
+        return true;
+    }
 
-	@Override
+    @Override
     public String toString() {
         return new StringBuilder()
-            .append("Doc: \n")
-            .append("\tid: " + this.id + "\n")
-            .append("\tName: " + this.name + "\n")
-            .append("\tCreated: " + this.ctime + "\n")
-            .append("\tLast updated: " + this.utime + "\n")
-            .append("\tCreated by: " + this.cuser.getName() + "\n")
-            .append("\tUpdated by: " + this.uuser.getName() + "\n")
-            .append("\tContent: " + this.content + "\n")
-            .toString();
+                .append("Doc: \n")
+                .append("\tid: " + this.id + "\n")
+                .append("\tName: " + this.name + "\n")
+                .append("\tCreated: " + this.ctime + "\n")
+                .append("\tLast updated: " + this.utime + "\n")
+                .append("\tCreated by: " + this.cuser.getName() + "\n")
+                .append("\tUpdated by: " + this.uuser.getName() + "\n")
+                .append("\tContent: " + this.content + "\n")
+                .toString();
     }
 }

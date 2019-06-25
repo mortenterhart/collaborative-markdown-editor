@@ -148,6 +148,7 @@
         },
         beforeMount() {
             this.$store.commit('app/setTitle', 'Collaborative Markdown Editor');
+            document.title = 'Collaborative Markdown Editor';
         }
     };
 </script>

@@ -66,6 +66,7 @@
                 switch (data.messageType) {
                     case "DocumentTitle": {
                         this.$store.commit('app/setTitle', data.msg);
+                        this.setHTMLTitle(data.msg);
                         break;
                     }
                     case "ContentInit": {
@@ -164,6 +165,9 @@
                     msg += array[i];
                 }
                 return msg;
+            },
+            setHTMLTitle(documentName) {
+                document.title = documentName + ' | Collaborative Markdown Editor';
             }
         },
         mounted() {

@@ -4,12 +4,16 @@ import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
-import org.dhbw.mosbach.ai.cmd.services.validation.document.BasicDocumentValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicCollaboratorValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicDocumentValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -17,6 +21,11 @@ import javax.validation.constraints.NotNull;
 
 @RequestScoped
 public class CollaboratorRemovalValidation implements ModelValidation<CollaboratorRemovalModel> {
+
+    /**
+     * Private logging instance to log validation operations
+     */
+    private static final Logger log = LoggerFactory.getLogger(CollaboratorRemovalValidation.class);
 
     @Inject
     private SessionUtil sessionUtil;
@@ -60,6 +69,8 @@ public class CollaboratorRemovalValidation implements ModelValidation<Collaborat
      *              service
      * @return a non-null validation result indicating if the collaborator removal
      * validation was successful or not
+     * @see ModelValidation#validate(Payload)
+     * @see org.dhbw.mosbach.ai.cmd.services.CollaboratorService
      */
     @Override
     @NotNull

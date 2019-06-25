@@ -11,7 +11,7 @@ import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorRemovalValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.BasicCollaboratorValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicCollaboratorValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;

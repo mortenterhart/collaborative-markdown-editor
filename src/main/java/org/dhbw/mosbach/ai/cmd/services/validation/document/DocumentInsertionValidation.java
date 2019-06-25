@@ -4,6 +4,7 @@ import org.dhbw.mosbach.ai.cmd.db.DocDao;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 import org.dhbw.mosbach.ai.cmd.services.payload.PayloadParameters;
 import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
@@ -12,6 +13,8 @@ import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicFieldValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.MatchTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,6 +24,11 @@ import java.util.regex.Pattern;
 
 @RequestScoped
 public class DocumentInsertionValidation implements ModelValidation<DocumentInsertionModel> {
+
+    /**
+     * Private logging instance to log validation operations
+     */
+    private static final Logger log = LoggerFactory.getLogger(DocumentInsertionValidation.class);
 
     private static final String DOCUMENT_NAME_VALID_CHARS = "[A-Za-z0-9_\\-()?!#=@$%&/+.*]";
     private static final String DOCUMENT_NAME_VALID_CHARS_WITH_SPACE = "[A-Za-z0-9_\\-()?!#=@$%&/+.* ]";
@@ -63,6 +71,8 @@ public class DocumentInsertionValidation implements ModelValidation<DocumentInse
      *              service
      * @return a non-null validation result indicating if the document insertion
      * validation was successful or not
+     * @see ModelValidation#validate(Payload)
+     * @see org.dhbw.mosbach.ai.cmd.services.DocumentService
      */
     @Override
     @NotNull

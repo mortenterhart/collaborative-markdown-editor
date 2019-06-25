@@ -61,8 +61,9 @@ import java.util.ListIterator;
  *
  * @author 6694964
  * @version 1.3
+ *
  * @see RestEndpoint
- * @see DocumentValidation
+ * @see BasicDocumentValidation
  * @see DocumentInsertionValidation
  * @see DocumentRemovalValidation
  * @see DocumentAccessValidation
@@ -90,7 +91,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     private CollaboratorDao collaboratorDao;
 
     @Inject
-    private DocumentValidation documentValidation;
+    private BasicDocumentValidation basicDocumentValidation;
 
     @Inject
     private DocumentInsertionValidation documentInsertionValidation;
@@ -239,7 +240,7 @@ public class DocumentService extends RootService implements RestEndpoint {
 
         boolean hasAccess = false;
 
-        final ValidationResult ownerCheck = documentValidation.checkUserIsDocumentOwner(document, currentUser);
+        final ValidationResult ownerCheck = basicDocumentValidation.checkUserIsDocumentOwner(document, currentUser);
         if (ownerCheck.isValid()) {
             hasAccess = true;
         }

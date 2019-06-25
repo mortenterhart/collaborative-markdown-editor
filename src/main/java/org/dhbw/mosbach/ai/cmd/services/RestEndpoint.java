@@ -17,8 +17,14 @@ package org.dhbw.mosbach.ai.cmd.services;
  * information such as the user object or operations such as invalidating the
  * current session.
  *
+ * An implementation of a REST endpoint may provide services which accept
+ * request models that contain the actual payload of a user request and return
+ * a response with appropriate information about the processing status of the
+ * request. In any case, request and response models should not be {@code null}.
+ *
  * @author 6694964
  * @version 1.3
+ *
  * @see AuthenticationService
  * @see CollaboratorService
  * @see DocumentService

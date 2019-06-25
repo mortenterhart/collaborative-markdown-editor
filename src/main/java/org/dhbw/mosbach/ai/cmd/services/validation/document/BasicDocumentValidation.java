@@ -10,7 +10,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class DocumentValidation {
+public class BasicDocumentValidation {
 
     @Inject
     private DocDao docDao;

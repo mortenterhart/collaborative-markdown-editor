@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 @RequestScoped
-public class CollaboratorValidation {
+public class BasicCollaboratorValidation {
 
     @Inject
     private CollaboratorDao collaboratorDao;

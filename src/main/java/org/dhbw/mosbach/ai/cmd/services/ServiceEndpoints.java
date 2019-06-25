@@ -7,6 +7,7 @@ package org.dhbw.mosbach.ai.cmd.services;
  *
  * @author 6694964
  * @version 1.3
+ *
  * @see RootService
  * @see AuthenticationService
  * @see CollaboratorService

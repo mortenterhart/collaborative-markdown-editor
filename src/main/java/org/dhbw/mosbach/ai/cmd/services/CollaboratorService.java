@@ -11,7 +11,7 @@ import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorRemovalValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.BasicCollaboratorValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;
@@ -56,8 +56,9 @@ import javax.ws.rs.core.Response;
  *
  * @author 6694964
  * @version 1.3
+ *
  * @see RestEndpoint
- * @see CollaboratorValidation
+ * @see BasicCollaboratorValidation
  * @see CollaboratorInsertionValidation
  * @see CollaboratorRemovalValidation
  */

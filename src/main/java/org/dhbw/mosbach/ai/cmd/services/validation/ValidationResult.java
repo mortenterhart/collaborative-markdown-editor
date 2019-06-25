@@ -4,6 +4,7 @@ import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 import org.dhbw.mosbach.ai.cmd.services.response.ResponseObject;
 import org.dhbw.mosbach.ai.cmd.services.response.Success;
 
+import javax.enterprise.context.RequestScoped;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
 

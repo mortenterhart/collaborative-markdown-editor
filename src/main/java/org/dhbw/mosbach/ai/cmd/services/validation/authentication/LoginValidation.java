@@ -31,7 +31,7 @@ public class LoginValidation implements ModelValidation<LoginModel> {
     @NotNull
     public ValidationResult validate(@NotNull LoginModel model) {
         if (model == null) {
-            return new ValidationResult(new InternalServerError("LoginModel is null"));
+            return ValidationResult.response(new InternalServerError("LoginModel is null"));
         }
 
         final String username = model.getUsername();

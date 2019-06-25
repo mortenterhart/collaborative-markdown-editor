@@ -55,20 +55,27 @@ public class Repo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         Repo other = (Repo) obj;
-        if (id != other.id)
+        if (id != other.id) {
             return false;
+        }
         if (owner == null) {
-            if (other.owner != null)
+            if (other.owner != null) {
                 return false;
-        } else if (!owner.equals(other.owner))
+            }
+        } else if (!owner.equals(other.owner)) {
             return false;
+        }
         return true;
     }
 

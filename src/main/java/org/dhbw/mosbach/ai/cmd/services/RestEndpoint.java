@@ -1,8 +1,8 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
 /**
- * The {@code RestEndpoint} is an abstraction of a REST compliant endpoint and
- * facilitates user interactions with the backend of the application.
+ * The {@code RestEndpoint} is an abstraction of a REST compliant endpoint
+ * and facilitates user interactions with the backend of the application.
  *
  * Implementations of this interface can provide several services which are
  * accessed by a distinct resource locator commonly referred to as URL. Each

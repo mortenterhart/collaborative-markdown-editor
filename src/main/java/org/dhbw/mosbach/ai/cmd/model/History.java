@@ -105,35 +105,47 @@ public class History {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         History other = (History) obj;
         if (content == null) {
-            if (other.content != null)
+            if (other.content != null) {
                 return false;
-        } else if (!content.equals(other.content))
+            }
+        } else if (!content.equals(other.content)) {
             return false;
+        }
         if (ctime == null) {
-            if (other.ctime != null)
+            if (other.ctime != null) {
                 return false;
-        } else if (!ctime.equals(other.ctime))
+            }
+        } else if (!ctime.equals(other.ctime)) {
             return false;
+        }
         if (doc == null) {
-            if (other.doc != null)
+            if (other.doc != null) {
                 return false;
-        } else if (!doc.equals(other.doc))
+            }
+        } else if (!doc.equals(other.doc)) {
             return false;
+        }
         if (hash == null) {
-            if (other.hash != null)
+            if (other.hash != null) {
                 return false;
+            }
         } else if (!hash.equals(other.hash))
             return false;
-        if (id != other.id)
+        if (id != other.id) {
             return false;
+        }
         return true;
     }
 

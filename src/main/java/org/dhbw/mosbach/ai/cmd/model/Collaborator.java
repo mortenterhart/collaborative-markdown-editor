@@ -112,32 +112,44 @@ public class Collaborator {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         Collaborator other = (Collaborator) obj;
         if (ctime == null) {
-            if (other.ctime != null)
+            if (other.ctime != null) {
                 return false;
-        } else if (!ctime.equals(other.ctime))
+            }
+        } else if (!ctime.equals(other.ctime)) {
             return false;
+        }
         if (doc == null) {
-            if (other.doc != null)
+            if (other.doc != null) {
                 return false;
-        } else if (!doc.equals(other.doc))
+            }
+        } else if (!doc.equals(other.doc)) {
             return false;
-        if (hasAccess != other.hasAccess)
+        }
+        if (hasAccess != other.hasAccess) {
             return false;
-        if (id != other.id)
+        }
+        if (id != other.id) {
             return false;
+        }
         if (user == null) {
-            if (other.user != null)
+            if (other.user != null) {
                 return false;
-        } else if (!user.equals(other.user))
+            }
+        } else if (!user.equals(other.user)) {
             return false;
+        }
         return true;
     }
 

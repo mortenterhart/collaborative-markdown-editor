@@ -7,10 +7,10 @@ import javax.ws.rs.core.Response;
 public class Status {
 
     @JsonProperty(value = ResponseParameters.STATUS_CODE, required = true)
-    private int code;
+    private final int code;
 
     @JsonProperty(value = ResponseParameters.STATUS_DESCRIPTION, required = true)
-    private String description;
+    private final String description;
 
     public Status(Response.Status status) {
         this.code = status.getStatusCode();

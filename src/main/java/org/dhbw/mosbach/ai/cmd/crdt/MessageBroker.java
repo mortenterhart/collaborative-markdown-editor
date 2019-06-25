@@ -21,8 +21,9 @@ public class MessageBroker {
      * @param activeDocument Current active document
      */
     public void transform(Message msg, ActiveDocument activeDocument) {
-        if (msg.getDocState() < activeDocument.getState())
+        if (msg.getDocState() < activeDocument.getState()) {
             activeDocument.makeConsistent(msg, activeDocument.getState());
+        }
 
         switch (msg.getMessageType()) {
             case Insert:
@@ -74,8 +75,9 @@ public class MessageBroker {
     public void publishToOtherUsers(Message msg, ActiveDocument activeDocument, Session currentUserSession) {
         for (Session session : activeDocument.getUsers()) {
             try {
-                if (session != currentUserSession)
+                if (session != currentUserSession) {
                     session.getBasicRemote().sendObject(msg);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -105,8 +107,9 @@ public class MessageBroker {
      * @return A list of user names formatted as a JSON array
      */
     public String getActiveUsers(List<Session> users, Session currentUser) {
-        if (users.size() <= 1) // Return empty array if the user is alone
+        if (users.size() <= 1) { // Return empty array if the user is alone
             return "[]";
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -114,7 +117,7 @@ public class MessageBroker {
         for (Session session : users) {
             if (session != currentUser) {
                 sb.append(formatUserMessage(session))
-                        .append(",");
+                  .append(",");
             }
         }
 
@@ -132,10 +135,10 @@ public class MessageBroker {
      */
     public String formatUserMessage(Session session) {
         return Json.createObjectBuilder()
-                .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
-                .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
-                .add("imageUrl", "https://ui-avatars.com/api/?name=" + session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString() + "&background=0D8ABC&color=fff")
-                .build()
-                .toString();
+                   .add("id", session.getUserProperties().get(CmdConfig.SESSION_USERID).toString())
+                   .add("name", session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString())
+                   .add("imageUrl", "https://ui-avatars.com/api/?name=" + session.getUserProperties().get(CmdConfig.SESSION_USERNAME).toString() + "&background=0D8ABC&color=fff")
+                   .build()
+                   .toString();
     }
 }

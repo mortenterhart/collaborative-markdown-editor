@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ActiveDocument {
 
-    private final static int QUEUE_LENGTH = 10;
+    private static final int QUEUE_LIMIT = 10;
 
     private Doc doc;
     private int state;
@@ -72,7 +72,7 @@ public class ActiveDocument {
      */
     public void insert(Message msg) {
         this.doc.setContent(new StringBuilder()
-                .append(doc.getContent().substring(0, msg.getCursorPos()))
+                .append(doc.getContent(), 0, msg.getCursorPos())
                 .append(msg.getMsg())
                 .append(doc.getContent().substring(msg.getCursorPos()))
                 .toString());
@@ -87,7 +87,7 @@ public class ActiveDocument {
      */
     public void del(Message msg) {
         this.doc.setContent(new StringBuilder()
-                .append(doc.getContent().substring(0, msg.getCursorPos()))
+                .append(doc.getContent(), 0, msg.getCursorPos())
                 .append(doc.getContent().substring(msg.getCursorPos() + msg.getMsg().length()))
                 .toString());
         this.state++;
@@ -101,10 +101,10 @@ public class ActiveDocument {
      * @param docState Given doc state
      */
     public void makeConsistent(Message msg, int docState) {
-        int delta = QUEUE_LENGTH - (msg.getDocState() - docState);
+        int delta = QUEUE_LIMIT - (msg.getDocState() - docState);
         int cursorPos = msg.getCursorPos();
 
-        for (int i = delta; i < QUEUE_LENGTH; i++) {
+        for (int i = delta; i < QUEUE_LIMIT; i++) {
 
             Message queuedMsg = this.latestTransforms.get(i);
 
@@ -132,11 +132,12 @@ public class ActiveDocument {
     private void appendTransform(Message msg) {
         msg.setDocState(msg.getDocState() + 1);
 
-        if (this.latestTransforms.isEmpty())
+        if (this.latestTransforms.isEmpty()) {
             this.latestTransforms.add(msg);
-        else {
-            if (this.latestTransforms.size() == QUEUE_LENGTH)
+        } else {
+            if (this.latestTransforms.size() == QUEUE_LIMIT) {
                 this.latestTransforms.remove(0);
+            }
 
             this.latestTransforms.add(msg);
         }

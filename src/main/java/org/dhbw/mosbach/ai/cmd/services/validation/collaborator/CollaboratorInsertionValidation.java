@@ -75,7 +75,7 @@ public class CollaboratorInsertionValidation implements ModelValidation<Collabor
         }
 
         if (collaborator.getId() == currentUser.getId()) {
-            return new ValidationResult(new BadRequest("The owner cannot be added as collaborator."));
+            return ValidationResult.response(new BadRequest("The owner cannot be added as collaborator."));
         }
 
         final ValidationResult collaboratorExistenceCheck = collaboratorValidation.checkCollaboratorExists(collaborator, document);

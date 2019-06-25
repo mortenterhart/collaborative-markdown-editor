@@ -154,50 +154,69 @@ public class Doc {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         Doc other = (Doc) obj;
         if (content == null) {
-            if (other.content != null)
+            if (other.content != null) {
                 return false;
-        } else if (!content.equals(other.content))
+            }
+        } else if (!content.equals(other.content)) {
             return false;
+        }
         if (ctime == null) {
-            if (other.ctime != null)
+            if (other.ctime != null) {
                 return false;
-        } else if (!ctime.equals(other.ctime))
+            }
+        } else if (!ctime.equals(other.ctime)) {
             return false;
+        }
         if (cuser == null) {
-            if (other.cuser != null)
+            if (other.cuser != null) {
                 return false;
-        } else if (!cuser.equals(other.cuser))
+            }
+        } else if (!cuser.equals(other.cuser)) {
             return false;
-        if (id != other.id)
+        }
+        if (id != other.id) {
             return false;
+        }
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
+        }
         if (repo == null) {
-            if (other.repo != null)
+            if (other.repo != null) {
                 return false;
-        } else if (!repo.equals(other.repo))
+            }
+        } else if (!repo.equals(other.repo)) {
             return false;
+        }
         if (utime == null) {
-            if (other.utime != null)
+            if (other.utime != null) {
                 return false;
-        } else if (!utime.equals(other.utime))
+            }
+        } else if (!utime.equals(other.utime)) {
             return false;
+        }
         if (uuser == null) {
-            if (other.uuser != null)
+            if (other.uuser != null) {
                 return false;
-        } else if (!uuser.equals(other.uuser))
+            }
+        } else if (!uuser.equals(other.uuser)) {
             return false;
+        }
         return true;
     }
 

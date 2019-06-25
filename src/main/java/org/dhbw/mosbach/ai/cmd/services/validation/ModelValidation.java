@@ -4,6 +4,10 @@ import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * The
+ * @param <T>
+ */
 public interface ModelValidation<T extends Payload> {
 
     @NotNull

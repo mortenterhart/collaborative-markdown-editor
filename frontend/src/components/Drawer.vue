@@ -293,6 +293,10 @@
                 this.$store.commit('app/incEditorKey');
                 this.$store.commit('app/setCurrentDocument', doc);
                 this.$store.commit('app/setTitle', doc.name);
+                this.setHTMLTitle(doc.name);
+            },
+            setHTMLTitle(documentName) {
+                document.title = documentName + ' | Collaborative Markdown Editor';
             }
         },
         beforeMount() {

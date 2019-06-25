@@ -1,6 +1,6 @@
 <template>
     <div class="centering-text">
-        <v-icon size="120" color="#1976d2">error</v-icon>
+        <v-icon size="120" color="#4e8cff">error</v-icon>
         <h1>403 Forbidden</h1>
         <p>You are not permitted to access this document!</p>
     </div>

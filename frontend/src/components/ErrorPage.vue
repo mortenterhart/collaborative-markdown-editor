@@ -1,6 +1,6 @@
 <template>
     <div class="centering-text">
-        <v-icon size="120" color="#1976d2">error</v-icon>
+        <v-icon size="120" color="#4e8cff">error</v-icon>
         <h1>404 Not Found</h1>
         <p>The resource {{ resourcePath }} you requested was not found on this server!</p>
     </div>

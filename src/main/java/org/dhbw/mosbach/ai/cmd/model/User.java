@@ -126,40 +126,55 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         User other = (User) obj;
         if (ctime == null) {
-            if (other.ctime != null)
+            if (other.ctime != null) {
                 return false;
-        } else if (!ctime.equals(other.ctime))
+            }
+        } else if (!ctime.equals(other.ctime)) {
             return false;
-        if (id != other.id)
+        }
+        if (id != other.id) {
             return false;
+        }
         if (mail == null) {
-            if (other.mail != null)
+            if (other.mail != null) {
                 return false;
-        } else if (!mail.equals(other.mail))
+            }
+        } else if (!mail.equals(other.mail)) {
             return false;
+        }
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
+        }
         if (password == null) {
-            if (other.password != null)
+            if (other.password != null) {
                 return false;
-        } else if (!password.equals(other.password))
+            }
+        } else if (!password.equals(other.password)) {
             return false;
+        }
         if (utime == null) {
-            if (other.utime != null)
+            if (other.utime != null) {
                 return false;
-        } else if (!utime.equals(other.utime))
+            }
+        } else if (!utime.equals(other.utime)) {
             return false;
+        }
         return true;
     }
 

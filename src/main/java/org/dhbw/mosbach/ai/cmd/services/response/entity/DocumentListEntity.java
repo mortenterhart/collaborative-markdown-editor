@@ -10,13 +10,13 @@ import java.util.List;
 public class DocumentListEntity {
 
     @JsonProperty(value = ResponseParameters.DOCUMENT_ICON, required = true)
-    private DocumentIcon icon;
+    private final DocumentIcon icon;
 
     @JsonProperty(value = ResponseParameters.DOCUMENT, required = true)
-    private Doc document;
+    private final Doc document;
 
     @JsonProperty(value = ResponseParameters.COLLABORATOR_LIST, required = true)
-    private List<Collaborator> collaborators;
+    private final List<Collaborator> collaborators;
 
     public DocumentListEntity(DocumentIcon icon, Doc document, List<Collaborator> collaborators) {
         this.icon = icon;

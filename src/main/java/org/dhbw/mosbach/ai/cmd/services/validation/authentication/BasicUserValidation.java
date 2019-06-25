@@ -12,9 +12,9 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 @RequestScoped
-public class UserValidation {
+public class BasicUserValidation {
 
-    private Logger log = LoggerFactory.getLogger(UserValidation.class);
+    private Logger log = LoggerFactory.getLogger(BasicUserValidation.class);
 
     @Inject
     private UserDao userDao;

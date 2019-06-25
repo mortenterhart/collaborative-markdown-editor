@@ -6,7 +6,7 @@ import org.dhbw.mosbach.ai.cmd.model.User;
 public class LoginUserResponse extends Success {
 
     @JsonProperty(value = ResponseParameters.USER, required = true)
-    private User user;
+    private final User user;
 
     public LoginUserResponse(User user, String message) {
         super(message);

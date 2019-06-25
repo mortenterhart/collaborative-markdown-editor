@@ -18,6 +18,7 @@ import javax.ws.rs.core.Application;
  *
  * @author 6694964
  * @version 1.3
+ *
  * @see RestEndpoint
  * @see AuthenticationService
  * @see CollaboratorService

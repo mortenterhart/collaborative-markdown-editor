@@ -8,7 +8,7 @@ import java.util.List;
 public class DocumentListResponse extends Success {
 
     @JsonProperty(value = ResponseParameters.DOCUMENT_LIST, required = true)
-    private List<DocumentListEntity> documents;
+    private final List<DocumentListEntity> documents;
 
     public DocumentListResponse(List<DocumentListEntity> documents, String message) {
         super(message);

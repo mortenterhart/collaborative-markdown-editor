@@ -8,9 +8,9 @@ import org.dhbw.mosbach.ai.cmd.services.response.BadRequest;
 import org.dhbw.mosbach.ai.cmd.services.response.InternalServerError;
 import org.dhbw.mosbach.ai.cmd.services.validation.ModelValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
-import org.dhbw.mosbach.ai.cmd.services.validation.authentication.UserValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.authentication.BasicUserValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicFieldValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.BasicDocumentValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 
 import javax.enterprise.context.RequestScoped;
@@ -24,13 +24,13 @@ public class CollaboratorInsertionValidation implements ModelValidation<Collabor
     private BasicFieldValidation basicFieldValidation;
 
     @Inject
-    private DocumentValidation documentValidation;
+    private BasicDocumentValidation basicDocumentValidation;
 
     @Inject
-    private CollaboratorValidation collaboratorValidation;
+    private BasicCollaboratorValidation basicCollaboratorValidation;
 
     @Inject
-    private UserValidation userValidation;
+    private BasicUserValidation basicUserValidation;
 
     @Inject
     private SessionUtil sessionUtil;
@@ -38,6 +38,36 @@ public class CollaboratorInsertionValidation implements ModelValidation<Collabor
     private Doc document;
     private User collaborator;
 
+    /**
+     * Checks the passed payload of the respective collaborator insertion model type for
+     * validity. The validation includes:
+     *
+     * <ul>
+     * <li>check for specification of the username of the collaborator that is to be added</li>
+     * <li>check for the existence of the document pointed to by the document id</li>
+     * <li>check for the existence of the user designated by the collaborator username</li>
+     * <li>check if the current user is the document owner</li>
+     * <li>check if the collaborator to be added is not the same user as the document owner</li>
+     * <li>check if the collaborator does not exist on the document yet.</li>
+     * </ul>
+     *
+     * The {@code validate} method follows the principle of error handling descending from
+     * the Go programming language. Accordingly, a potential error in the validation is
+     * returned as an unsuccessful {@link ValidationResult} using a sufficient error message
+     * rather than throwing an exception which requires additional mappers in the services
+     * to handle those exceptions. A successful validation is returned in the same manner
+     * as a successful validation result.
+     *
+     * In any case, the method should accept a non-null payload and return a non-null
+     * validation result. In case the payload should be {@code null} this method should
+     * answer with an unsuccessful validation result containing an internal server error
+     * response.
+     *
+     * @param model the provided non-null collaborator insertion model from the collaborator
+     *              service
+     * @return a non-null validation result indicating if the collaborator insertion
+     * validation was successful or not
+     */
     @Override
     @NotNull
     public ValidationResult validate(@NotNull CollaboratorInsertionModel model) {
@@ -55,30 +85,30 @@ public class CollaboratorInsertionValidation implements ModelValidation<Collabor
 
         User currentUser = sessionUtil.getUser();
 
-        final ValidationResult documentExistenceCheck = documentValidation.checkDocumentExists(documentId);
+        final ValidationResult documentExistenceCheck = basicDocumentValidation.checkDocumentExists(documentId);
         if (documentExistenceCheck.isInvalid()) {
             return documentExistenceCheck;
         }
 
-        document = documentValidation.getFoundDocument();
+        document = basicDocumentValidation.getFoundDocument();
 
-        final ValidationResult userExistenceCheck = userValidation.checkUserExists(collaboratorUsername);
+        final ValidationResult userExistenceCheck = basicUserValidation.checkUserExists(collaboratorUsername);
         if (userExistenceCheck.isInvalid()) {
             return ValidationResult.response(new BadRequest("User '%s' does not exist. Please choose a valid username.", collaboratorUsername));
         }
 
-        collaborator = userValidation.getFoundUser();
+        collaborator = basicUserValidation.getFoundUser();
 
-        final ValidationResult ownerCheck = documentValidation.checkUserIsDocumentOwner(document, currentUser);
+        final ValidationResult ownerCheck = basicDocumentValidation.checkUserIsDocumentOwner(document, currentUser);
         if (ownerCheck.isInvalid()) {
             return ValidationResult.response(new BadRequest("You are unauthorized. Only the owner of this document may add collaborators."));
         }
 
         if (collaborator.getId() == currentUser.getId()) {
-            return new ValidationResult(new BadRequest("The owner cannot be added as collaborator."));
+            return ValidationResult.response(new BadRequest("The owner cannot be added as collaborator."));
         }
 
-        final ValidationResult collaboratorExistenceCheck = collaboratorValidation.checkCollaboratorExists(collaborator, document);
+        final ValidationResult collaboratorExistenceCheck = basicCollaboratorValidation.checkCollaboratorExists(collaborator, document);
         if (collaboratorExistenceCheck.isValid()) {
             return ValidationResult.response(new BadRequest("Collaborator '%s' was already added to this document.", collaboratorUsername));
         }

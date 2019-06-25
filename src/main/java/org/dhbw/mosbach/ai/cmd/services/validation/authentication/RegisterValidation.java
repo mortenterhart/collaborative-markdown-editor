@@ -27,10 +27,39 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
     private static final Pattern USERNAME_FORMAT = Pattern.compile("^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$");
 
     @Inject
-    private UserValidation userValidation;
+    private BasicUserValidation basicUserValidation;
 
     private BasicFieldValidation fieldValidation = new BasicFieldValidation();
 
+    /**
+     * Checks the passed payload of the respective registration model type for
+     * validity. The validation includes:
+     *
+     * <ul>
+     * <li>check for the specification of username, email address and password</li>
+     * <li>check for the correct formatting of the username</li>
+     * <li>check if the username is already registered</li>
+     * <li>check for the conformity of the email address syntax</li>
+     * <li>check for password security constraints (at least 8 characters containing
+     * uppercase and lowercase letters and digits).</li>
+     * </ul>
+     *
+     * The {@code validate} method follows the principle of error handling descending from
+     * the Go programming language. Accordingly, a potential error in the validation is
+     * returned as an unsuccessful {@link ValidationResult} using a sufficient error message
+     * rather than throwing an exception which requires additional mappers in the services
+     * to handle those exceptions. A successful validation is returned in the same manner
+     * as a successful validation result.
+     *
+     * In any case, the method should accept a non-null payload and return a non-null
+     * validation result. In case the payload should be {@code null} this method should
+     * answer with an unsuccessful validation result containing an internal server error
+     * response.
+     *
+     * @param model the provided non-null registration model from the register service
+     * @return a non-null validation result indicating if the registration validation was
+     * successful or not
+     */
     @NotNull
     public ValidationResult validate(@NotNull RegisterModel model) {
         if (model == null) {
@@ -70,12 +99,26 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
             return ValidationResult.response(new BadRequest("Username has invalid formatting. Allowed characters include: A-Z a-z 0-9 Space _ -"));
         }
 
-        final ValidationResult userExistenceCheck = userValidation.checkUserExists(username);
+        final ValidationResult userExistenceCheck = basicUserValidation.checkUserExists(username);
         if (userExistenceCheck.isValid()) {
             return ValidationResult.response(new BadRequest("Username '%s' is already registered", username));
         }
 
         return ValidationResult.success("Username is not registered yet");
+    }
+
+    @NotNull
+    private ValidationResult validateEmailSyntax(String email) {
+        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.EMAIL, email);
+        if (specifiedCheck.isInvalid()) {
+            return specifiedCheck;
+        }
+
+        if (!VALID_EMAIL_FORMAT.matcher(email).matches()) {
+            return ValidationResult.response(new BadRequest("Invalid email syntax"));
+        }
+
+        return ValidationResult.success("Email syntax is valid");
     }
 
     @NotNull
@@ -102,20 +145,6 @@ public class RegisterValidation implements ModelValidation<RegisterModel> {
         }
 
         return ValidationResult.success("Password constraints match");
-    }
-
-    @NotNull
-    private ValidationResult validateEmailSyntax(String email) {
-        final ValidationResult specifiedCheck = fieldValidation.checkSpecified(PayloadParameters.EMAIL, email);
-        if (specifiedCheck.isInvalid()) {
-            return specifiedCheck;
-        }
-
-        if (!VALID_EMAIL_FORMAT.matcher(email).matches()) {
-            return ValidationResult.response(new BadRequest("Invalid email syntax"));
-        }
-
-        return ValidationResult.success("Email syntax is valid");
     }
 }
 

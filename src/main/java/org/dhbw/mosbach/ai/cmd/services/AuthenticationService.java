@@ -50,6 +50,7 @@ import javax.ws.rs.core.Response;
  *
  * @author 6694964
  * @version 1.3
+ *
  * @see RestEndpoint
  * @see LoginValidation
  * @see RegisterValidation

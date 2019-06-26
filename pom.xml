@@ -141,7 +141,15 @@
         <profile>
             <id>deployment</id>
             <build>
-                <finalName>${root.deploy.name}</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <configuration>
+                            <warName>${root.deploy.name}</warName>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>
@@ -214,7 +222,7 @@
                     <!-- Add MySQL driver to WildFly -->
                     <execution>
                         <id>install-mysql-driver</id>
-                        <phase>install</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>deploy-artifact</goal>
                         </goals>
@@ -229,8 +237,8 @@
 
                     <!-- Add the WildFly datasource for MySQL -->
                     <execution>
-                        <id>add-datasource</id>
-                        <phase>install</phase>
+                        <id>add-mysql-datasource</id>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>add-resource</goal>
                         </goals>
@@ -260,8 +268,8 @@
 
                     <!-- Deploy the application to WildFly -->
                     <execution>
-                        <id>deploy</id>
-                        <phase>install</phase>
+                        <id>deploy-application</id>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>deploy</goal>
                         </goals>

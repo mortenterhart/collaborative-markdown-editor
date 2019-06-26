@@ -62,12 +62,12 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
      * and thus deserializers need (and should) not check for it.
      *
      * @param jsonParser Parsed used for reading JSON content
-     * @param ctxt       Context that can be used to access information about
+     * @param context    Context that can be used to access information about
      *                   this deserialization activity.
      * @return Deserialized value
      */
     @Override
-    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException, JsonProcessingException {
         return LocalDateTime.parse(jsonParser.readValueAs(String.class));
     }
 }

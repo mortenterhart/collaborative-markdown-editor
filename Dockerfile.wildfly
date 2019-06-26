@@ -1,4 +1,5 @@
-FROM jboss/wildfly:16.0.0.Final as server
+ARG WILDFLY_VERSION=16.0.0.Final
+FROM jboss/wildfly:${WILDFLY_VERSION} AS server
 
 ARG buildno
 
@@ -9,7 +10,6 @@ ENV WEBAPP_PORT 8080/tcp
 ENV ADMINISTRATION_PORT 9990/tcp
 
 # WildFly settings
-ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_USER wildfly
 ENV WILDFLY_PASSWORD wildfly
 
@@ -54,7 +54,7 @@ RUN cd ${APP_DIR} && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -
 # Deploy the application as ROOT app to WildFly
 RUN cp -vf ${APP_DIR}/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
 
-# Remove
+# Remove the application directory to reduce image size
 RUN rm -rf ${APP_DIR}
 
 # Expose the webapp port

@@ -9,9 +9,9 @@ import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.response.Success;
 import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicCollaboratorValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
 import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorRemovalValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicCollaboratorValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;
@@ -19,12 +19,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -100,7 +102,8 @@ public class CollaboratorService extends RootService implements RestEndpoint {
      * This operation can only be performed if the user is authenticated. An invocation without
      * valid session will result in {@code 401 Unauthorized}.
      *
-     * @param model the request model containing the document id and the collaborator username
+     * @param model   the request model containing the document id and the collaborator username
+     * @param request the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the collaborator could be added, otherwise
      * {@code 400 Bad Request} if the request contained invalid fields or the user has no
      * appropriate rights for this operation.
@@ -110,7 +113,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response addCollaborator(@NotNull CollaboratorInsertionModel model) {
+    public Response addCollaborator(@NotNull CollaboratorInsertionModel model, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
@@ -120,8 +123,8 @@ public class CollaboratorService extends RootService implements RestEndpoint {
             return collaboratorInsertionCheck.buildResponse();
         }
 
-        int documentId = model.getDocumentId();
-        String collaboratorUsername = model.getCollaboratorName();
+        final int documentId = model.getDocumentId();
+        final String collaboratorUsername = model.getCollaboratorName();
 
         Doc document = collaboratorInsertionValidation.getDocument();
         User collaborator = collaboratorInsertionValidation.getCollaborator();
@@ -132,7 +135,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
         newCollaborator.setHasAccess(HasAccess.Y);
 
         collaboratorDao.createCollaborator(newCollaborator);
-        log.info("Created collaborator '{}' for document '{}'", collaboratorUsername, document.getName());
+        log.info("{}: Created collaborator '{}' for document '{}'", request.getRequestURI(), collaboratorUsername, document.getName());
 
         return new Success("The collaborator '%s' was successfully added to your document.", collaboratorUsername).buildResponse();
     }
@@ -148,7 +151,8 @@ public class CollaboratorService extends RootService implements RestEndpoint {
      * This operation can only be performed if the user is authenticated. An invocation without
      * valid session will result in {@code 401 Unauthorized}.
      *
-     * @param model the request model containing the document id and collaborator id
+     * @param model   the request model containing the document id and collaborator id
+     * @param request the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the specified collaborator could be removed, otherwise
      * {@code 400 Bad Request} if the request contained invalid fields or the requesting user
      * has not the appropriate rights for this operation.
@@ -158,7 +162,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response removeCollaborator(@NotNull CollaboratorRemovalModel model) {
+    public Response removeCollaborator(@NotNull CollaboratorRemovalModel model, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
@@ -171,6 +175,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
         Collaborator collaborator = collaboratorRemovalValidation.getCollaborator();
 
         collaboratorDao.removeCollaborator(collaborator);
+        log.info("{}: Removed collaborator '{}' from document '{}'", request.getRequestURI(), collaborator.getUser().getName(), collaborator.getDoc().getName());
 
         return new Success("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName()).buildResponse();
     }

@@ -19,15 +19,26 @@ import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentIcon;
 import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
 import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicDocumentValidation;
-import org.dhbw.mosbach.ai.cmd.services.validation.document.*;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentAccessValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentInsertionValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentRemovalValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.document.DocumentTransferValidation;
 import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -127,6 +138,7 @@ public class DocumentService extends RootService implements RestEndpoint {
      * valid session will result in {@code 401 Unauthorized}.
      *
      * @param insertionModel the request model containing the name of the new document
+     * @param request        the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the document was created, otherwise
      */
     @POST
@@ -134,7 +146,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response addDocument(@NotNull DocumentInsertionModel insertionModel) {
+    public Response addDocument(@NotNull DocumentInsertionModel insertionModel, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to create a new document.").buildResponse();
         }
@@ -157,7 +169,7 @@ public class DocumentService extends RootService implements RestEndpoint {
         document.setName(documentName.trim());
 
         docDao.createDoc(document);
-        log.info("Document '{}' was created for user '{}'", documentName, currentUser.getName());
+        log.info("{}: Document '{}' was created for user '{}'", request.getRequestURI(), documentName, currentUser.getName());
 
         return new Success("Document was created successfully").buildResponse();
     }
@@ -173,6 +185,7 @@ public class DocumentService extends RootService implements RestEndpoint {
      * valid session will result in {@code 401 Unauthorized}.
      *
      * @param removalModel the request model containing the id of the document to be removed
+     * @param request      the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the document was removed, otherwise
      * {@code 400 Bad Request} if the document does not exist or the user is not authorized
      * to remove the document.
@@ -182,7 +195,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response removeDocument(@NotNull DocumentRemovalModel removalModel) {
+    public Response removeDocument(@NotNull DocumentRemovalModel removalModel, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to remove a document.").buildResponse();
         }
@@ -192,14 +205,14 @@ public class DocumentService extends RootService implements RestEndpoint {
             return documentRemovalCheck.buildResponse();
         }
 
-        int documentId = removalModel.getDocumentId();
-        Doc document = docDao.getDoc(documentId);
+        final int documentId = removalModel.getDocumentId();
+        final Doc document = documentRemovalValidation.getFoundDocument();
 
         docDao.removeDoc(document);
-        log.info("Removed document '{}' from repository of user '{}'", documentId, sessionUtil.getUser().getName());
+        log.info("{}: Removed document '{}' from repository of user '{}'", request.getRequestURI(), documentId, sessionUtil.getUser().getName());
         for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
             collaboratorDao.removeCollaborator(collaborator);
-            log.info("Removed collaborator '{}' from document '{}'", collaborator.getId(), documentId);
+            log.info("{}: Removed collaborator '{}' from document '{}'", request.getRequestURI(), collaborator.getId(), documentId);
         }
 
         return new Success("Document was removed successfully").buildResponse();
@@ -217,6 +230,7 @@ public class DocumentService extends RootService implements RestEndpoint {
      * valid session will result in {@code 401 Unauthorized}.
      *
      * @param accessModel the requesting model containing the document id to be checked for access
+     * @param request     the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the user is permitted to access the document, otherwise
      * a {@code 403 Forbidden} response if the user is not allowed.
      */
@@ -225,7 +239,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel) {
+    public Response hasDocumentAccess(@NotNull DocumentAccessModel accessModel, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to have access to this document.").buildResponse();
         }
@@ -238,6 +252,8 @@ public class DocumentService extends RootService implements RestEndpoint {
         User currentUser = sessionUtil.getUser();
 
         Doc document = documentAccessValidation.getFoundDocument();
+
+        log.info("{}: Checking for access permission of user '{}' to document '{}'", request.getRequestURI(), currentUser.getName(), document.getName());
 
         boolean hasAccess = false;
 
@@ -254,9 +270,11 @@ public class DocumentService extends RootService implements RestEndpoint {
         }
 
         if (!hasAccess) {
+            log.info("{}: User '{}' is not permitted to access the document '{}'", request.getRequestURI(), currentUser.getName(), document.getName());
             return new Forbidden("You do not have the permission to access this document").buildResponse();
         }
 
+        log.info("{}: User '{}' has the permission to access the document '{}'", request.getRequestURI(), currentUser.getName(), document.getName());
         return new Success("You have granted access to this document").buildResponse();
     }
 
@@ -282,6 +300,7 @@ public class DocumentService extends RootService implements RestEndpoint {
      * This operation can only be performed if the user is authenticated. An invocation without
      * valid session will result in {@code 401 Unauthorized}.
      *
+     * @param request the injected request for URI information to be logged
      * @return a {@code 200 OK} response with all documents if the user is authenticated, otherwise
      * a {@code 401 Unauthorized} because the user needs to authenticate.
      */
@@ -289,7 +308,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response getAllDocuments() {
+    public Response getAllDocuments(@Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to fetch all documents.").buildResponse();
         }
@@ -322,6 +341,7 @@ public class DocumentService extends RootService implements RestEndpoint {
             }
         }
 
+        log.info("{}: Successfully loaded all {} documents for user '{}'", request.getRequestURI(), documentEntities.size(), currentUser.getName());
         return new DocumentListResponse(documentEntities, "Documents loaded successfully").buildResponse();
     }
 
@@ -338,6 +358,7 @@ public class DocumentService extends RootService implements RestEndpoint {
      *
      * @param transferModel the request model containing the document id and the name of the
      *                      new owner
+     * @param request       the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the ownership was transferred, otherwise a
      * {@code 400 Bad Request} if the
      */
@@ -346,7 +367,7 @@ public class DocumentService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response transferOwnership(@NotNull DocumentTransferModel transferModel) {
+    public Response transferOwnership(@NotNull DocumentTransferModel transferModel, @Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to transfer an ownership.").buildResponse();
         }
@@ -366,6 +387,7 @@ public class DocumentService extends RootService implements RestEndpoint {
         document.setRepo(newRepo);
         document.setUuser(newOwner);
         docDao.transferRepo(document);
+        log.info("{}: Transferred the ownership for document '{}' to user '{}'", request.getRequestURI(), document.getName(), newOwner.getName());
 
         return new Success("Ownership was transferred to '%s' successfully", newOwnerName).buildResponse();
     }

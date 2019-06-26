@@ -17,6 +17,36 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+/**
+ * The {@code DocumentRemovalValidation} provides a validation to check an incoming
+ * user request with a provided document removal model for the existence of the
+ * document pointed to by a supplied document id and for the possession of necessary
+ * owner rights in order to be able to remove a document from a repository.
+ *
+ * This validation uses the injection mechanism offered by CDI to get access to more
+ * general validation classes such as {@link BasicDocumentValidation} to perform the
+ * document removal validation correctly and to verify the existence of documents and
+ * the ownership of the referenced document.
+ *
+ * Considering that loading a document from the database is an expensive operation the
+ * loaded document is cached within the {@code foundDocument} attribute. This way the
+ * service calling validation methods contained in this class does not need to load the
+ * document again, but can fetch the cached document via the getter method {@link
+ * DocumentRemovalValidation#getFoundDocument()}. Accordingly, there is no duplication
+ * of database operations increasing performance.
+ *
+ * If the cached document is accessed via the mentioned getter method the cache attribute
+ * is set back to {@code null} to clear the cache for next checks and to signalize other
+ * services using these validation methods that there has been no document yet that was
+ * loaded from the database.
+ *
+ * @author 6694964
+ * @version 1.1
+ *
+ * @see ModelValidation
+ * @see BasicDocumentValidation
+ * @see SessionUtil
+ */
 @RequestScoped
 public class DocumentRemovalValidation implements ModelValidation<DocumentRemovalModel> {
 
@@ -30,6 +60,13 @@ public class DocumentRemovalValidation implements ModelValidation<DocumentRemova
 
     @Inject
     private SessionUtil sessionUtil;
+
+    /**
+     * Cached instance of the last loaded document to be conveyed by a
+     * service in order to reduce database operations. Once accessed, this
+     * document attribute is cleared back to {@code null}.
+     */
+    private Doc foundDocument;
 
     /**
      * Checks the passed payload of the respective document removal model type for
@@ -72,14 +109,32 @@ public class DocumentRemovalValidation implements ModelValidation<DocumentRemova
             return documentExistenceCheck;
         }
 
-        Doc document = basicDocumentValidation.getFoundDocument();
+        foundDocument = basicDocumentValidation.getFoundDocument();
         User currentUser = sessionUtil.getUser();
 
-        final ValidationResult ownerCheck = basicDocumentValidation.checkUserIsDocumentOwner(document, currentUser);
+        final ValidationResult ownerCheck = basicDocumentValidation.checkUserIsDocumentOwner(foundDocument, currentUser);
         if (ownerCheck.isInvalid()) {
             return ValidationResult.response(new BadRequest("You are unauthorized. Only the owner of this document may remove it."));
         }
 
         return ValidationResult.success("Document may be removed");
+    }
+
+    /**
+     * Retrieves the cached instance of the found document loaded by the method
+     * checking the existence of the referenced document. If this method has found
+     * a corresponding document this getter method returns the instance for this
+     * document and clears the {@code foundDocument} attribute back to {@code null}.
+     * The method returns null in case no collaborator was found or the method was
+     * not executed before.
+     *
+     * @return the cached instance of the document or {@code null} if the document
+     * was not found or the method for checking the existence of a document was
+     * not executed previously.
+     */
+    public Doc getFoundDocument() {
+        Doc document = foundDocument;
+        foundDocument = null;
+        return document;
     }
 }

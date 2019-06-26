@@ -25,6 +25,10 @@ import java.util.regex.Pattern;
  * non-existence of the applied username to disallow duplication of users and
  * security constraints for the password of a new user.
  *
+ * This validation uses the injection mechanism offered by CDI to get access to more
+ * general validation classes such as {@link BasicUserValidation} to perform the
+ * registration validation correctly and to verify the applied fields.
+ *
  * @author 6694964
  * @version 1.1
  *

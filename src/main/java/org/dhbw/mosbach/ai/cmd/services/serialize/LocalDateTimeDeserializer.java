@@ -8,6 +8,10 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
 
     private static final long serialVersionUID = 1470228654468269002L;

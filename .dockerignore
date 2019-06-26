@@ -80,6 +80,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+target/
 
 # Vim Temporary Files
 *.swp

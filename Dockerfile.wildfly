@@ -1,15 +1,41 @@
-FROM jboss/wildfly:16.0.0.Final as server
+# Specify WildFly version and app home
+# directory as arguments
+ARG WILDFLY_VERSION=16.0.0.Final
+
+# 1. Stage: Build frontend and backend
+# Use Maven base image
+FROM maven:3.6.0-jdk-11-slim AS build
+
+ENV APP_HOME /app
+
+COPY frontend ${APP_HOME}/frontend
+COPY src ${APP_HOME}/src
+COPY pom.xml ${APP_HOME}/pom.xml
+
+# Set the working directory to the app home directory
+WORKDIR ${APP_HOME}
+
+# Install Git as this is required for a custom
+# npm dependency
+RUN apt-get update && apt-get --assume-yes install git
+
+# Build the frontend and backend of the application
+RUN mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+# 2. Stage: Configure WildFly and deploy application
+# Use the WildFly base image to deploy the built application
+FROM jboss/wildfly:${WILDFLY_VERSION} AS server
 
 ARG buildno
 
-WORKDIR .
+# Set the working directory to the WildFly home directory
+WORKDIR ${JBOSS_HOME}
 
 # Ports used by the WildFly instance
 ENV WEBAPP_PORT 8080/tcp
 ENV ADMINISTRATION_PORT 9990/tcp
 
 # WildFly settings
-ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_USER wildfly
 ENV WILDFLY_PASSWORD wildfly
 
@@ -28,34 +54,18 @@ ENV JBOSS_CLI ${JBOSS_HOME}/bin/jboss-cli.sh
 ENV DEPLOYMENT_DIR ${JBOSS_HOME}/standalone/deployments
 ENV APP_DIR ./collaborative-markdown-editor
 
-USER jboss
-
 RUN echo "Build Number: ${buildno}"
 
-# Add MySQL driver and datasource to the WildFly
-ADD --chown=jboss:jboss ./jboss-configure-mysql-datasource.sh .
+# Execute the configuration script to add MySQL driver
+# and datasource to the WildFly instance
+COPY ./jboss-configure-mysql-datasource.sh .
 RUN ./jboss-configure-mysql-datasource.sh
 
 # Remove the script
 RUN rm -f ./jboss-configure-datasource.sh
 
-USER root
-
-# Install Git in the image
-RUN yum --assumeyes install git
-
-USER jboss
-
-ADD --chown=jboss:jboss ./ ${APP_DIR}/
-
-# Build and package the application with Maven
-RUN cd ${APP_DIR} && ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
 # Deploy the application as ROOT app to WildFly
-RUN cp -vf ${APP_DIR}/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
-
-# Remove
-RUN rm -rf ${APP_DIR}
+COPY --from=build /app/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
 
 # Expose the webapp port
 EXPOSE ${WEBAPP_PORT}

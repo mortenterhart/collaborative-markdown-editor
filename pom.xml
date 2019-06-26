@@ -212,7 +212,7 @@
                 </configuration>
                 <executions>
                     <!-- Add MySQL driver to WildFly -->
-                    <!--execution>
+                    <execution>
                         <id>install-mysql-driver</id>
                         <phase>install</phase>
                         <goals>
@@ -225,7 +225,7 @@
                             <name>${wildfly.mysql.driver-name}</name>
                             <driver-name>${wildfly.mysql.driver-name}</driver-name>
                         </configuration>
-                    </execution-->
+                    </execution>
 
                     <!-- Add the WildFly datasource for MySQL -->
                     <execution>

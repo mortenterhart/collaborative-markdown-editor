@@ -20,7 +20,7 @@ WORKDIR ${APP_HOME}
 RUN apt-get update && apt-get --assume-yes install git
 
 # Build the frontend and backend of the application
-RUN mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+RUN mvn install -P deployment -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 # 2. Stage: Configure WildFly and deploy application
 # Use the WildFly base image to deploy the built application
@@ -65,7 +65,7 @@ RUN ./jboss-configure-mysql-datasource.sh
 RUN rm -f ./jboss-configure-datasource.sh
 
 # Deploy the application as ROOT app to WildFly
-COPY --from=build /app/target/CMD.war ${DEPLOYMENT_DIR}/ROOT.war
+COPY --from=build /app/target/ROOT.war ${DEPLOYMENT_DIR}/
 
 # Expose the webapp port
 EXPOSE ${WEBAPP_PORT}

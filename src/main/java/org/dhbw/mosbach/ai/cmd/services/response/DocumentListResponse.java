@@ -5,6 +5,10 @@ import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 
 import java.util.List;
 
+/**
+ * @author 6694964
+ * @version 1.3
+ */
 public class DocumentListResponse extends Success {
 
     @JsonProperty(value = ResponseParameters.DOCUMENT_LIST, required = true)

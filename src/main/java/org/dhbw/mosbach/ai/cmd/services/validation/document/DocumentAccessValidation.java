@@ -14,6 +14,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 @RequestScoped
 public class DocumentAccessValidation implements ModelValidation<DocumentAccessModel> {
 

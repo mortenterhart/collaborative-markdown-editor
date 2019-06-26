@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 public class Status {
 
     @JsonProperty(value = ResponseParameters.STATUS_CODE, required = true)

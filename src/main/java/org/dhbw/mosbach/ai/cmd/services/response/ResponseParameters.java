@@ -1,5 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.services.response;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 public abstract class ResponseParameters {
 
     public static final String HTTP_STATUS = "status";

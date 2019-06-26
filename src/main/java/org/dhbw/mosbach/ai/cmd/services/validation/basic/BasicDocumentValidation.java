@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 @RequestScoped
 public class BasicDocumentValidation {
 

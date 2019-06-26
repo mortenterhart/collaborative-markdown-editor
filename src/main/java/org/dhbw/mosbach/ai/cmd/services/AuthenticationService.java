@@ -108,9 +108,9 @@ public class AuthenticationService extends RootService implements RestEndpoint {
             return loginCheck.buildResponse();
         }
 
-        String username = loginModel.getUsername();
+        final String username = loginModel.getUsername();
 
-        User user = userDao.getUserByName(username);
+        User user = loginValidation.getFoundUser();
 
         if (sessionUtil.createSession(user)) {
             log.debug("login: Created new session for user '{}'", username);
@@ -146,9 +146,9 @@ public class AuthenticationService extends RootService implements RestEndpoint {
             return registerCheck.buildResponse();
         }
 
-        String username = registerModel.getUsername();
-        String email = registerModel.getEmail();
-        String password = registerModel.getPassword();
+        final String username = registerModel.getUsername();
+        final String email = registerModel.getEmail();
+        final String password = registerModel.getPassword();
 
         User newUser = new User();
         newUser.setName(username);

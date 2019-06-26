@@ -157,7 +157,7 @@ public class DocumentService extends RootService implements RestEndpoint {
         document.setName(documentName.trim());
 
         docDao.createDoc(document);
-        log.info("Document '{}' was created for user '{}'", documentName, currentUser.getName());
+        log.info("addDocument: Document '{}' was created for user '{}'", documentName, currentUser.getName());
 
         return new Success("Document was created successfully").buildResponse();
     }
@@ -192,14 +192,14 @@ public class DocumentService extends RootService implements RestEndpoint {
             return documentRemovalCheck.buildResponse();
         }
 
-        int documentId = removalModel.getDocumentId();
-        Doc document = docDao.getDoc(documentId);
+        final int documentId = removalModel.getDocumentId();
+        final Doc document = documentRemovalValidation.getFoundDocument();
 
         docDao.removeDoc(document);
-        log.info("Removed document '{}' from repository of user '{}'", documentId, sessionUtil.getUser().getName());
+        log.info("removeDocument: Removed document '{}' from repository of user '{}'", documentId, sessionUtil.getUser().getName());
         for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
             collaboratorDao.removeCollaborator(collaborator);
-            log.info("Removed collaborator '{}' from document '{}'", collaborator.getId(), documentId);
+            log.info("removeDocument: Removed collaborator '{}' from document '{}'", collaborator.getId(), documentId);
         }
 
         return new Success("Document was removed successfully").buildResponse();
@@ -239,6 +239,8 @@ public class DocumentService extends RootService implements RestEndpoint {
 
         Doc document = documentAccessValidation.getFoundDocument();
 
+        log.info("hasAccess: Checking for access permission of user '{}' to document '{}'", currentUser.getName(), document.getName());
+
         boolean hasAccess = false;
 
         final ValidationResult ownerCheck = basicDocumentValidation.checkUserIsDocumentOwner(document, currentUser);
@@ -254,9 +256,11 @@ public class DocumentService extends RootService implements RestEndpoint {
         }
 
         if (!hasAccess) {
+            log.info("hasAccess: User '{}' is not permitted to access the document '{}'", currentUser.getName(), document.getName());
             return new Forbidden("You do not have the permission to access this document").buildResponse();
         }
 
+        log.info("hasAccess: User '{}' has the permission to access the document '{}'", currentUser.getName(), document.getName());
         return new Success("You have granted access to this document").buildResponse();
     }
 
@@ -322,6 +326,7 @@ public class DocumentService extends RootService implements RestEndpoint {
             }
         }
 
+        log.info("getAllDocuments: Successfully loaded all {} documents for user '{}'", documentEntities.size(), currentUser.getName());
         return new DocumentListResponse(documentEntities, "Documents loaded successfully").buildResponse();
     }
 

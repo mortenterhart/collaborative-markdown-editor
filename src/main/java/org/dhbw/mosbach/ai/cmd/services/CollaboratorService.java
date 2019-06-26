@@ -120,8 +120,8 @@ public class CollaboratorService extends RootService implements RestEndpoint {
             return collaboratorInsertionCheck.buildResponse();
         }
 
-        int documentId = model.getDocumentId();
-        String collaboratorUsername = model.getCollaboratorName();
+        final int documentId = model.getDocumentId();
+        final String collaboratorUsername = model.getCollaboratorName();
 
         Doc document = collaboratorInsertionValidation.getDocument();
         User collaborator = collaboratorInsertionValidation.getCollaborator();
@@ -132,7 +132,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
         newCollaborator.setHasAccess(HasAccess.Y);
 
         collaboratorDao.createCollaborator(newCollaborator);
-        log.info("Created collaborator '{}' for document '{}'", collaboratorUsername, document.getName());
+        log.info("addCollaborator: Created collaborator '{}' for document '{}'", collaboratorUsername, document.getName());
 
         return new Success("The collaborator '%s' was successfully added to your document.", collaboratorUsername).buildResponse();
     }
@@ -171,6 +171,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
         Collaborator collaborator = collaboratorRemovalValidation.getCollaborator();
 
         collaboratorDao.removeCollaborator(collaborator);
+        log.info("removeCollaborator: Removed collaborator '{}' from document '{}'", collaborator.getUser().getName(), collaborator.getDoc().getName());
 
         return new Success("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName()).buildResponse();
     }

@@ -28,6 +28,17 @@ import javax.validation.constraints.NotNull;
  * general validation classes such as {@link BasicUserValidation} to perform the login
  * validation correctly and to verify the applied username and password.
  *
+ * Considering that loading a user from the database is an expensive operation the loaded
+ * user is cached within the {@code foundUser} attribute. This way the service calling
+ * validation methods contained in this class does not need to load the user again, but
+ * can fetch the cached user via the getter method {@link LoginValidation#getFoundUser}.
+ * Accordingly, there is no duplication of database operations increasing performance.
+ *
+ * If the cached user is accessed via the mentioned getter method the cache attribute is
+ * set back to {@code null} to clear the cache for next checks and to signalize other
+ * services using these validation methods that there has been no user yet that was loaded
+ * from the database.
+ *
  * @author 6694964
  * @version 1.1
  *
@@ -56,6 +67,13 @@ public class LoginValidation implements ModelValidation<LoginModel> {
 
     @Inject
     private Hashing hashing;
+
+    /**
+     * Cached instance of the last loaded user object from the database in order to
+     * reduce database operations and increase request processing performance. Once
+     * accessed, this user attribute is cleared back to {@code null}.
+     */
+    private User foundUser;
 
     /**
      * Checks the passed payload of the respective login model type for
@@ -115,6 +133,11 @@ public class LoginValidation implements ModelValidation<LoginModel> {
      * validation result if either the user does not exist or the password does not match
      * the correct one.
      *
+     * If the user exists it is temporarily stored inside the {@code foundUser} attribute
+     * and can be fetched by a service consuming this login validation using the getter
+     * method {@link LoginValidation#getFoundUser()}. After that the method checks further
+     * if the supplied password matches the one stored in database.
+     *
      * Notably here is that the returned response is the same in both cases of user
      * non-existence or wrong applied password to prevent exposure of information about
      * existing or non-existing users.
@@ -131,12 +154,28 @@ public class LoginValidation implements ModelValidation<LoginModel> {
             return ValidationResult.response(new BadRequest("Invalid username or password"));
         }
 
-        User user = basicUserValidation.getFoundUser();
+        foundUser = basicUserValidation.getFoundUser();
 
-        if (!hashing.checkPassword(password, user.getPassword())) {
+        if (!hashing.checkPassword(password, foundUser.getPassword())) {
             return ValidationResult.response(new BadRequest("Invalid username or password"));
         }
 
         return ValidationResult.success("Authentication successful");
+    }
+
+    /**
+     * Retrieves the cached instance of the loaded user from the database after checking
+     * for the existence of the user designated by the applied username in {@link
+     * LoginValidation#checkCredentialsCorrect(String, String)}. If the method has found
+     * a concrete user this instance is returned. If no user was found or the method was
+     * not invoked before this one the result will be {@code null}.
+     *
+     * @return the cached user if the login validation has found one or {@code null} if
+     * no user was found or the validation was not invoked previously.
+     */
+    public User getFoundUser() {
+        User user = foundUser;
+        foundUser = null;
+        return user;
     }
 }

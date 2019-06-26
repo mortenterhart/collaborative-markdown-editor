@@ -1,4 +1,8 @@
-FROM mysql:8.0.15 AS database
+# Specify the MySQL version to be downloaded
+ARG MYSQL_VERSION=8.0.15
+
+# Pull the official MySQL image
+FROM mysql:${MYSQL_VERSION} AS database
 
 ARG buildno
 

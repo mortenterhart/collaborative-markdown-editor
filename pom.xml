@@ -6,12 +6,39 @@
     <artifactId>collaborative-markdown-editor</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Version Properties for Java, WildFly, MySQL connector and NodeJS -->
         <java.version>11</java.version>
+        <wildfly.version>16.0.0.Final</wildfly.version>
+        <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
+        <nodejs.version>v10.15.3</nodejs.version>
+
+        <!-- Path properties for special directories -->
+        <webapp.directory>src/main/webapp</webapp.directory>
+        <nodejs.installation.directory>target</nodejs.installation.directory>
+        <frontend.directory>frontend</frontend.directory>
+
+        <!-- Username and password for the WildFly administration user -->
+        <wildfly.user.name>wildfly</wildfly.user.name>
+        <wildfly.user.password>wildfly</wildfly.user.password>
+
+        <!-- Properties for the MySQL datasource for WildFly -->
+        <wildfly.datasource.name>cmdDS</wildfly.datasource.name>
+        <wildfly.datasource.jndi-name>java:/cmd</wildfly.datasource.jndi-name>
+        <wildfly.datasource.jdbc.url>jdbc:mysql://localhost:3306/cmd?useSSL=false</wildfly.datasource.jdbc.url>
+        <wildfly.datasource.username>root</wildfly.datasource.username>
+        <wildfly.datasource.password>root</wildfly.datasource.password>
+        <wildfly.mysql.driver-name>mysql-connector-java-${mysql-connector-java.version}</wildfly.mysql.driver-name>
+
+        <!-- Name of the WAR file when in deploy mode -->
+        <root.deploy.name>ROOT</root.deploy.name>
+
+        <!-- Do not fail on missing web.xml -->
         <failOnMissingWebXml>false</failOnMissingWebXml>
     </properties>
 
@@ -20,31 +47,36 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.15</version>
+            <version>${mysql-connector-java.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- Hibernate 5.2.6 Final -->
+        <!-- https://mvnrepository.com/artifact/org.hibernate/5.2.6.Final -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>5.2.6.Final</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.2.11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
             <version>2.2.11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>2.2.11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
@@ -83,19 +115,20 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.9</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.5.0-M1</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-surefire-provider</artifactId>
@@ -108,13 +141,39 @@
         <profile>
             <id>deployment</id>
             <build>
-                <finalName>ROOT</finalName>
+                <finalName>${root.deploy.name}</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>no-frontend-build</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.7.6</version>
+                        <executions>
+                            <execution>
+                                <id>node-and-npm-installation</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>npm-install</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>npm-run-build</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
 
     <build>
-        <finalName>CMD</finalName>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -138,13 +197,76 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>2.0.1.Final</version>
                 <configuration>
-                    <modules-path>
-                        <paths>
-                            <path>/opt/WildFly/modules</path>
-                            <path>/opt/my-modules</path>
-                        </paths>
-                    </modules-path>
+                    <version>${wildfly.version}</version>
+                    <add-user>
+                        <users>
+                            <user>
+                                <username>${wildfly.user.name}</username>
+                                <password>${wildfly.user.password}</password>
+                                <groups>
+                                    <group>admin</group>
+                                </groups>
+                            </user>
+                        </users>
+                    </add-user>
                 </configuration>
+                <executions>
+                    <!-- Add MySQL driver to WildFly -->
+                    <execution>
+                        <id>install-mysql-driver</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>deploy-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                            <version>${mysql-connector-java.version}</version>
+                            <name>${wildfly.mysql.driver-name}</name>
+                            <driver-name>${wildfly.mysql.driver-name}</driver-name>
+                        </configuration>
+                    </execution>
+
+                    <!-- Add the WildFly datasource for MySQL -->
+                    <execution>
+                        <id>add-datasource</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <address>subsystem=datasources,data-source=${wildfly.datasource.name}</address>
+                            <resources>
+                                <resource>
+                                    <properties>
+                                        <name>${wildfly.datasource.name}</name>
+                                        <jndi-name>${wildfly.datasource.jndi-name}</jndi-name>
+                                        <connection-url>${wildfly.datasource.jdbc.url}</connection-url>
+                                        <driver-name>${wildfly.mysql.driver-name}</driver-name>
+                                        <user-name>${wildfly.datasource.username}</user-name>
+                                        <password>${wildfly.datasource.password}</password>
+                                        <enable>true</enable>
+                                        <jta>true</jta>
+                                        <max-pool-size>25</max-pool-size>
+                                        <blocking-timeout-wait-millis>5000</blocking-timeout-wait-millis>
+                                        <enabled>true</enabled>
+                                        <use-ccm>true</use-ccm>
+                                    </properties>
+                                </resource>
+                            </resources>
+                            <retryFailedDeploymentCount>1</retryFailedDeploymentCount>
+                        </configuration>
+                    </execution>
+
+                    <!-- Deploy the application to WildFly -->
+                    <execution>
+                        <id>deploy</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -173,7 +295,7 @@
                     <attachClasses>true</attachClasses>
                     <webResources>
                         <resource>
-                            <directory>src/main/webapp</directory>
+                            <directory>${webapp.directory}</directory>
                             <filtering>true</filtering>
                         </resource>
                     </webResources>
@@ -195,13 +317,13 @@
                 <version>1.7.6</version>
 
                 <configuration>
-                    <workingDirectory>frontend</workingDirectory>
-                    <installDirectory>target</installDirectory>
+                    <workingDirectory>${frontend.directory}</workingDirectory>
+                    <installDirectory>${nodejs.installation.directory}</installDirectory>
                 </configuration>
 
                 <executions>
                     <execution>
-                        <id>node and npm installation</id>
+                        <id>node-and-npm-installation</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
@@ -209,12 +331,12 @@
                         <phase>generate-resources</phase>
 
                         <configuration>
-                            <nodeVersion>v10.15.3</nodeVersion>
+                            <nodeVersion>${nodejs.version}</nodeVersion>
                         </configuration>
                     </execution>
 
                     <execution>
-                        <id>npm install</id>
+                        <id>npm-install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -227,7 +349,7 @@
                     </execution>
 
                     <execution>
-                        <id>npm run build</id>
+                        <id>npm-run-build</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>

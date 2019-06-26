@@ -7,6 +7,10 @@ import org.dhbw.mosbach.ai.cmd.services.response.ResponseParameters;
 
 import java.util.List;
 
+/**
+ * @author 6694964
+ * @version 1.3
+ */
 public class DocumentListEntity {
 
     @JsonProperty(value = ResponseParameters.DOCUMENT_ICON, required = true)

@@ -15,7 +15,7 @@
                     :showTypingIndicator="showTypingIndicator"
                     :colors="colors"
                     :alwaysScrollToBottom="alwaysScrollToBottom"
-                    :messageStyling="messageStyling"/>
+                    :messageStyling="messageStyling"></beautiful-chat>
             <v-flex d-flex xs12 md6 pr-2>
                 <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"
                      @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>

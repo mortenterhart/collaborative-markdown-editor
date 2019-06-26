@@ -82,7 +82,7 @@ public class Collaborator {
         this.doc = doc;
     }
 
-    public HasAccess getHasAccess() {
+    public HasAccess hasAccess() {
         return hasAccess;
     }
 

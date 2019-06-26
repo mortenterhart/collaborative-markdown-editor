@@ -1,5 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
+/**
+ * @author 6694964
+ * @version 1.2
+ */
 public abstract class PayloadParameters {
 
     public static final String USERNAME = "username";

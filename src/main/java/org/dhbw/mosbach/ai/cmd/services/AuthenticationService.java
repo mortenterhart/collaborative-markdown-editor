@@ -16,11 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -94,6 +96,7 @@ public class AuthenticationService extends RootService implements RestEndpoint {
      * to store the {@code JSESSIONID} referencing the user session.
      *
      * @param loginModel the request model containing username and password
+     * @param request    the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the login is successful including the user
      * object, otherwise {@code 400 Bad Request}.
      */
@@ -102,21 +105,21 @@ public class AuthenticationService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response doLogin(@NotNull LoginModel loginModel) {
+    public Response doLogin(@NotNull LoginModel loginModel, @Context HttpServletRequest request) {
         final ValidationResult loginCheck = loginValidation.validate(loginModel);
         if (loginCheck.isInvalid()) {
             return loginCheck.buildResponse();
         }
 
-        String username = loginModel.getUsername();
+        final String username = loginModel.getUsername();
 
-        User user = userDao.getUserByName(username);
+        User user = loginValidation.getFoundUser();
 
         if (sessionUtil.createSession(user)) {
-            log.debug("login: Created new session for user '{}'", username);
+            log.debug("{}: Created new session for user '{}'", request.getRequestURI(), username);
         }
 
-        log.info("login: User '{}' logged in successfully", username);
+        log.info("{}: User '{}' logged in successfully", request.getRequestURI(), username);
         return new LoginUserResponse(user, "Logged in successfully.").buildResponse();
     }
 
@@ -132,6 +135,7 @@ public class AuthenticationService extends RootService implements RestEndpoint {
      *
      * @param registerModel the request model containing username, email address and password
      *                      for the new user
+     * @param request       the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the registration was successful, otherwise
      * {@code 400 Bad Request} if some of the constraints do not match
      */
@@ -140,15 +144,15 @@ public class AuthenticationService extends RootService implements RestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response doRegister(@NotNull RegisterModel registerModel) {
+    public Response doRegister(@NotNull RegisterModel registerModel, @Context HttpServletRequest request) {
         final ValidationResult registerCheck = registerValidation.validate(registerModel);
         if (registerCheck.isInvalid()) {
             return registerCheck.buildResponse();
         }
 
-        String username = registerModel.getUsername();
-        String email = registerModel.getEmail();
-        String password = registerModel.getPassword();
+        final String username = registerModel.getUsername();
+        final String email = registerModel.getEmail();
+        final String password = registerModel.getPassword();
 
         User newUser = new User();
         newUser.setName(username);
@@ -159,7 +163,8 @@ public class AuthenticationService extends RootService implements RestEndpoint {
 
         userDao.createUser(newUser);
 
-        log.info("register: User '{}' was registered successfully", username);
+        log.info("{}: New user '{}' was registered successfully", request.getRequestURI(), username);
+        log.info("{}: Created new repository for user '{}'", request.getRequestURI(), username);
         return new Success("Registration successful.").buildResponse();
     }
 
@@ -169,22 +174,23 @@ public class AuthenticationService extends RootService implements RestEndpoint {
      * the service also responds with a successful message. It also transmits the demand for deleting
      * the {@code JSESSIONID} cookie from the client.
      *
+     * @param request the injected request for URI information to be logged
      * @return a {@code 200 OK} response if the user was logged out or if he was already logged out
      */
     @POST
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response doLogout() {
+    public Response doLogout(@Context HttpServletRequest request) {
         if (!sessionUtil.isLoggedIn()) {
             return new Success("You are already logged out.").buildResponse();
         }
 
         User user = sessionUtil.getUser();
 
-        log.info("logout: Logged user '{}' out", user.getName());
+        log.info("{}: Logged user '{}' out", request.getRequestURI(), user.getName());
         if (sessionUtil.invalidateSession()) {
-            log.info("logout: Session of user '{}' was invalidated", user.getName());
+            log.info("{}: Session of user '{}' was invalidated", request.getRequestURI(), user.getName());
         }
 
         return new Success("Successfully logged out.").buildResponse();

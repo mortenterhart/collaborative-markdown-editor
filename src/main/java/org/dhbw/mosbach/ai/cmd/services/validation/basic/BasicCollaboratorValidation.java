@@ -21,6 +21,10 @@ import javax.validation.constraints.NotNull;
  * collaborator referencing a user as well as a check to find out whether a collaborator
  * belongs to a certain document.
  *
+ * This validation uses the injection mechanism offered by CDI to get access to more
+ * database access objects such as {@link CollaboratorDao} to perform the lookup for
+ * collaborators in order to verify their existence.
+ *
  * Considering that loading collaborators from the database is an expensive operation
  * the loaded collaborator is cached within the {@code foundCollaborator} attribute.
  * This way the service calling validation methods contained in this class does not
@@ -156,11 +160,11 @@ public class BasicCollaboratorValidation {
      * Retrieves the cached instance of the found collaborator loaded by the methods
      * checking the existence of a collaborator. If one of those methods has found
      * a corresponding collaborator this getter method returns the instance for this
-     * collaborator and clears the {@code foundCollaborator} attribute back to null.
-     * The method returns null in case no collaborator was found or the method was
-     * not executed before.
+     * collaborator and clears the {@code foundCollaborator} attribute back to {@code
+     * null}. The method returns null in case no collaborator was found or the method
+     * was not executed before.
      *
-     * @return the cached instance of the collaborator or null if the collaborator
+     * @return the cached instance of the collaborator or {@code null} if the collaborator
      * was not found or the method for checking the existence of a collaborator was
      * not executed previously.
      */

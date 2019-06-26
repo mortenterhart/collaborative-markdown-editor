@@ -22,6 +22,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 @RequestScoped
 public class DocumentInsertionValidation implements ModelValidation<DocumentInsertionModel> {
 

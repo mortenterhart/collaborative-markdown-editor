@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+/**
+ * @author 6694964
+ * @version 1.1
+ */
 @RequestScoped
 public class BasicDocumentValidation {
 
@@ -34,17 +38,17 @@ public class BasicDocumentValidation {
         return ValidationResult.success("Document with id '%d' exists.", documentId);
     }
 
-    public Doc getFoundDocument() {
-        Doc document = foundDocument;
-        foundDocument = null;
-        return document;
-    }
-
     public ValidationResult checkUserIsDocumentOwner(Doc document, User user) {
         if (user.getId() != document.getRepo().getOwner().getId()) {
             return ValidationResult.response(new BadRequest("Applied user is not the document owner"));
         }
 
         return ValidationResult.success("Applied user is the document owner");
+    }
+
+    public Doc getFoundDocument() {
+        Doc document = foundDocument;
+        foundDocument = null;
+        return document;
     }
 }

@@ -142,9 +142,9 @@ public class CollaboratorDao {
      */
     @Transactional
     public int updateCollaborator(Collaborator c) {
-        log.debug("Updating collaborator: " + c.getId());
+        log.debug("Updating access of collaborator '{}' for document '{}' to '{}'", c.getId(), c.getDoc().getId(), c.hasAccess());
         return this.em.createQuery("UPDATE Collaborator c SET c.hasAccess=:hasAccess WHERE c.doc.id=:doc_id AND c.user.id=:user_id")
-                .setParameter("hasAccess", c.getHasAccess())
+                .setParameter("hasAccess", c.hasAccess())
                 .setParameter("doc_id", c.getDoc().getId())
                 .setParameter("user_id", c.getUser().getId())
                 .executeUpdate();
@@ -159,6 +159,7 @@ public class CollaboratorDao {
      */
     @Transactional
     public int removeCollaborator(Collaborator c) {
+        log.debug("Removing collaborator '{}' from document '{}'", c.getId(), c.getDoc().getId());
         return this.em.createQuery("DELETE FROM Collaborator c WHERE c.id = :collaboratorId")
                 .setParameter("collaboratorId", c.getId())
                 .executeUpdate();

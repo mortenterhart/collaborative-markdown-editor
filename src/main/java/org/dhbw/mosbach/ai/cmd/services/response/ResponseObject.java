@@ -2,6 +2,7 @@ package org.dhbw.mosbach.ai.cmd.services.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -22,7 +23,7 @@ public class ResponseObject {
     }
 
     public Response buildResponse() {
-        return Response.status(status.getCode()).entity(this).build();
+        return Response.status(status.getCode()).type(MediaType.APPLICATION_JSON_TYPE).entity(this).build();
     }
 
     public Status getStatus() {

@@ -30,6 +30,8 @@ public abstract class MapperJsonResponse {
 
     public static final String CAUSE = "cause";
 
+    public static final String SOURCE_LOCATION = "sourceLocation";
+
     public static JsonObjectBuilder createResponseBuilder(Response.Status status, String message) {
         return Json.createObjectBuilder()
                    .add(HTTP_STATUS, Json.createObjectBuilder()

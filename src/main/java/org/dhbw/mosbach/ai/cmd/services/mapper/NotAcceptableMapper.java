@@ -39,6 +39,7 @@ public class NotAcceptableMapper implements ExceptionMapper<NotAcceptableExcepti
                                                     .build();
 
         return Response.notAcceptable(Variant.mediaTypes(MediaType.APPLICATION_JSON_TYPE).build())
+                       .type(MediaType.APPLICATION_JSON_TYPE)
                        .entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON_TYPE)
                        .build();
     }

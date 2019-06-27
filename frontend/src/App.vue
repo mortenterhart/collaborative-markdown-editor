@@ -15,6 +15,7 @@
             <v-toolbar-side-icon
                     v-if="this.$store.state.login.isLoggedIn"
                     @click="drawer = !drawer"/>
+            <img src="./assets/cmd_logo.png" alt="CMD Logo" width="45"/>
             <v-toolbar-title v-text="this.$store.state.app.title"/>
             <template v-if="$route.name === 'document'">
                 <template

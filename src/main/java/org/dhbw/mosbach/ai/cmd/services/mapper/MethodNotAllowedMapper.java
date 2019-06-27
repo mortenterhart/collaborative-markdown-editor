@@ -11,10 +11,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
+/**
+ * @author 6694964
+ * @version 1.0
+ */
 @Provider
 public class MethodNotAllowedMapper implements ExceptionMapper<NotAllowedException> {
 
@@ -33,8 +35,8 @@ public class MethodNotAllowedMapper implements ExceptionMapper<NotAllowedExcepti
         String allowHeader = allowedMethods.stream().reduce((m1, m2) -> m1 + ", " + m2).orElse(HttpMethod.OPTIONS);
 
         JsonObject jsonResponse = MapperJsonResponse.createResponseBuilder(Response.Status.METHOD_NOT_ALLOWED, exception.getMessage())
-                                      .add(MapperJsonResponse.ALLOWED_METHODS, createJsonArray(allowedMethods))
-                                      .build();
+                                                    .add(MapperJsonResponse.ALLOWED_METHODS, createJsonArray(allowedMethods))
+                                                    .build();
 
         return Response.status(Response.Status.METHOD_NOT_ALLOWED)
                        .type(MediaType.APPLICATION_JSON_TYPE)

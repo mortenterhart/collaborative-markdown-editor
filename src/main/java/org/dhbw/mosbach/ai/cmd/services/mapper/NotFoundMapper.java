@@ -9,6 +9,10 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * @author 6694964
+ * @version 1.0
+ */
 @Provider
 public class NotFoundMapper implements ExceptionMapper<NotFoundException> {
 

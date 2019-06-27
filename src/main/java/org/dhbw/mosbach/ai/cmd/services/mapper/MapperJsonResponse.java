@@ -4,6 +4,10 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.Response;
 
+/**
+ * @author 6694964
+ * @version 1.0
+ */
 public abstract class MapperJsonResponse {
 
     public static final String HTTP_STATUS = "status";

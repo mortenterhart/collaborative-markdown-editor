@@ -1,0 +1,4 @@
+users:
+  - name: testuser
+    mail: testuser@cmd.com
+    password: $2a$12$Q/9fHlwZ9P5sN4L6qK54Fe/nH1v0M.Mwevml80bkHxphjcu7nYXS2

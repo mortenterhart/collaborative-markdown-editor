@@ -11,6 +11,10 @@ public class DocumentAccessModel implements Payload {
     @JsonProperty(value = PayloadParameters.DOCUMENT_ID, required = true)
     private int documentId;
 
+    public DocumentAccessModel(int documentId) {
+        this.documentId = documentId;
+    }
+
     public int getDocumentId() {
         return documentId;
     }

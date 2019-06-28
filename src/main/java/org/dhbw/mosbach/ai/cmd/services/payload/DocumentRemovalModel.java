@@ -11,6 +11,10 @@ public class DocumentRemovalModel implements Payload {
     @JsonProperty(value = PayloadParameters.DOCUMENT_ID, required = true)
     private int documentId;
 
+    public DocumentRemovalModel(int documentId) {
+        this.documentId = documentId;
+    }
+
     public int getDocumentId() {
         return documentId;
     }

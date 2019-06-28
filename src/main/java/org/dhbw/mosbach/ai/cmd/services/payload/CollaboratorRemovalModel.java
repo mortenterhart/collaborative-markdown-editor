@@ -14,6 +14,11 @@ public class CollaboratorRemovalModel implements Payload {
     @JsonProperty(value = PayloadParameters.COLLABORATOR_ID, required = true)
     private int collaboratorId;
 
+    public CollaboratorRemovalModel(int documentId, int collaboratorId) {
+        this.documentId = documentId;
+        this.collaboratorId = collaboratorId;
+    }
+
     public int getDocumentId() {
         return documentId;
     }

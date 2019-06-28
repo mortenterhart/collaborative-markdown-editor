@@ -17,6 +17,12 @@ public class RegisterModel implements Payload {
     @JsonProperty(value = PayloadParameters.PASSWORD, required = true)
     private String password;
 
+    public RegisterModel(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }

@@ -14,6 +14,11 @@ public class LoginModel implements Payload {
     @JsonProperty(value = PayloadParameters.PASSWORD, required = true)
     private String password;
 
+    public LoginModel(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }

@@ -11,6 +11,10 @@ public class DocumentInsertionModel implements Payload {
     @JsonProperty(value = PayloadParameters.DOCUMENT_NAME, required = true)
     private String name;
 
+    public DocumentInsertionModel(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

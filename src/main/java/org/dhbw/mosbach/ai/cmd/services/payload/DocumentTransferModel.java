@@ -14,6 +14,11 @@ public class DocumentTransferModel implements Payload {
     @JsonProperty(value = PayloadParameters.NEW_OWNER_NAME, required = true)
     private String newOwnerName;
 
+    public DocumentTransferModel(int documentId, String newOwnerName) {
+        this.documentId = documentId;
+        this.newOwnerName = newOwnerName;
+    }
+
     public int getDocumentId() {
         return documentId;
     }

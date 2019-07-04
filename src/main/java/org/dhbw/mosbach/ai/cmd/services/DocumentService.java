@@ -82,7 +82,7 @@ import java.util.ListIterator;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService extends RootService implements RestEndpoint {
+public class DocumentService extends RootService implements RestEndpoint, IDocumentService {
 
     /**
      * Private logger instance for logging important service operations
@@ -160,7 +160,7 @@ public class DocumentService extends RootService implements RestEndpoint {
 
         Repo repository = repoDao.getRepo(currentUser);
 
-        String documentName = insertionModel.getName();
+        String documentName = insertionModel.getDocumentName();
 
         Doc document = new Doc();
         document.setCuser(currentUser);

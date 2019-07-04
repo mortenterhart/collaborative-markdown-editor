@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author 3040018
  */
-public class TestHashing {
+public class HashingTest {
 
     private Hashing hashing;
 

@@ -85,7 +85,7 @@ public class DocumentInsertionValidation implements ModelValidation<DocumentInse
             return ValidationResult.response(new InternalServerError("DocumentInsertionModel is null"));
         }
 
-        String documentName = model.getName();
+        String documentName = model.getDocumentName();
 
         final ValidationResult nameSpecifiedCheck = basicFieldValidation.checkSpecified(PayloadParameters.DOCUMENT_NAME, documentName);
         if (nameSpecifiedCheck.isInvalid()) {

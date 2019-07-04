@@ -45,7 +45,6 @@ public class Doc {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime ctime;
 
-    @Column(name = "UTIME")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime utime;

@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -14,7 +15,9 @@ public class CollaboratorInsertionModel implements Payload {
     @JsonProperty(value = PayloadParameters.COLLABORATOR_USERNAME, required = true)
     private String collaboratorName;
 
-    public CollaboratorInsertionModel(int documentId, String collaboratorName) {
+    @JsonCreator
+    public CollaboratorInsertionModel(@JsonProperty(PayloadParameters.DOCUMENT_ID) int documentId,
+                                      @JsonProperty(PayloadParameters.COLLABORATOR_USERNAME) String collaboratorName) {
         this.documentId = documentId;
         this.collaboratorName = collaboratorName;
     }

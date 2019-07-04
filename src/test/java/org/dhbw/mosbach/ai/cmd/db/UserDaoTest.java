@@ -1,41 +1,34 @@
-package org.dhbw.mosbach.ai.cmd.services;
+package org.dhbw.mosbach.ai.cmd.db;
 
+import org.dhbw.mosbach.ai.cmd.model.User;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.Cleanup;
+import org.jboss.arquillian.persistence.CleanupStrategy;
 import org.jboss.arquillian.persistence.TestExecutionPhase;
 import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URISyntaxException;
+import javax.inject.Inject;
 import java.net.URL;
 
 @RunWith(Arquillian.class)
-@Cleanup(phase = TestExecutionPhase.AFTER)
-@RunAsClient
-public class AuthenticationServiceTest {
+@Cleanup(phase = TestExecutionPhase.AFTER, strategy = CleanupStrategy.USED_TABLES_ONLY)
+public class UserDaoTest {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(UserDaoTest.class);
 
-    @Deployment(testable = false)
+    @Deployment
     public static WebArchive createDeployment() {
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, "cmd.war")
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "cmd.war")
                                        .addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
                                                             .importRuntimeAndTestDependencies()
                                                             .resolve()
@@ -46,24 +39,22 @@ public class AuthenticationServiceTest {
                                        .addAsResource("META-INF/log4j.properties")
                                        .addPackages(true, "org/dhbw/mosbach/ai/cmd");
 
-        log.info(archive.toString(true));
+        log.info(war.toString(true));
 
-        return archive;
+        return war;
     }
 
     @ArquillianResource
     private URL deploymentUrl;
 
+    @Inject
+    private UserDao userDao;
+
     @Test
-    @Ignore
-    @UsingDataSet("datasets/users.yml")
-    public void testDoLogin() throws URISyntaxException {
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(deploymentUrl.toURI().resolve("api/authentication/login"));
+    @UsingDataSet("users.yml")
+    public void testGetUserByName() {
+        User user = userDao.getUserByName("testuser");
 
-        Invocation postRequest = target.request().accept(MediaType.APPLICATION_JSON_TYPE).buildGet();
-        Response response = postRequest.invoke();
-
-        Assert.assertEquals(200, response.getStatus());
+        Assert.assertNotNull(user);
     }
 }

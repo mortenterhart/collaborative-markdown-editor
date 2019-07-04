@@ -152,7 +152,7 @@ public class History {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("User: \n")
+                .append("History: \n")
                 .append("\tid: " + this.id + "\n")
                 .append("\tHash: " + this.hash + "\n")
                 .append("\tCreated: " + this.ctime + "\n")

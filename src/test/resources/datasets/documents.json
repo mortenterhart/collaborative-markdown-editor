@@ -1,0 +1,137 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "jackson",
+      "mail": "jackson@fasterxml.com",
+      "ctime": "2019-05-05 18:54:01",
+      "utime": "2019-05-05 18:54:01"
+    },
+    {
+      "id": 2,
+      "name": "appuser",
+      "mail": "sample@appuser.com",
+      "ctime": "2019-05-06 01:19:34",
+      "utime": "2019-05-06 01:19:34"
+    },
+    {
+      "id": 3,
+      "name": "admin",
+      "mail": "admin@cmd.com",
+      "ctime": "2019-05-09 14:24:56",
+      "utime": "2019-05-09 14:24:56"
+    },
+    {
+      "id": 4,
+      "name": "wildfly",
+      "mail": "user@wildfly.org",
+      "ctime": "2019-05-11 18:08:16",
+      "utime": "2019-05-11 18:08:16"
+    },
+    {
+      "id": 5,
+      "name": "vuejs",
+      "mail": "frontend@vuejs.org",
+      "ctime": "2019-05-12 21:33:45",
+      "utime": "2019-05-12 21:33:45"
+    }
+  ],
+  "repos": [
+    {
+      "id": 1,
+      "fk_users": 1
+    },
+    {
+      "id": 2,
+      "fk_users": 2
+    },
+    {
+      "id": 3,
+      "fk_users": 3
+    },
+    {
+      "id": 4,
+      "fk_users": 4
+    },
+    {
+      "id": 5,
+      "fk_users": 5
+    }
+  ],
+  "docs": [
+    {
+      "id": 1,
+      "name": "Testdocument",
+      "content": "\n",
+      "ctime": "2019-05-07 22:23:09",
+      "utime": "2019-06-23 23:47:16",
+      "cuser": 2,
+      "fk_repos": 2,
+      "uuser": 5
+    },
+    {
+      "id": 2,
+      "name": "Lecture Java EE",
+      "content": "\n",
+      "ctime": "2019-06-23 14:53:42",
+      "utime": "2019-06-23 18:00:24",
+      "cuser": 3,
+      "fk_repos": 4,
+      "uuser": 4
+    },
+    {
+      "id": 3,
+      "name": "Collaborative Markdown Editor",
+      "content": "# This is our Collaborative Markdown Editor\nInsert your document here.\n",
+      "ctime": "2019-06-25 22:24:19",
+      "utime": "2019-06-26 23:37:22",
+      "cuser": 2,
+      "fk_repos": 2,
+      "uuser": 4
+    }
+  ],
+  "collaborators": [
+    {
+      "id": 1,
+      "ctime": "2019-05-11 17:40:10",
+      "has_access": "Y",
+      "fk_docs": 1,
+      "fk_users": 5
+    },
+    {
+      "id": 2,
+      "ctime": "2019-05-11 17:40:13",
+      "has_access": "Y",
+      "fk_docs": 1,
+      "fk_users": 2
+    },
+    {
+      "id": 3,
+      "ctime": "2019-05-11 18:26:22",
+      "has_access": "Y",
+      "fk_docs": 1,
+      "fk_users": 4
+    },
+    {
+      "id": 4,
+      "ctime": "2019-06-24 19:01:18",
+      "has_access": "Y",
+      "fk_docs": 2,
+      "fk_users": 3
+    },
+    {
+      "id": 5,
+      "ctime": "2019-06-23 14:46:27",
+      "has_access": "Y",
+      "fk_docs": 2,
+      "fk_users": 1
+    },
+    {
+      "id": 6,
+      "ctime": "2019-06-23 14:47:47",
+      "has_access": "Y",
+      "fk_docs": 2,
+      "fk_users": 5
+    }
+  ]
+}

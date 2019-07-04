@@ -120,6 +120,12 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="org.hibernate">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="org.dhbw.mosbach.ai.cmd">
+                <level name="DEBUG"/>
+            </logger>
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
@@ -157,7 +163,7 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-                <datasource jndi-name="java:/cmd" pool-name="cmdDS" enabled="true" use-java-context="true">
+                <datasource jndi-name="${wildfly.datasource.jndi-name:java:/cmd}" pool-name="${wildfly.datasource.name:cmdDS}" enabled="true" use-java-context="true">
                     <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</connection-url>
                     <driver>h2</driver>
                     <security>

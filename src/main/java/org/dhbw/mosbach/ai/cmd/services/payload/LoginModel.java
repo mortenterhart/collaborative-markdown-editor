@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -14,7 +15,9 @@ public class LoginModel implements Payload {
     @JsonProperty(value = PayloadParameters.PASSWORD, required = true)
     private String password;
 
-    public LoginModel(String username, String password) {
+    @JsonCreator
+    public LoginModel(@JsonProperty(PayloadParameters.USERNAME) String username,
+                      @JsonProperty(PayloadParameters.PASSWORD) String password) {
         this.username = username;
         this.password = password;
     }

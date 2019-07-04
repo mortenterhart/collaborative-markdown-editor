@@ -87,4 +87,21 @@ public class UserDao {
 
         return user;
     }
+
+    /**
+     * Update the username, mail and password of a certain user
+     *
+     * @param user the user
+     * @return The number of updated rows
+     */
+    @Transactional
+    public int updateUser(User user) {
+        log.debug("Updated user '{}' with name, mail and password", user.getName());
+        return this.em.createQuery("UPDATE User u SET u.name=:name, u.mail=:mail, u.password=:password WHERE u.id=:id")
+                      .setParameter("name", user.getName())
+                      .setParameter("mail", user.getMail())
+                      .setParameter("password", user.getPassword())
+                      .setParameter("id", user.getId())
+                      .executeUpdate();
+    }
 }

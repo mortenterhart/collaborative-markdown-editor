@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -9,13 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DocumentInsertionModel implements Payload {
 
     @JsonProperty(value = PayloadParameters.DOCUMENT_NAME, required = true)
-    private String name;
+    private String documentName;
 
-    public DocumentInsertionModel(String name) {
-        this.name = name;
+    @JsonCreator
+    public DocumentInsertionModel(@JsonProperty(PayloadParameters.DOCUMENT_NAME) String documentName) {
+        this.documentName = documentName;
     }
 
-    public String getName() {
-        return name;
+    public String getDocumentName() {
+        return documentName;
     }
 }

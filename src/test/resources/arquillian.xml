@@ -7,23 +7,29 @@
 
     <container qualifier="wildfly-managed" default="true">
         <configuration>
-            <!-- <property name="jbossHome">${jboss.home}</property> -->
-            <property name="jbossHome">target/wildfly-${wildfly.version}</property>
-            <property name="serverConfig">../../../../src/test/resources/arquillian-standalone-h2db.xml</property>
+            <property name="jbossHome">${jboss.home}</property>
+            <property name="serverConfig">${jboss.standalone-config.relative-path:standalone.xml}</property>
             <!-- use different ports -->
-            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Xms512m -Xmx1024m
-                -XX:MaxPermSize=512m --add-modules java.se
-            </property>
+            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Xms512m -Xmx1024m -XX:MaxPermSize=512m --add-modules java.se</property>
             <property name="managementPort">19990</property>
         </configuration>
     </container>
 
     <extension qualifier="persistence">
-        <property name="defaultDataSource">java:/cmd</property>
+        <property name="defaultDataSource">${wildfly.datasource.jndi-name}</property>
+    </extension>
+
+    <extension qualifier="persistence-dbunit">
+        <property name="datatypeFactory">org.dbunit.ext.h2.H2DataTypeFactory</property>
+        <property name="useIdentityInsert">true</property>
+        <property name="excludePoi">true</property>
     </extension>
 
     <extension qualifier="webdriver">
-        <property name="browser">${browser}</property>
+        <property name="browser">${extension.webdriver}</property>
     </extension>
 
+    <extension qualifier="systemproperties">
+        <property name="prefix">ARQUILLIAN_</property>
+    </extension>
 </arquillian>

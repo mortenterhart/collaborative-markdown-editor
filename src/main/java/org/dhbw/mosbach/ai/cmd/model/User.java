@@ -185,7 +185,7 @@ public class User {
                 .append("\tid: " + this.id + "\n")
                 .append("\tName: " + this.name + "\n")
                 .append("\tHash: " + this.password + "\n")
-                .append("\tMAIL: " + this.mail + "\n")
+                .append("\tMail: " + this.mail + "\n")
                 .append("\tCreated: " + this.ctime + "\n")
                 .append("\tLast updated: " + this.utime + "\n")
                 .toString();

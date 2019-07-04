@@ -1,0 +1,106 @@
+users:
+  - id: 1
+    name: jackson
+    mail: jackson@fasterxml.com
+    password: "$2a$12$rCpWwNOiPtXYAImWxrlF.OPnwJAvi4Adg2l./dYZ5yOl8VsvDBiwy"
+    ctime: "2019-05-05 18:54:01"
+    utime: "2019-05-05 18:54:01"
+  - id: 2
+    name: appuser
+    mail: sample@appuser.com
+    password: "$2a$12$wTi0Vsomd.2Uy5/B0BTF.egDVF1WTGMcVZ4AoBxQgMwGV/EZPN0qu"
+    ctime: "2019-05-06 01:19:34"
+    utime: "2019-05-06 01:19:34"
+  - id: 3
+    name: admin
+    mail: admin@cmd.com
+    password: "$2a$12$YrClkNlU2ATy.UnkPE0dyeLMp2LMqFCA4V51HNTEpe4oA.9Z5DzvS"
+    ctime: "2019-05-09 14:24:56"
+    utime: "2019-05-09 14:24:56"
+  - id: 4
+    name: wildfly
+    mail: user@wildfly.org
+    password: "$2a$12$MOg1cujn5RfrnNxVirB55ufvxlHL8882prZSWjDEg5.fHjl82fpp2"
+    ctime: "2019-05-11 18:08:16"
+    utime: "2019-05-11 18:08:16"
+  - id: 5
+    name: vuejs
+    mail: frontend@vuejs.org
+    password: "$2a$12$ec3hnq3dIDz2uTDcXZwut.7r8LTrMqsa98t4STM8lB2mk4vHrHwse"
+    ctime: "2019-05-12 21:33:45"
+    utime: "2019-05-12 21:33:45"
+
+repos:
+  - id: 1
+    fk_users: 1
+  - id: 2
+    fk_users: 2
+  - id: 3
+    fk_users: 3
+  - id: 4
+    fk_users: 4
+  - id: 5
+    fk_users: 5
+
+docs:
+  - id: 1
+    name: Testdocument
+    content: >
+      # Main Heading
+    ctime: "2019-05-07 22:23:09"
+    utime: "2019-06-23 23:47:16"
+    cuser: 2
+    fk_repos: 2
+    uuser: 5
+  - id: 2
+    name: Lecture Java EE
+    content: >
+      # Java EE
+    ctime: "2019-06-23 14:53:42"
+    utime: "2019-06-23 18:00:24"
+    cuser: 3
+    fk_repos: 4
+    uuser: 4
+  - id: 3
+    name: Collaborative Markdown Editor
+    content: >
+      # This is our Collaborative Markdown Editor
+
+      Insert your document here.
+    ctime: "2019-06-25 22:24:19"
+    utime: "2019-06-26 23:37:22"
+    cuser: 2
+    fk_repos: 2
+    uuser: 4
+
+collaborators:
+  - id: 1
+    ctime: "2019-05-11 17:40:10"
+    has_access: Y
+    fk_docs: 1
+    fk_users: 5
+  - id: 2
+    ctime: "2019-05-11 17:40:13"
+    has_access: Y
+    fk_docs: 1
+    fk_users: 2
+  - id: 3
+    ctime: "2019-05-11 18:26:22"
+    has_access: Y
+    fk_docs: 1
+    fk_users: 4
+  - id: 4
+    ctime: "2019-06-24 19:01:18"
+    has_access: Y
+    fk_docs: 2
+    fk_users: 3
+  - id: 5
+    ctime: "2019-06-23 14:46:27"
+    has_access: Y
+    fk_docs: 2
+    fk_users: 1
+  - id: 6
+    ctime: "2019-06-23 14:47:47"
+    has_access: Y
+    fk_docs: 2
+    fk_users: 5

@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -11,7 +12,8 @@ public class DocumentAccessModel implements Payload {
     @JsonProperty(value = PayloadParameters.DOCUMENT_ID, required = true)
     private int documentId;
 
-    public DocumentAccessModel(int documentId) {
+    @JsonCreator
+    public DocumentAccessModel(@JsonProperty(PayloadParameters.DOCUMENT_ID) int documentId) {
         this.documentId = documentId;
     }
 

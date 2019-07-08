@@ -1,7 +1,5 @@
 package org.dhbw.mosbach.ai.cmd.services.helper;
 
-import org.dhbw.mosbach.ai.cmd.security.Hashing;
-
 import java.security.SecureRandom;
 import java.util.Random;
 

@@ -1,10 +1,15 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
+import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
+import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
+import org.dhbw.mosbach.ai.cmd.testconfig.TestConfig;
+import org.dhbw.mosbach.ai.cmd.testconfig.TestUsers;
 import org.dhbw.mosbach.ai.cmd.db.UserDao;
-import org.dhbw.mosbach.ai.cmd.services.helper.JsonPrettyPrinter;
-import org.dhbw.mosbach.ai.cmd.services.helper.TestConfig;
-import org.dhbw.mosbach.ai.cmd.services.helper.TestUsers;
+import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
+import org.dhbw.mosbach.ai.cmd.services.helper.JsonUtil;
 import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
+import org.dhbw.mosbach.ai.cmd.services.response.DocumentListResponse;
+import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
 import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -16,9 +21,7 @@ import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +37,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -46,18 +50,14 @@ public class DocumentServiceTest {
 
     private static final String API_PREFIX = RootService.class.getAnnotation(ApplicationPath.class).value().substring(1);
 
-    @Deployment(name = "cmd")
+    @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME)
     public static WebArchive createDeployment() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "cmd.war")
-                                   .addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-                                                        .importRuntimeAndTestDependencies()
-                                                        .resolve()
-                                                        .withTransitivity()
-                                                        .asFile())
-                                   .addAsResource("META-INF/beans.xml")
-                                   .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-                                   .addAsResource("META-INF/log4j.properties")
-                                   .addPackages(true, "org/dhbw/mosbach/ai/cmd");
+        WebArchive war = DeploymentPackager.createDeployment(DeploymentConfig.DEPLOYMENT_NAME)
+                                           .addMavenRuntimeAndTestDependencies()
+                                           .addBeansAndPersistenceDefinition()
+                                           .addTestResources()
+                                           .addPackages(PackageIncludes.DOCUMENT_SERVICE)
+                                           .packageWebArchive();
 
         log.info(war.toString(true));
 
@@ -78,11 +78,11 @@ public class DocumentServiceTest {
 
     @Test
     @UsingDataSet("datasets/documents.yml")
-    public void testGetAllDocuments() throws URISyntaxException {
+    public void testGetAllDocuments() throws URISyntaxException, IOException {
         Response authResponse = authenticateToAPI(deploymentUrl.toURI());
 
-        JsonPrettyPrinter printer = new JsonPrettyPrinter();
-        log.info(printer.prettyPrint(authResponse.readEntity(String.class)));
+        JsonUtil jsonUtil = new JsonUtil();
+        log.info(jsonUtil.prettyPrint(authResponse.readEntity(String.class)));
 
         Assert.assertEquals(Response.Status.OK.getStatusCode(), authResponse.getStatus());
 
@@ -98,9 +98,25 @@ public class DocumentServiceTest {
                                           .cookie(authCookie)
                                           .get();
 
-        log.info(printer.prettyPrint(documentResponse.readEntity(String.class)));
+        String responseBody = documentResponse.readEntity(String.class);
+        log.info(jsonUtil.prettyPrint(responseBody));
 
         Assert.assertEquals(Response.Status.OK.getStatusCode(), documentResponse.getStatus());
+
+        DocumentListResponse documentList = jsonUtil.deserialize(responseBody, DocumentListResponse.class);
+
+        Assert.assertNotNull(documentList);
+        Assert.assertFalse(documentList.getDocuments().isEmpty());
+
+        boolean ownsDocument = false;
+        for (DocumentListEntity entity : documentList.getDocuments()) {
+            if (entity.getDocument().getName().equals("Lecture Java EE")) {
+                ownsDocument = true;
+                break;
+            }
+        }
+
+        Assert.assertTrue(ownsDocument);
     }
 
     private Response authenticateToAPI(URI deploymentBaseURI) {

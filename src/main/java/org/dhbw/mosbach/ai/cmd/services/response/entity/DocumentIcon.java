@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.response.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -13,6 +14,7 @@ public enum DocumentIcon {
 
     private String identifier;
 
+    @JsonCreator
     private DocumentIcon(String identifier) {
         this.identifier = identifier;
     }

@@ -1,6 +1,9 @@
 package org.dhbw.mosbach.ai.cmd.db;
 
+import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
+import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
 import org.dhbw.mosbach.ai.cmd.model.User;
+import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.Cleanup;
@@ -8,9 +11,7 @@ import org.jboss.arquillian.persistence.CleanupStrategy;
 import org.jboss.arquillian.persistence.TestExecutionPhase;
 import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,18 +27,14 @@ public class UserDaoTest {
 
     private static final Logger log = LoggerFactory.getLogger(UserDaoTest.class);
 
-    @Deployment
+    @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME)
     public static WebArchive createDeployment() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "cmd.war")
-                                       .addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-                                                            .importRuntimeAndTestDependencies()
-                                                            .resolve()
-                                                            .withTransitivity()
-                                                            .asFile())
-                                       .addAsResource("META-INF/beans.xml")
-                                       .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-                                       .addAsResource("META-INF/log4j.properties")
-                                       .addPackages(true, "org/dhbw/mosbach/ai/cmd");
+        WebArchive war = DeploymentPackager.createDeployment(DeploymentConfig.DEPLOYMENT_NAME)
+                .addMavenRuntimeAndTestDependencies()
+                .addBeansAndPersistenceDefinition()
+                .addTestResources()
+                .addPackages(PackageIncludes.USER_DAO)
+                .packageWebArchive();
 
         log.info(war.toString(true));
 

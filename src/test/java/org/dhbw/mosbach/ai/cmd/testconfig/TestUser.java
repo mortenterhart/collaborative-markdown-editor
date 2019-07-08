@@ -1,4 +1,4 @@
-package org.dhbw.mosbach.ai.cmd.services.helper;
+package org.dhbw.mosbach.ai.cmd.testconfig;
 
 public class TestUser {
 

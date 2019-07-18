@@ -208,12 +208,13 @@ public class DocumentService extends RootService implements RestEndpoint, IDocum
         final int documentId = removalModel.getDocumentId();
         final Doc document = documentRemovalValidation.getFoundDocument();
 
-        docDao.removeDoc(document);
-        log.info("{}: Removed document '{}' from repository of user '{}'", request.getRequestURI(), documentId, sessionUtil.getUser().getName());
         for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
             collaboratorDao.removeCollaborator(collaborator);
             log.info("{}: Removed collaborator '{}' from document '{}'", request.getRequestURI(), collaborator.getId(), documentId);
         }
+
+        docDao.removeDoc(document);
+        log.info("{}: Removed document '{}' from repository of user '{}'", request.getRequestURI(), documentId, sessionUtil.getUser().getName());
 
         return new Success("Document was removed successfully").buildResponse();
     }

@@ -2,9 +2,10 @@ package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
 import org.dhbw.mosbach.ai.cmd.services.helper.JsonUtil;
-import org.dhbw.mosbach.ai.cmd.services.payload.LoginModel;
+import org.dhbw.mosbach.ai.cmd.services.payload.TestLoginModel;
 import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
 import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
+import org.dhbw.mosbach.ai.cmd.testconfig.TestUsers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.Cleanup;
@@ -30,12 +31,11 @@ import java.net.URL;
 
 @RunWith(Arquillian.class)
 @Cleanup(phase = TestExecutionPhase.AFTER)
-//@RunAsClient
 public class AuthenticationServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceTest.class);
 
-    @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME/*, testable = false*/)
+    @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME)
     public static WebArchive createDeployment() {
         WebArchive archive = DeploymentPackager.createDeployment(DeploymentConfig.DEPLOYMENT_NAME)
                                                .addMavenRuntimeAndTestDependencies()
@@ -58,7 +58,7 @@ public class AuthenticationServiceTest {
         ResteasyClient client = new ResteasyClientBuilder().build();
         WebTarget target = client.target(deploymentUrl.toURI().resolve("api/authentication/login"));
 
-        Invocation postRequest = target.request().accept(MediaType.APPLICATION_JSON_TYPE).buildPost(Entity.json(new LoginModel("testuser", "Testuser1")));
+        Invocation postRequest = target.request().accept(MediaType.APPLICATION_JSON_TYPE).buildPost(Entity.json(new TestLoginModel(TestUsers.ADMIN)));
         Response response = postRequest.invoke();
 
         String responseBody = response.readEntity(String.class);

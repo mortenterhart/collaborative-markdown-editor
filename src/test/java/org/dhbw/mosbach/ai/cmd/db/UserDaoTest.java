@@ -4,6 +4,7 @@ import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
 import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
+import org.dhbw.mosbach.ai.cmd.testconfig.TestUsers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.Cleanup;
@@ -48,9 +49,9 @@ public class UserDaoTest {
     private UserDao userDao;
 
     @Test
-    @UsingDataSet("users.yml")
+    @UsingDataSet("datasets/users.yml")
     public void testGetUserByName() {
-        User user = userDao.getUserByName("testuser");
+        User user = userDao.getUserByName(TestUsers.JACKSON.getUsername());
 
         Assert.assertNotNull(user);
     }

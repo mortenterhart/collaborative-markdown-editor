@@ -7,7 +7,7 @@
 
     <persistence-unit name="cmd" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>java:/cmd</jta-data-source>
+        <jta-data-source>java:jboss/datasources/cmdDS</jta-data-source>
         <class>org.dhbw.mosbach.ai.cmd.model.Collaborator</class>
         <class>org.dhbw.mosbach.ai.cmd.model.Doc</class>
         <class>org.dhbw.mosbach.ai.cmd.model.History</class>

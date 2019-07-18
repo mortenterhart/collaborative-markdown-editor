@@ -3,6 +3,7 @@ package org.dhbw.mosbach.ai.cmd.services;
 import org.dhbw.mosbach.ai.cmd.services.helper.Authenticator;
 import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
 import org.dhbw.mosbach.ai.cmd.services.helper.JsonUtil;
+import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentRemovalModel;
 import org.dhbw.mosbach.ai.cmd.services.response.DocumentListResponse;
@@ -235,6 +236,132 @@ public class DocumentServiceTest {
 
         // Check if response does not contain the document
         Assert.assertFalse(checkResponseContainsDocument(documentList, documentId));
+    }
+
+    @Test
+    @UsingDataSet("datasets/documents.yml")
+    public void testCollaboratorHasGrantedDocumentAccess() throws URISyntaxException {
+        // First authenticate to the application in order to use
+        // the document APIs
+        Response authResponse = Authenticator.authenticate(deploymentUrl.toURI(), TestUsers.VUEJS);
+
+        // Log the response of the authentication
+        JsonUtil jsonUtil = new JsonUtil();
+        log.info(jsonUtil.prettyPrint(authResponse.readEntity(String.class)));
+
+        // Check if the authentication was successful
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), authResponse.getStatus());
+
+        // Fetch the JSESSIONID authentication cookie from the response
+        Cookie authCookie = authResponse.getCookies().get(TestConfig.JSESSIONID);
+
+        // Check that the cookie is not null
+        Assert.assertNotNull(authCookie);
+
+        // Verify that the authenticated user has access to document 1
+        int documentId = 1;
+
+        // Build a client and a web target for the /document/hasAccess API
+        Client client = ClientBuilder.newClient();
+        final WebTarget target = client.target(deploymentUrl.toURI().resolve(API_PREFIX + TestConfig.DOCUMENT_ACCESS_PATH));
+
+        // Invoke a POST request to the web target including
+        // the authentication cookie in order to check for
+        // access to document 1
+        Response accessResponse = target.request(MediaType.APPLICATION_JSON)
+                .cookie(authCookie)
+                .post(Entity.json(new DocumentAccessModel(documentId)));
+
+        // Read and log the response body
+        String accessResponseBody = accessResponse.readEntity(String.class);
+        log.info(jsonUtil.prettyPrint(accessResponseBody));
+
+        // Check that the invocation was successful
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), accessResponse.getStatus());
+    }
+
+    @Test
+    @UsingDataSet("datasets/documents.yml")
+    public void testOwnerHasGrantedDocumentAccess() throws URISyntaxException {
+        // First authenticate to the application in order to use
+        // the document APIs
+        Response authResponse = Authenticator.authenticate(deploymentUrl.toURI(), TestUsers.WILDFLY);
+
+        // Log the response of the authentication
+        JsonUtil jsonUtil = new JsonUtil();
+        log.info(jsonUtil.prettyPrint(authResponse.readEntity(String.class)));
+
+        // Check if the authentication was successful
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), authResponse.getStatus());
+
+        // Fetch the JSESSIONID authentication cookie from the response
+        Cookie authCookie = authResponse.getCookies().get(TestConfig.JSESSIONID);
+
+        // Check that the cookie is not null
+        Assert.assertNotNull(authCookie);
+
+        // Verify that the authenticated user has access to document 1
+        int documentId = 2;
+
+        // Build a client and a web target for the /document/hasAccess API
+        Client client = ClientBuilder.newClient();
+        final WebTarget target = client.target(deploymentUrl.toURI().resolve(API_PREFIX + TestConfig.DOCUMENT_ACCESS_PATH));
+
+        // Invoke a POST request to the web target including
+        // the authentication cookie in order to check for
+        // access to document 1
+        Response accessResponse = target.request(MediaType.APPLICATION_JSON)
+                                        .cookie(authCookie)
+                                        .post(Entity.json(new DocumentAccessModel(documentId)));
+
+        // Read and log the response body
+        String accessResponseBody = accessResponse.readEntity(String.class);
+        log.info(jsonUtil.prettyPrint(accessResponseBody));
+
+        // Check that the invocation was successful
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), accessResponse.getStatus());
+    }
+
+    @Test
+    @UsingDataSet("datasets/documents.yml")
+    public void testUserHasDeniedDocumentAccess() throws URISyntaxException {
+        // First authenticate to the application in order to use
+        // the document APIs
+        Response authResponse = Authenticator.authenticate(deploymentUrl.toURI(), TestUsers.VUEJS);
+
+        // Log the response of the authentication
+        JsonUtil jsonUtil = new JsonUtil();
+        log.info(jsonUtil.prettyPrint(authResponse.readEntity(String.class)));
+
+        // Check if the authentication was successful
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), authResponse.getStatus());
+
+        // Fetch the JSESSIONID authentication cookie from the response
+        Cookie authCookie = authResponse.getCookies().get(TestConfig.JSESSIONID);
+
+        // Check that the cookie is not null
+        Assert.assertNotNull(authCookie);
+
+        // Verify that the authenticated user has access to document 1
+        int documentId = 3;
+
+        // Build a client and a web target for the /document/hasAccess API
+        Client client = ClientBuilder.newClient();
+        final WebTarget target = client.target(deploymentUrl.toURI().resolve(API_PREFIX + TestConfig.DOCUMENT_ACCESS_PATH));
+
+        // Invoke a POST request to the web target including
+        // the authentication cookie in order to check for
+        // access to document 1
+        Response accessResponse = target.request(MediaType.APPLICATION_JSON)
+                                        .cookie(authCookie)
+                                        .post(Entity.json(new DocumentAccessModel(documentId)));
+
+        // Read and log the response body
+        String accessResponseBody = accessResponse.readEntity(String.class);
+        log.info(jsonUtil.prettyPrint(accessResponseBody));
+
+        // Check that the invocation was successful
+        Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), accessResponse.getStatus());
     }
 
     private DocumentListResponse retrieveAllDocuments(Cookie authCookie) throws URISyntaxException {

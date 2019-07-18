@@ -181,20 +181,20 @@
 
                 const deleteMessage = vm.buildMessageStringFromArray(changeObj.removed);
                 if (deleteMessage.length > 0) {
-                    vm.contentChanges = [...vm.contentChanges, {
+                    vm.contentChanges.push({
                         type: 'Delete',
                         msg: deleteMessage,
                         pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)
-                    }];
+                    });
                 }
 
                 const insertMessage = vm.buildMessageStringFromArray(changeObj.text);
                 if (insertMessage.length > 0) {
-                    vm.contentChanges = [...vm.contentChanges, {
+                    vm.contentChanges.push({
                         type: 'Insert',
                         msg: insertMessage,
                         pos: vm.getTotalCursorPos(vm.content, changeObj.from.line, changeObj.from.ch)
-                    }];
+                    });
                 }
 
                 vm.sendContentDiffAfterTyping(vm);

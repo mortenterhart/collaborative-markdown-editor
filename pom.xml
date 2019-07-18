@@ -31,7 +31,7 @@
 
         <!-- Properties for the MySQL datasource for WildFly -->
         <wildfly.datasource.name>cmdDS</wildfly.datasource.name>
-        <wildfly.datasource.jndi-name>java:/cmd</wildfly.datasource.jndi-name>
+        <wildfly.datasource.jndi-name>java:jboss/datasources/cmdDS</wildfly.datasource.jndi-name>
         <wildfly.datasource.jdbc.url>jdbc:mysql://localhost:3306/cmd?useSSL=false</wildfly.datasource.jdbc.url>
         <wildfly.datasource.username>root</wildfly.datasource.username>
         <wildfly.datasource.password>root</wildfly.datasource.password>
@@ -44,8 +44,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
         <jboss.home>${project.basedir}/target/wildfly-${wildfly.version}</jboss.home>
-        <jboss.standalone-config.relative-path>../../../../src/test/resources/arquillian-standalone-h2db.xml
-        </jboss.standalone-config.relative-path>
+        <jboss.standalone.config>../../../../src/test/resources/arquillian-standalone-h2db.xml</jboss.standalone.config>
         <extension.webdriver>phantomJS</extension.webdriver>
     </properties>
 
@@ -457,15 +456,14 @@
                                 </goals>
                                 <configuration>
                                     <systemProperties>
-                                        <arquillian.launch>wildfly-managed</arquillian.launch>
-                                        <java.util.logging.manager>org.jboss.logmanager.LogManager
-                                        </java.util.logging.manager>
+                                        <arquillian.container>wildfly-managed</arquillian.container>
+                                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                         <!-- setting jboss.home here does not work :-( -->
                                         <jboss.home>${jboss.home}</jboss.home>
                                         <module.path>${jboss.home}/modules</module.path>
+                                        <jboss.standalone.config>${jboss.standalone.config}</jboss.standalone.config>
                                         <wildfly.datasource.name>${wildfly.datasource.name}</wildfly.datasource.name>
-                                        <wildfly.datasource.jndi-name>${wildfly.datasource.jndi-name}
-                                        </wildfly.datasource.jndi-name>
+                                        <wildfly.datasource.jndi-name>${wildfly.datasource.jndi-name}</wildfly.datasource.jndi-name>
                                         <extension.webdriver>${extension.webdriver}</extension.webdriver>
                                     </systemProperties>
                                     <redirectTestOutputToFile>false</redirectTestOutputToFile>
@@ -492,10 +490,10 @@
                     <systemProperties>
                         <!-- System properties for Arquillian to be used in
                              arquillian.xml and arquillian-standalone-h2db.xml -->
+                        <arquillian.container>wildfly-managed</arquillian.container>
                         <jboss.home>${jboss.home}</jboss.home>
                         <module.path>${jboss.home}/modules</module.path>
-                        <jboss.standalone-config.relative-path>${jboss.standalone-config.relative-path}
-                        </jboss.standalone-config.relative-path>
+                        <jboss.standalone.config>${jboss.standalone.config}</jboss.standalone.config>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <wildfly.datasource.name>${wildfly.datasource.name}</wildfly.datasource.name>
                         <wildfly.datasource.jndi-name>${wildfly.datasource.jndi-name}</wildfly.datasource.jndi-name>

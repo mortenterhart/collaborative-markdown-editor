@@ -82,7 +82,7 @@ import java.util.ListIterator;
  */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_DOCUMENT)
-public class DocumentService extends RootService implements RestEndpoint, IDocumentService {
+public class DocumentService extends RootService implements RestEndpoint {
 
     /**
      * Private logger instance for logging important service operations

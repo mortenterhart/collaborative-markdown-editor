@@ -8,7 +8,7 @@
     <container qualifier="wildfly-managed" default="true">
         <configuration>
             <property name="jbossHome">${jboss.home}</property>
-            <property name="serverConfig">${jboss.standalone-config.relative-path:standalone.xml}</property>
+            <property name="serverConfig">${jboss.standalone.config:standalone.xml}</property>
             <!-- use different ports -->
             <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Xms512m -Xmx1024m -XX:MaxPermSize=512m --add-modules java.se</property>
             <property name="managementPort">19990</property>

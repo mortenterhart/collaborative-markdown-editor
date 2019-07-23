@@ -1,20 +1,14 @@
 package org.dhbw.mosbach.ai.cmd.testconfig;
 
-public class TestUser {
+import org.dhbw.mosbach.ai.cmd.model.User;
 
-    private String username;
-    private String password;
+public class TestUser extends User {
 
-    public TestUser(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    private static final long serialVersionUID = 5846623425879886960L;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
+    public TestUser(String username, String email, String password) {
+        this.setName(username);
+        this.setMail(email);
+        this.setPassword(password);
     }
 }

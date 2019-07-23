@@ -388,7 +388,7 @@ public class DocumentService extends RootService implements RestEndpoint {
         document.setRepo(newRepo);
         document.setUuser(newOwner);
         docDao.transferRepo(document);
-        log.info("{}: Transferred the ownership for document '{}' to user '{}'", request.getRequestURI(), document.getName(), newOwner.getName());
+        log.info("{}: Transferred the ownership for document '{}' to user '{}'", request.getRequestURI(), document.getName(), newOwnerName);
 
         return new Success("Ownership was transferred to '%s' successfully", newOwnerName).buildResponse();
     }

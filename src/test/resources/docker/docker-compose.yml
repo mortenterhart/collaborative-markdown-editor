@@ -1,0 +1,49 @@
+# Docker-Compose file for the Collaborative Markdown Editor
+#
+# This compose file defines the 'webapp' and 'mysql' services
+# which are automatically built using the Dockerfiles and
+# configured using external scripts from the repository.
+
+version: "3"
+
+services:
+    arquillian-cube-wildfly-test:
+        build: src/test/resources/docker
+        #image: "jboss/wildfly:16.0.0.Final"
+        #hostname: cmd-wildfly-instance
+        #container_name: cmd-wildfly-webapp
+        #buildImage:
+        #    dockerfileLocation: src/test/resources/docker
+        #    dockerfileName: Dockerfile
+        #    noCache: true
+        #    remove: true
+        #    args:
+        #        buildno: 1
+        ports:
+            - "8080:8080"
+#        links:
+#            - "mysql:mysql-instance"
+        networks:
+          - cmd_network
+#        depends_on:
+#            - mysql
+
+#    mysql:
+#        image: "mysql:8.0.15"
+        #hostname: mysql-instance
+        #container_name: cmd-mysql-instance
+        #buildImage:
+        #    dockerfileLocation: src/test/resources/docker
+        #    dockerfileName: Dockerfile.mysql
+        #    noCache: true
+        #    remove: true
+        #    args:
+        #        buildno: 2
+#        networks:
+#          - cmd_network
+#        ports:
+#            - "3306:3306"
+
+networks:
+    cmd_network:
+        name: cmd_network

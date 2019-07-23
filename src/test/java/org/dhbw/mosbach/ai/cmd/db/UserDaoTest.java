@@ -1,9 +1,10 @@
 package org.dhbw.mosbach.ai.cmd.db;
 
-import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
-import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
 import org.dhbw.mosbach.ai.cmd.model.User;
 import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
+import org.dhbw.mosbach.ai.cmd.testconfig.Datasets;
+import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
+import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
 import org.dhbw.mosbach.ai.cmd.testconfig.TestUsers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,11 +32,10 @@ public class UserDaoTest {
     @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME)
     public static WebArchive createDeployment() {
         WebArchive war = DeploymentPackager.createDeployment(DeploymentConfig.DEPLOYMENT_NAME)
-                .addMavenRuntimeAndTestDependencies()
-                .addBeansAndPersistenceDefinition()
-                .addTestResources()
-                .addPackages(PackageIncludes.USER_DAO)
-                .packageWebArchive();
+                                           .addBeansAndPersistenceDefinition()
+                                           .addTestResources()
+                                           .addPackages(PackageIncludes.USER_DAO)
+                                           .packageWebArchive();
 
         log.info(war.toString(true));
 
@@ -49,9 +49,10 @@ public class UserDaoTest {
     private UserDao userDao;
 
     @Test
-    @UsingDataSet("datasets/users.yml")
+    @UsingDataSet(Datasets.USERS)
     public void testGetUserByName() {
-        User user = userDao.getUserByName(TestUsers.JACKSON.getUsername());
+        log.info("Deployed under {}", deploymentUrl.toExternalForm());
+        User user = userDao.getUserByName(TestUsers.JACKSON.getName());
 
         Assert.assertNotNull(user);
     }

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.validation.constraints.NotNull;
-import java.awt.*;
 
 /**
  * @author 6694964
@@ -30,7 +29,6 @@ public class BasicFieldValidation {
         return ValidationResult.success("Field '%s' has been specified", fieldName);
     }
 
-    @NotNull
     private String capitalize(String field) {
         if (field == null || field.length() == 0) {
             return field;

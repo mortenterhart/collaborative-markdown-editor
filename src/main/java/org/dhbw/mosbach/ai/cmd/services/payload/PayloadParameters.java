@@ -6,6 +6,9 @@ package org.dhbw.mosbach.ai.cmd.services.payload;
  */
 public abstract class PayloadParameters {
 
+    private PayloadParameters() {
+    }
+
     public static final String USERNAME = "username";
 
     public static final String PASSWORD = "password";

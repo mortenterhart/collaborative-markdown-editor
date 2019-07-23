@@ -1,9 +1,12 @@
 package org.dhbw.mosbach.ai.cmd.security;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 /**
  * Testing the Hashing class
@@ -14,7 +17,7 @@ public class HashingTest {
 
     private Hashing hashing;
 
-    @BeforeEach
+    @Before
     public void init() {
         hashing = new Hashing();
     }

@@ -20,6 +20,9 @@ public final class Authenticator {
 
     private static final String API_PREFIX = ServiceEndpoints.PATH_API_ROOT.substring(1);
 
+    private Authenticator() {
+    }
+
     public static Response authenticate(URI deploymentBaseURI, TestUser testUser) {
         final WebTarget target = ClientBuilder.newClient().target(deploymentBaseURI.resolve(API_PREFIX + TestConfig.AUTHENTICATION_LOGIN_PATH));
 

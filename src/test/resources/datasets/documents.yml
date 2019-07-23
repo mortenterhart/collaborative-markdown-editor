@@ -83,7 +83,7 @@ collaborators:
     ctime: "2019-05-11 17:40:13"
     has_access: Y
     fk_docs: 1
-    fk_users: 2
+    fk_users: 1
   - id: 3
     ctime: "2019-05-11 18:26:22"
     has_access: Y

@@ -13,20 +13,20 @@ public class CollaboratorInsertionModel implements Payload {
     private int documentId;
 
     @JsonProperty(value = PayloadParameters.COLLABORATOR_USERNAME, required = true)
-    private String collaboratorName;
+    private String collaboratorUsername;
 
     @JsonCreator
     public CollaboratorInsertionModel(@JsonProperty(PayloadParameters.DOCUMENT_ID) int documentId,
-                                      @JsonProperty(PayloadParameters.COLLABORATOR_USERNAME) String collaboratorName) {
+                                      @JsonProperty(PayloadParameters.COLLABORATOR_USERNAME) String collaboratorUsername) {
         this.documentId = documentId;
-        this.collaboratorName = collaboratorName;
+        this.collaboratorUsername = collaboratorUsername;
     }
 
     public int getDocumentId() {
         return documentId;
     }
 
-    public String getCollaboratorName() {
-        return collaboratorName;
+    public String getCollaboratorUsername() {
+        return collaboratorUsername;
     }
 }

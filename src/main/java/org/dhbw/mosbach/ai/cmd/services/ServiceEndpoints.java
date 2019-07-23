@@ -15,6 +15,9 @@ package org.dhbw.mosbach.ai.cmd.services;
  */
 public abstract class ServiceEndpoints {
 
+    private ServiceEndpoints() {
+    }
+
     /**
      * The path prefix for all other endpoints pretended by the {@link RootService}
      */

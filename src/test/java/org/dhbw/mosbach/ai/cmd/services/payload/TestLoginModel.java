@@ -5,6 +5,6 @@ import org.dhbw.mosbach.ai.cmd.testconfig.TestUser;
 public class TestLoginModel extends LoginModel {
 
     public TestLoginModel(TestUser user) {
-        super(user.getUsername(), user.getPassword());
+        super(user.getName(), user.getPassword());
     }
 }

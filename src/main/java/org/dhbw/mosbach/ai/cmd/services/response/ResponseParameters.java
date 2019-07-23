@@ -6,6 +6,9 @@ package org.dhbw.mosbach.ai.cmd.services.response;
  */
 public abstract class ResponseParameters {
 
+    private ResponseParameters() {
+    }
+
     public static final String HTTP_STATUS = "status";
 
     public static final String STATUS_CODE = "code";

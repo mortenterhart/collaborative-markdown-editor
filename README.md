@@ -81,10 +81,14 @@ generating a JaCoCo coverage report, packing the application into a WAR archive,
 Wildfly and deploying the application.
 
 ```bash
-mvn deploy -P deployment -DskipTests=true
+mvn wildfly:deploy -P deployment -DskipTests=true
 ```
 
 Your Wildfly should now be deploying your application and you can verify by visiting http://localhost:8080.
+
+## Deployment
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 ## Architecture
 

@@ -10,6 +10,9 @@ import javax.ws.rs.core.Response;
  */
 public abstract class MapperJsonResponse {
 
+    private MapperJsonResponse() {
+    }
+
     public static final String HTTP_STATUS = "status";
 
     public static final String STATUS_CODE = "code";

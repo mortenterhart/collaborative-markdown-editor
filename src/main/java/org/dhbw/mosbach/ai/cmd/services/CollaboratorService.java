@@ -124,7 +124,7 @@ public class CollaboratorService extends RootService implements RestEndpoint {
         }
 
         final int documentId = model.getDocumentId();
-        final String collaboratorUsername = model.getCollaboratorName();
+        final String collaboratorUsername = model.getCollaboratorUsername();
 
         Doc document = collaboratorInsertionValidation.getDocument();
         User collaborator = collaboratorInsertionValidation.getCollaborator();

@@ -19,6 +19,7 @@
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
         <nodejs.version>v10.15.3</nodejs.version>
         <resteasy.version>3.6.3.Final</resteasy.version>
+        <jacoco.version>0.8.4</jacoco.version>
 
         <!-- Path properties for special directories -->
         <webapp.directory>${project.basedir}/src/main/webapp</webapp.directory>
@@ -152,40 +153,11 @@
         </dependency>
 
         <!-- JUnit Test Dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.5.0-M1</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
-        <!-- required to execute JUnit 5 tests -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.0-M1</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine -->
-        <!-- required to execute JUnit 4 tests with Arquillian -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.4.1</version>
-            <scope>test</scope>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>1.1.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -456,7 +428,7 @@
                                 </goals>
                                 <configuration>
                                     <systemProperties>
-                                        <arquillian.container>wildfly-managed</arquillian.container>
+                                        <arquillian.launch>wildfly-managed</arquillian.launch>
                                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                         <!-- setting jboss.home here does not work :-( -->
                                         <jboss.home>${jboss.home}</jboss.home>
@@ -484,13 +456,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M3</version>
                 <configuration>
                     <reuseForks>false</reuseForks>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.dhbw.mosbach.ai.cmd.extension.MethodPrintListener</value>
+                        </property>
+                    </properties>
                     <systemProperties>
                         <!-- System properties for Arquillian to be used in
                              arquillian.xml and arquillian-standalone-h2db.xml -->
-                        <arquillian.container>wildfly-managed</arquillian.container>
+                        <arquillian.launch>wildfly-managed</arquillian.launch>
                         <jboss.home>${jboss.home}</jboss.home>
                         <module.path>${jboss.home}/modules</module.path>
                         <jboss.standalone.config>${jboss.standalone.config}</jboss.standalone.config>
@@ -613,7 +591,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.3</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>

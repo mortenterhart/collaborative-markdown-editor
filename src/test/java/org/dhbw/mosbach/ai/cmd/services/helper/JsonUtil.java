@@ -1,6 +1,8 @@
 package org.dhbw.mosbach.ai.cmd.services.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dhbw.mosbach.ai.cmd.services.payload.Payload;
 import org.dhbw.mosbach.ai.cmd.services.response.ResponseObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,19 @@ public final class JsonUtil {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
         } catch (IOException exc) {
             log.error("Could not pretty print json: " + exc.getLocalizedMessage(), exc);
-            exc.printStackTrace();
-            return null;
         }
+
+        return null;
+    }
+
+    public <T extends Payload> String serialize(T object) {
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException jpe) {
+            log.error(jpe.getLocalizedMessage(), jpe);
+        }
+
+        return null;
     }
 
     public <T extends ResponseObject> T deserialize(String json, Class<T> type) {
@@ -29,8 +41,8 @@ public final class JsonUtil {
             return mapper.readValue(json, type);
         } catch (IOException exc) {
             log.error("Could not deserialize json: " + exc.getLocalizedMessage(), exc);
-            exc.printStackTrace();
-            return null;
         }
+
+        return null;
     }
 }

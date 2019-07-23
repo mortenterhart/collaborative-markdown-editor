@@ -60,4 +60,4 @@ volumes:
 
 networks:
     cmd_network:
-      name: collab-down-network
+      name: cmd-network

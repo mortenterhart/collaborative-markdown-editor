@@ -2,6 +2,8 @@ package org.dhbw.mosbach.ai.cmd.crdt;
 
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import javax.websocket.Session;
@@ -13,6 +15,8 @@ import java.util.List;
  * @author 3040018
  */
 public class MessageBroker {
+
+    private static final Logger log = LoggerFactory.getLogger(MessageBroker.class);
 
     /**
      * Transforms a given message according to the provided MessageType
@@ -79,7 +83,7 @@ public class MessageBroker {
                     session.getBasicRemote().sendObject(msg);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }
@@ -95,7 +99,7 @@ public class MessageBroker {
         try {
             session.getBasicRemote().sendObject(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 

@@ -9,6 +9,9 @@ import java.time.format.DateTimeFormatter;
  */
 public abstract class CmdConfig {
 
+    private CmdConfig() {
+    }
+
     /**
      * Session attribute name and form parameter name for storing user name
      */

@@ -2,7 +2,6 @@ package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.services.helper.Authenticator;
-import org.dhbw.mosbach.ai.cmd.services.helper.DeploymentPackager;
 import org.dhbw.mosbach.ai.cmd.services.helper.JsonUtil;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentAccessModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.DocumentInsertionModel;
@@ -12,16 +11,20 @@ import org.dhbw.mosbach.ai.cmd.services.response.DocumentListResponse;
 import org.dhbw.mosbach.ai.cmd.services.response.entity.DocumentListEntity;
 import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeDeserializer;
 import org.dhbw.mosbach.ai.cmd.services.serialize.LocalDateTimeSerializer;
-import org.dhbw.mosbach.ai.cmd.testconfig.Datasets;
-import org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig;
-import org.dhbw.mosbach.ai.cmd.testconfig.PackageIncludes;
-import org.dhbw.mosbach.ai.cmd.testconfig.TestConfig;
-import org.dhbw.mosbach.ai.cmd.testconfig.TestUser;
-import org.dhbw.mosbach.ai.cmd.testconfig.TestUsers;
+import org.dhbw.mosbach.ai.cmd.test.config.DeploymentConfig;
+import org.dhbw.mosbach.ai.cmd.test.config.TestConfig;
+import org.dhbw.mosbach.ai.cmd.test.config.TestUser;
+import org.dhbw.mosbach.ai.cmd.test.config.TestUsers;
+import org.dhbw.mosbach.ai.cmd.test.helper.DeploymentPackager;
+import org.dhbw.mosbach.ai.cmd.test.include.PackageIncludes;
+import org.dhbw.mosbach.ai.cmd.test.resources.Datasets;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.Cleanup;
 import org.jboss.arquillian.persistence.CleanupStrategy;
+import org.jboss.arquillian.persistence.DataSeedStrategy;
+import org.jboss.arquillian.persistence.DataSource;
+import org.jboss.arquillian.persistence.SeedDataUsing;
 import org.jboss.arquillian.persistence.TestExecutionPhase;
 import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -47,18 +50,19 @@ import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static org.dhbw.mosbach.ai.cmd.testconfig.TestConfig.API_PREFIX;
-import static org.dhbw.mosbach.ai.cmd.testconfig.TestConfig.JSESSIONID;
+import static org.dhbw.mosbach.ai.cmd.test.config.TestConfig.API_PREFIX;
 
 /**
  * @author 6694964
  * @version 1.4
  */
 @RunWith(Arquillian.class)
+@DataSource(DeploymentConfig.DEFAULT_DATA_SOURCE)
+@SeedDataUsing(DataSeedStrategy.CLEAN_INSERT)
 @Cleanup(phase = TestExecutionPhase.AFTER, strategy = CleanupStrategy.USED_TABLES_ONLY)
-public class DocumentServiceTest {
+public class DocumentServiceIT {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentServiceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentServiceIT.class);
 
     @Deployment(name = DeploymentConfig.DEPLOYMENT_NAME)
     public static WebArchive createDeployment() {
@@ -79,7 +83,7 @@ public class DocumentServiceTest {
 
     @BeforeClass
     public static void initResteasyClient() {
-        System.out.println("Initializing RESTEasy client");
+        log.info("Initializing RESTEasy client");
         RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
     }
 
@@ -428,7 +432,7 @@ public class DocumentServiceTest {
 
         Assert.assertEquals(Response.Status.OK.getStatusCode(), verifyAuthResponse.getStatus());
 
-        Cookie verifyAuthCookie = verifyAuthResponse.getCookies().get(JSESSIONID);
+        Cookie verifyAuthCookie = verifyAuthResponse.getCookies().get(TestConfig.JSESSIONID);
 
         Assert.assertNotNull(verifyAuthCookie);
 

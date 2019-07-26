@@ -2,8 +2,8 @@ package org.dhbw.mosbach.ai.cmd.services.helper;
 
 import org.dhbw.mosbach.ai.cmd.services.ServiceEndpoints;
 import org.dhbw.mosbach.ai.cmd.services.payload.TestLoginModel;
-import org.dhbw.mosbach.ai.cmd.testconfig.TestConfig;
-import org.dhbw.mosbach.ai.cmd.testconfig.TestUser;
+import org.dhbw.mosbach.ai.cmd.test.config.TestConfig;
+import org.dhbw.mosbach.ai.cmd.test.config.TestUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -82,7 +82,7 @@ public class Repo {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("User: \n")
+                .append("Repo: \n")
                 .append("\tid: " + this.id + "\n")
                 .append("\tOwner: " + this.owner.getName() + "\n")
                 .toString();

@@ -1,4 +1,4 @@
-package org.dhbw.mosbach.ai.cmd.testconfig;
+package org.dhbw.mosbach.ai.cmd.test.config;
 
 public abstract class TestConfig {
 

@@ -1,8 +1,10 @@
-package org.dhbw.mosbach.ai.cmd.testconfig;
+package org.dhbw.mosbach.ai.cmd.test.config;
 
 public final class DeploymentConfig {
 
     public static final String DEPLOYMENT_NAME = "cmd";
+
+    public static final String DEFAULT_DATA_SOURCE = "java:jboss/datasources/cmdDS";
 
     public static final String PROJECT_POM = "pom.xml";
 

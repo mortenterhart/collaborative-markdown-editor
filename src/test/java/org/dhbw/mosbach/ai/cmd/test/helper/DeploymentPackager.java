@@ -1,11 +1,13 @@
-package org.dhbw.mosbach.ai.cmd.services.helper;
+package org.dhbw.mosbach.ai.cmd.test.helper;
 
+import org.dhbw.mosbach.ai.cmd.test.include.DependencyIncludes;
+import org.dhbw.mosbach.ai.cmd.test.include.PackageIncludes;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
-import static org.dhbw.mosbach.ai.cmd.testconfig.DeploymentConfig.*;
+import static org.dhbw.mosbach.ai.cmd.test.config.DeploymentConfig.*;
 
 /**
  * @author 6694964
@@ -38,6 +40,11 @@ public final class DeploymentPackager {
             return this;
         }
 
+        public Builder addMavenDependencies(DependencyIncludes includes) {
+            archive.addAsLibraries(Maven.resolver().resolve(includes.getDependencies()).withoutTransitivity().asFile());
+            return this;
+        }
+
         public Builder addBeansAndPersistenceDefinition() {
             archive.addAsResource(BEANS_XML)
                    .addAsResource(TEST_PERSISTENCE_XML, PERSISTENCE_XML);
@@ -49,8 +56,8 @@ public final class DeploymentPackager {
             return this;
         }
 
-        public Builder addPackages(String... packages) {
-            archive.addPackages(true, Filters.exclude(".*Test$"), packages);
+        public Builder addPackages(PackageIncludes includes) {
+            archive.addPackages(true, Filters.exclude(".*Test$"), includes.getPackages());
             return this;
         }
 

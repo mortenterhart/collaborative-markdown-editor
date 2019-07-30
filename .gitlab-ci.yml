@@ -1,23 +1,44 @@
-image: maven:3.6.1-jdk-11
-
 stages:
     - verify
     - build
     - test
 
+cache:
+    paths:
+        - frontend/node_modules
+
 lint_frontend:
+    image: "node:10.6"
     stage: verify
-    script: cd frontend/ && npm run install && npm run lint
+    script:
+        - cd frontend/
+        - npm install
+        - npm run lint
 
 build_app:
+    image: "maven:3.6.1-slim"
     stage: build
-    script: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -V
+    script: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -V
 
-run_tests:
+run_frontend_tests:
+    image: node:10.16
     stage: test
     script:
-        - cd frontend/ && npm run test
-        - ./mvnw verify -P skip-frontend-build,arquillian-wildfly-managed
+        - cd frontend
+        - npm run test
+
+run_backend_tests:
+    image: "maven:3.6.1-slim"
+    stage: test
+    script:
+        - mvn verify -P skip-frontend-build,arquillian-wildfly-managed
     artifacts:
         paths:
             - target/CMD.war
+
+run_docker_build:
+    image: "tiangolo/docker-with-compose:latest"
+    stage: test
+    script:
+        - docker-compose build
+

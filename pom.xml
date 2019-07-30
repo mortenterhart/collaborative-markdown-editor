@@ -16,6 +16,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Final name for the WAR artifact -->
+        <finalName>CMD</finalName>
+
         <!-- Software Versions -->
         <java.version>11</java.version>
         <wildfly.version>16.0.0.Final</wildfly.version>
@@ -466,7 +469,7 @@
     </profiles>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${finalName}</finalName>
         <plugins>
 
             <!-- Maven Surefire Plugin to execute JUnit 4 tests -->

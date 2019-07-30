@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dhbw.mosbach.ai.cmd.model.User;
 
@@ -12,7 +13,9 @@ public class LoginUserResponse extends Success {
     @JsonProperty(value = ResponseParameters.USER, required = true)
     private final User user;
 
-    public LoginUserResponse(User user, String message) {
+    @JsonCreator
+    public LoginUserResponse(@JsonProperty(ResponseParameters.USER) User user,
+                             @JsonProperty(ResponseParameters.MESSAGE) String message) {
         super(message);
         this.user = user;
     }

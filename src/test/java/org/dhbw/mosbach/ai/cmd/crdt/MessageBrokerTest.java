@@ -2,23 +2,23 @@ package org.dhbw.mosbach.ai.cmd.crdt;
 
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Testing the MessageBroker class
  *
  * @author 3040018
  */
-public class TestMessageBroker {
+public class MessageBrokerTest {
 
     private MessageBroker messageBroker;
     private ActiveDocument activeDocument;
     private Message msg;
 
-    @BeforeEach
+    @Before
     public void init() {
         messageBroker = new MessageBroker();
 

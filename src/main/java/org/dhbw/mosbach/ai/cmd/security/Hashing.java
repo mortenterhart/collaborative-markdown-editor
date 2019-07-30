@@ -2,6 +2,8 @@ package org.dhbw.mosbach.ai.cmd.security;
 
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
  * @author 3040018
  */
 public class Hashing {
+
+    private static final Logger log = LoggerFactory.getLogger(Hashing.class);
 
     /**
      * Hash a password with the BCrypt algorithm
@@ -59,7 +63,7 @@ public class Hashing {
                 return "da39a3ee5e6b4b0d3255bfef95601890afd80709";
             }
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
             return null;
         }
     }

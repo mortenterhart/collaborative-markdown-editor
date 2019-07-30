@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -24,7 +25,9 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = -2710544765197505707L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -185,7 +188,7 @@ public class User {
                 .append("\tid: " + this.id + "\n")
                 .append("\tName: " + this.name + "\n")
                 .append("\tHash: " + this.password + "\n")
-                .append("\tMAIL: " + this.mail + "\n")
+                .append("\tMail: " + this.mail + "\n")
                 .append("\tCreated: " + this.ctime + "\n")
                 .append("\tLast updated: " + this.utime + "\n")
                 .toString();

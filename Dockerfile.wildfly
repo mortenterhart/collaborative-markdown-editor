@@ -58,7 +58,7 @@ RUN echo "Build Number: ${buildno}"
 
 # Execute the configuration script to add MySQL driver
 # and datasource to the WildFly instance
-COPY ./jboss-configure-mysql-datasource.sh .
+COPY docker-scripts/jboss-configure-mysql-datasource.sh .
 RUN ./jboss-configure-mysql-datasource.sh
 
 # Remove the script

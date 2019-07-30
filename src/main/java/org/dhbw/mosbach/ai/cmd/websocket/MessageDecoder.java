@@ -5,6 +5,7 @@ import org.dhbw.mosbach.ai.cmd.util.MessageType;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;

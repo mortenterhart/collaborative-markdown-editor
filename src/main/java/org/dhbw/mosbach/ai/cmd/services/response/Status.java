@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.ws.rs.core.Response;
@@ -19,6 +20,13 @@ public class Status {
     public Status(Response.Status status) {
         this.code = status.getStatusCode();
         this.description = status.getReasonPhrase();
+    }
+
+    @JsonCreator
+    private Status(@JsonProperty(ResponseParameters.STATUS_CODE) int code,
+                   @JsonProperty(ResponseParameters.STATUS_DESCRIPTION) String description) {
+        this.code = code;
+        this.description = description;
     }
 
     public int getCode() {

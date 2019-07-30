@@ -160,7 +160,7 @@ public class DocumentService extends RootService implements RestEndpoint {
 
         Repo repository = repoDao.getRepo(currentUser);
 
-        String documentName = insertionModel.getName();
+        String documentName = insertionModel.getDocumentName();
 
         Doc document = new Doc();
         document.setCuser(currentUser);
@@ -208,12 +208,13 @@ public class DocumentService extends RootService implements RestEndpoint {
         final int documentId = removalModel.getDocumentId();
         final Doc document = documentRemovalValidation.getFoundDocument();
 
-        docDao.removeDoc(document);
-        log.info("{}: Removed document '{}' from repository of user '{}'", request.getRequestURI(), documentId, sessionUtil.getUser().getName());
         for (Collaborator collaborator : collaboratorDao.getCollaboratorsForDoc(document)) {
             collaboratorDao.removeCollaborator(collaborator);
             log.info("{}: Removed collaborator '{}' from document '{}'", request.getRequestURI(), collaborator.getId(), documentId);
         }
+
+        docDao.removeDoc(document);
+        log.info("{}: Removed document '{}' from repository of user '{}'", request.getRequestURI(), documentId, sessionUtil.getUser().getName());
 
         return new Success("Document was removed successfully").buildResponse();
     }
@@ -387,7 +388,7 @@ public class DocumentService extends RootService implements RestEndpoint {
         document.setRepo(newRepo);
         document.setUuser(newOwner);
         docDao.transferRepo(document);
-        log.info("{}: Transferred the ownership for document '{}' to user '{}'", request.getRequestURI(), document.getName(), newOwner.getName());
+        log.info("{}: Transferred the ownership for document '{}' to user '{}'", request.getRequestURI(), document.getName(), newOwnerName);
 
         return new Success("Ownership was transferred to '%s' successfully", newOwnerName).buildResponse();
     }

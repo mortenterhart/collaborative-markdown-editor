@@ -1,22 +1,22 @@
 package org.dhbw.mosbach.ai.cmd.crdt;
 
 import org.dhbw.mosbach.ai.cmd.model.Doc;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Testing the ActiveDocument class
  *
  * @author 3040018
  */
-public class TestActiveDocument {
+public class ActiveDocumentTest {
 
     private ActiveDocument activeDocument;
     private Message msg;
 
-    @BeforeEach
+    @Before
     public void init() {
         Doc doc = new Doc();
         doc.setId(1);

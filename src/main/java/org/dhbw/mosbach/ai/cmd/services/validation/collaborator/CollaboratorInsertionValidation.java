@@ -91,7 +91,7 @@ public class CollaboratorInsertionValidation implements ModelValidation<Collabor
         }
 
         final int documentId = model.getDocumentId();
-        final String collaboratorUsername = model.getCollaboratorName();
+        final String collaboratorUsername = model.getCollaboratorUsername();
 
         ValidationResult collaboratorUsernameSpecifiedCheck = basicFieldValidation.checkSpecified(PayloadParameters.COLLABORATOR_USERNAME, collaboratorUsername);
         if (collaboratorUsernameSpecifiedCheck.isInvalid()) {

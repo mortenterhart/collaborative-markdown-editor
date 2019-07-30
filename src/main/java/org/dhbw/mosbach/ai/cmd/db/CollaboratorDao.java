@@ -58,7 +58,7 @@ public class CollaboratorDao {
                     .setParameter("hasAccess", HasAccess.Y)
                     .getResultList();
         } catch (NoResultException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
             return null;
         }
 
@@ -82,7 +82,7 @@ public class CollaboratorDao {
                     .setParameter("hasAccess", HasAccess.Y)
                     .getResultList();
         } catch (NoResultException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
             return null;
         }
 

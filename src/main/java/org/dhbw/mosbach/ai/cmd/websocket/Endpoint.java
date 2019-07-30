@@ -11,6 +11,8 @@ import org.dhbw.mosbach.ai.cmd.model.History;
 import org.dhbw.mosbach.ai.cmd.security.Hashing;
 import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.dhbw.mosbach.ai.cmd.util.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.websocket.*;
@@ -27,6 +29,8 @@ import java.util.Map;
  */
 @ServerEndpoint(value = "/ws/{docId}/{username}/{userId}", encoders = { MessageEncoder.class }, decoders = { MessageDecoder.class })
 public class Endpoint {
+
+    private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
 
     /**
      * Active docs being worked on by n users
@@ -155,10 +159,10 @@ public class Endpoint {
     /**
      * Gets triggered on an error.
      *
-     * @param T Given Exception
+     * @param t Given Exception
      */
     @OnError
-    public void onError(Throwable T) {
-        T.printStackTrace();
+    public void onError(Throwable t) {
+        log.error(t.getLocalizedMessage(), t);
     }
 }

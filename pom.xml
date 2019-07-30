@@ -1,27 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.dhbw.mosbach.ai</groupId>
+
+    <groupId>org.dhbw.mosbach.ai.cmd</groupId>
     <artifactId>collaborative-markdown-editor</artifactId>
     <version>1.0.0</version>
+
     <packaging>war</packaging>
-    <name>${project.artifactId}</name>
+    <name>Collaborative Markdown Editor</name>
+    <description>A collaborative Markdown Editor built on top of Java EE and Vue.js</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Version Properties for Java, WildFly, MySQL connector and NodeJS -->
+        <!-- Software Versions -->
         <java.version>11</java.version>
         <wildfly.version>16.0.0.Final</wildfly.version>
-        <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
         <nodejs.version>v10.15.3</nodejs.version>
 
+        <!-- Dependency Versions -->
+        <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
+        <hibernate.version>5.2.6.Final</hibernate.version>
+        <jaxb.version>2.3.0</jaxb.version>
+        <jackson.version>2.9.9</jackson.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
+        <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+        <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+
+        <!-- Test Dependency Versions -->
+        <junit.version>4.12</junit.version>
+        <arquillian.version>1.4.0.Final</arquillian.version>
+        <arquillian-rest-client.version>1.0.0.Alpha4</arquillian-rest-client.version>
+        <resteasy.version>3.6.3.Final</resteasy.version>
+        <jacoco.version>0.8.4</jacoco.version>
+        <maven-surefire.version>3.0.0-M3</maven-surefire.version>
+
         <!-- Path properties for special directories -->
-        <webapp.directory>src/main/webapp</webapp.directory>
-        <nodejs.installation.directory>target</nodejs.installation.directory>
-        <frontend.directory>frontend</frontend.directory>
+        <webapp.directory>${project.basedir}/src/main/webapp</webapp.directory>
+        <nodejs.installation.directory>${project.basedir}/target</nodejs.installation.directory>
+        <frontend.directory>${project.basedir}/frontend</frontend.directory>
 
         <!-- Username and password for the WildFly administration user -->
         <wildfly.user.name>wildfly</wildfly.user.name>
@@ -29,20 +50,25 @@
 
         <!-- Properties for the MySQL datasource for WildFly -->
         <wildfly.datasource.name>cmdDS</wildfly.datasource.name>
-        <wildfly.datasource.jndi-name>java:/cmd</wildfly.datasource.jndi-name>
+        <wildfly.datasource.jndi-name>java:jboss/datasources/cmdDS</wildfly.datasource.jndi-name>
         <wildfly.datasource.jdbc.url>jdbc:mysql://localhost:3306/cmd?useSSL=false</wildfly.datasource.jdbc.url>
         <wildfly.datasource.username>root</wildfly.datasource.username>
         <wildfly.datasource.password>root</wildfly.datasource.password>
         <wildfly.mysql.driver-name>mysql-connector-java-${mysql-connector-java.version}</wildfly.mysql.driver-name>
 
-        <!-- Name of the WAR file when in deploy mode -->
+        <!-- Name of the WAR file in deployment mode -->
         <root.deploy.name>ROOT</root.deploy.name>
 
         <!-- Do not fail on missing web.xml -->
         <failOnMissingWebXml>false</failOnMissingWebXml>
+
+        <jboss.home>${project.basedir}/target/wildfly-${wildfly.version}</jboss.home>
+        <jboss.standalone.config>../../../../src/test/resources/arquillian-standalone-h2db.xml</jboss.standalone.config>
+        <extension.webdriver>phantomJS</extension.webdriver>
     </properties>
 
     <dependencies>
+        <!-- Runtime Dependencies -->
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>
             <groupId>mysql</groupId>
@@ -55,26 +81,31 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.2.6.Final</version>
+            <version>${hibernate.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.2.11</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>2.2.11</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.11</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
@@ -96,55 +127,204 @@
             <version>1.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.26</version>
+            <version>${slf4j.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.9</version>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.9</version>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
+            <version>${jbcrypt.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+
+        <!-- JUnit Test Dependencies -->
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.0-M1</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
+
+        <!-- Arquillian Test Dependencies -->
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.junit/arquillian-junit-container -->
         <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>1.1.0</version>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <version>${arquillian.version}</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.junit/arquillian-junit-core -->
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-core</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.test/arquillian-test-api -->
+        <dependency>
+            <groupId>org.jboss.arquillian.test</groupId>
+            <artifactId>arquillian-test-api</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.container/arquillian-container-test-api -->
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-test-api</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.protocol/arquillian-protocol-servlet -->
+        <dependency>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-persistence-api -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-api</artifactId>
+            <version>1.0.0.Alpha7</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-persistence-dbunit -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-dbunit</artifactId>
+            <version>1.0.0.Alpha7</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-rest-client-api -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-rest-client-api</artifactId>
+            <version>${arquillian-rest-client.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-rest-client-impl-3x -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-rest-client-impl-3x</artifactId>
+            <version>${arquillian-rest-client.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.dbunit/dbunit -->
+        <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>2.5.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.shrinkwrap/shrinkwrap-api -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.shrinkwrap.resolver/shrinkwrap-resolver-impl-maven -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-api-maven</artifactId>
+            <version>3.1.3</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.shrinkwrap.resolver/shrinkwrap-resolver-impl-maven -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${resteasy.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-servlet-initializer -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>${resteasy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson2-provider -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
+            <version>${resteasy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/org.jboss.arquillian/arquillian-bom -->
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <profiles>
+        <!-- Profile to be used for deployment to server in test or
+             production environment: generates a ROOT.war file so that
+             it can be deployed as root application to standalone WildFly -->
         <profile>
             <id>deployment</id>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-war-plugin</artifactId>
-                        <version>3.2.2</version>
+                        <version>${maven-war-plugin.version}</version>
                         <configuration>
                             <warName>${root.deploy.name}</warName>
                         </configuration>
@@ -152,14 +332,16 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- Profile for quicker builds skipping the long frontend build -->
         <profile>
-            <id>no-frontend-build</id>
+            <id>skip-frontend-build</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.7.6</version>
+                        <version>${frontend-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>node-and-npm-installation</id>
@@ -178,28 +360,150 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- Arquillian WildFly Managed profile -->
+        <profile>
+            <id>arquillian-wildfly-managed</id>
+
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/org.wildfly.arquillian/wildfly-arquillian-container-managed -->
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <version>2.2.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-phantom-driver -->
+                <dependency>
+                    <groupId>org.jboss.arquillian.extension</groupId>
+                    <artifactId>arquillian-phantom-driver</artifactId>
+                    <version>1.2.1.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <!-- Maven Dependency Plugin to download and unpack WildFly
+                         for the Arquillian integration tests -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.8</version>
+                        <executions>
+                            <execution>
+                                <id>wildfly-unpack</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <version>${wildfly.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.basedir}/target</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Maven Failsafe plugin for integration tests -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-surefire.version}</version>
+
+                        <configuration>
+                            <includes>
+                                <include>**/IT*.java</include>
+                                <include>**/*IT.java</include>
+                                <include>**/*ITCase.java</include>
+                            </includes>
+                            <properties>
+                                <property>
+                                    <name>listener</name>
+                                    <value>org.dhbw.mosbach.ai.cmd.extension.listener.FailsafeTestPrintListener</value>
+                                </property>
+                            </properties>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <systemPropertyVariables>
+                                        <arquillian.launch>wildfly-managed</arquillian.launch>
+                                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                        <jboss.home>${jboss.home}</jboss.home>
+                                        <module.path>${jboss.home}/modules</module.path>
+                                        <jboss.standalone.config>${jboss.standalone.config}</jboss.standalone.config>
+                                        <wildfly.datasource.name>${wildfly.datasource.name}</wildfly.datasource.name>
+                                        <wildfly.datasource.jndi-name>${wildfly.datasource.jndi-name}</wildfly.datasource.jndi-name>
+                                        <extension.webdriver>${extension.webdriver}</extension.webdriver>
+                                    </systemPropertyVariables>
+                                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
+
+            <!-- Maven Surefire Plugin to execute JUnit 4 tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.1.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.5.0-M1</version>
-                    </dependency>
-                </dependencies>
+                <version>${maven-surefire.version}</version>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.dhbw.mosbach.ai.cmd.extension.listener.SurefireTestPrintListener</value>
+                        </property>
+                        <excludes>
+                            <exclude>**/IT*.java</exclude>
+                            <exclude>**/*IT.java</exclude>
+                            <exclude>**/*ITCase.java</exclude>
+                        </excludes>
+                    </properties>
+                    <systemPropertyVariables>
+                        <!-- System properties for Arquillian to be used in
+                             arquillian.xml and arquillian-standalone-h2db.xml -->
+                        <arquillian.launch>wildfly-managed</arquillian.launch>
+                        <jboss.home>${jboss.home}</jboss.home>
+                        <module.path>${jboss.home}/modules</module.path>
+                        <jboss.standalone.config>${jboss.standalone.config}</jboss.standalone.config>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <wildfly.datasource.name>${wildfly.datasource.name}</wildfly.datasource.name>
+                        <wildfly.datasource.jndi-name>${wildfly.datasource.jndi-name}</wildfly.datasource.jndi-name>
+                        <extension.webdriver>${extension.webdriver}</extension.webdriver>
+                    </systemPropertyVariables>
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                </configuration>
             </plugin>
+
+            <!-- Wildfly Maven Deploy setup -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
@@ -262,7 +566,7 @@
                                     </properties>
                                 </resource>
                             </resources>
-                            <retryFailedDeploymentCount>1</retryFailedDeploymentCount>
+                            <retryFailedDeploymentCount>3</retryFailedDeploymentCount>
                         </configuration>
                     </execution>
 
@@ -276,10 +580,12 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- JaCoCo plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.3</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -296,9 +602,11 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Maven WAR plugin -->
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <attachClasses>true</attachClasses>
                     <webResources>
@@ -307,8 +615,11 @@
                             <filtering>true</filtering>
                         </resource>
                     </webResources>
+                    <failOnMissingWebXml>${failOnMissingWebXml}</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
+            <!-- Maven compiler plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
@@ -317,12 +628,14 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+
+            <!-- Frontend maven plugin for the Vue.js build -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <!-- Use the latest released version:
                 https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin -->
-                <version>1.7.6</version>
+                <version>${frontend-maven-plugin.version}</version>
 
                 <configuration>
                     <workingDirectory>${frontend.directory}</workingDirectory>
@@ -335,9 +648,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-
                         <phase>generate-resources</phase>
-
                         <configuration>
                             <nodeVersion>${nodejs.version}</nodeVersion>
                         </configuration>
@@ -348,9 +659,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-
                         <phase>generate-resources</phase>
-
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
@@ -361,9 +670,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-
                         <phase>generate-resources</phase>
-
                         <configuration>
                             <arguments>run build</arguments>
                         </configuration>

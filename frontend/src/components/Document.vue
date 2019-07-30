@@ -17,8 +17,8 @@
                     :alwaysScrollToBottom="alwaysScrollToBottom"
                     :messageStyling="messageStyling"></beautiful-chat>
             <v-flex d-flex xs12 md6 pr-2>
-                <MDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"
-                     @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"/>
+                <SimpleMDE :key="this.$store.state.app.editorKey" @contentWasChanged="content = $event"
+                     @sendWebSocketMessage="sendWebSocketMessage($event)" ref="editor"></SimpleMDE>
             </v-flex>
             <v-flex d-flex xs12 md6 pl-2>
                 <Preview :content="content"/>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-    import MDE from './Editor';
+    import SimpleMDE from './Editor';
     import Preview from './Preview';
     import axios from 'axios';
 
@@ -71,7 +71,7 @@
             }
         },
         components: {
-            MDE,
+            SimpleMDE,
             Preview
         },
         watch: {
@@ -169,7 +169,7 @@
                     return;
                 }
 
-                this.messageList = [...this.messageList, message];
+                this.messageList.push(message);
 
                 if (message.author === 'me') {
                     const msg = JSON.stringify({
@@ -185,7 +185,7 @@
             },
             handleUserCommand(message) {
                 if (!message.data.text || message.type === 'system' || !message.data.text.trim().startsWith('!')) {
-                    return false
+                    return false;
                 }
 
                 const command = message.data.text.trim().substring(1).toLowerCase();
@@ -226,7 +226,7 @@
             },
             getWebSocketURL() {
                 const wsProtocol = location.protocol.startsWith('https') ? 'wss' : 'ws';
-                const pathname = location.pathname.replace(/\/?$/, "");
+                const pathname = location.pathname.replace(/\/?$/, '');
                 const user = this.$store.state.login.user;
                 const wsPath = `${this.$route.params.id}/${user.name}/${user.id}`;
                 return `${wsProtocol}://${location.host}${pathname}/ws/${wsPath}`;

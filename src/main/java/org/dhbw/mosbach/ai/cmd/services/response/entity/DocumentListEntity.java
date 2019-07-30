@@ -1,5 +1,6 @@
 package org.dhbw.mosbach.ai.cmd.services.response.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
@@ -22,7 +23,10 @@ public class DocumentListEntity {
     @JsonProperty(value = ResponseParameters.COLLABORATOR_LIST, required = true)
     private final List<Collaborator> collaborators;
 
-    public DocumentListEntity(DocumentIcon icon, Doc document, List<Collaborator> collaborators) {
+    @JsonCreator
+    public DocumentListEntity(@JsonProperty(ResponseParameters.DOCUMENT_ICON) DocumentIcon icon,
+                              @JsonProperty(ResponseParameters.DOCUMENT) Doc document,
+                              @JsonProperty(ResponseParameters.COLLABORATOR_LIST) List<Collaborator> collaborators) {
         this.icon = icon;
         this.document = document;
         this.collaborators = collaborators;

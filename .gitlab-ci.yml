@@ -6,7 +6,7 @@ stages:
 lint_frontend:
     image: node:10.6
     stage: verify
-    script: cd frontend/ && npm run install && npm run lint
+    script: cd frontend/ && npm install && npm run lint
 
 build_app:
     stage: build

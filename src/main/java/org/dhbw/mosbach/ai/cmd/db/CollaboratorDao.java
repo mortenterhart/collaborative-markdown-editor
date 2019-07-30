@@ -53,12 +53,12 @@ public class CollaboratorDao {
 
         try {
             collaborators = (List<Collaborator>) this.em
-                .createQuery("SELECT c FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess=:hasAccess")
-                .setParameter("id", d.getId())
-                .setParameter("hasAccess", HasAccess.Y)
-                .getResultList();
+                    .createQuery("SELECT c FROM Collaborator c WHERE c.doc.id=:id AND c.hasAccess=:hasAccess")
+                    .setParameter("id", d.getId())
+                    .setParameter("hasAccess", HasAccess.Y)
+                    .getResultList();
         } catch (NoResultException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
             return null;
         }
 
@@ -77,12 +77,12 @@ public class CollaboratorDao {
 
         try {
             collaborators = (List<Collaborator>) this.em
-                .createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess=:hasAccess")
-                .setParameter("id", u.getId())
-                .setParameter("hasAccess", HasAccess.Y)
-                .getResultList();
+                    .createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:id AND c.hasAccess=:hasAccess")
+                    .setParameter("id", u.getId())
+                    .setParameter("hasAccess", HasAccess.Y)
+                    .getResultList();
         } catch (NoResultException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
             return null;
         }
 
@@ -101,11 +101,11 @@ public class CollaboratorDao {
 
         try {
             collaborator = (Collaborator) this.em
-                .createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id=:doc_id AND c.hasAccess=:hasAccess")
-                .setParameter("user_id", u.getId())
-                .setParameter("doc_id", d.getId())
-                .setParameter("hasAccess", HasAccess.Y)
-                .getSingleResult();
+                    .createQuery("SELECT c FROM Collaborator c WHERE c.user.id=:user_id AND c.doc.id=:doc_id AND c.hasAccess=:hasAccess")
+                    .setParameter("user_id", u.getId())
+                    .setParameter("doc_id", d.getId())
+                    .setParameter("hasAccess", HasAccess.Y)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -124,9 +124,9 @@ public class CollaboratorDao {
 
         try {
             collaborator = (Collaborator) this.em
-                .createQuery("SELECT c FROM Collaborator c WHERE c.id = :collaborator_id")
-                .setParameter("collaborator_id", id)
-                .getSingleResult();
+                    .createQuery("SELECT c FROM Collaborator c WHERE c.id = :collaborator_id")
+                    .setParameter("collaborator_id", id)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -142,12 +142,12 @@ public class CollaboratorDao {
      */
     @Transactional
     public int updateCollaborator(Collaborator c) {
-        log.debug("Updating collaborator: " + c.getId());
+        log.debug("Updating access of collaborator '{}' for document '{}' to '{}'", c.getId(), c.getDoc().getId(), c.hasAccess());
         return this.em.createQuery("UPDATE Collaborator c SET c.hasAccess=:hasAccess WHERE c.doc.id=:doc_id AND c.user.id=:user_id")
-                      .setParameter("hasAccess", c.getHasAccess())
-                      .setParameter("doc_id", c.getDoc().getId())
-                      .setParameter("user_id", c.getUser().getId())
-                      .executeUpdate();
+                .setParameter("hasAccess", c.hasAccess())
+                .setParameter("doc_id", c.getDoc().getId())
+                .setParameter("user_id", c.getUser().getId())
+                .executeUpdate();
     }
 
     /**
@@ -159,8 +159,9 @@ public class CollaboratorDao {
      */
     @Transactional
     public int removeCollaborator(Collaborator c) {
+        log.debug("Removing collaborator '{}' from document '{}'", c.getId(), c.getDoc().getId());
         return this.em.createQuery("DELETE FROM Collaborator c WHERE c.id = :collaboratorId")
-                      .setParameter("collaboratorId", c.getId())
-                      .executeUpdate();
+                .setParameter("collaboratorId", c.getId())
+                .executeUpdate();
     }
 }

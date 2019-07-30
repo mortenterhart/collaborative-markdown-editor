@@ -56,7 +56,6 @@ ehthumbs_vista.db
 [Dd]esktop.ini
 
 # Maven
-log/
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -77,3 +76,6 @@ src/main/webapp/img
 src/main/webapp/js
 src/main/webapp/favicon.ico
 src/main/webapp/index.html
+
+# Node modules
+frontend/node_modules/

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://jboss.org/schema/arquillian"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <defaultProtocol type="Servlet 3.0"/>
+
+    <container qualifier="wildfly-managed" mode="suite" default="true">
+        <configuration>
+            <property name="jbossHome">${jboss.home}</property>
+            <property name="serverConfig">${jboss.standalone.config:standalone.xml}</property>
+            <!-- use different ports -->
+            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Xms512m -Xmx1024m --add-modules java.se -showversion</property>
+            <property name="managementPort">19990</property>
+        </configuration>
+    </container>
+
+    <extension qualifier="persistence">
+        <property name="defaultDataSource">${wildfly.datasource.jndi-name}</property>
+        <property name="defaultTransactionMode">COMMIT</property>
+        <property name="defaultDataSeedStrategy">CLEAN_INSERT</property>
+    </extension>
+
+    <extension qualifier="persistence-dbunit">
+        <property name="datatypeFactory">org.dbunit.ext.h2.H2DataTypeFactory</property>
+        <property name="useIdentityInsert">true</property>
+        <property name="excludePoi">true</property>
+    </extension>
+
+    <extension qualifier="webdriver">
+        <property name="browser">${extension.webdriver}</property>
+    </extension>
+
+    <extension qualifier="systemproperties">
+        <property name="prefix">ARQUILLIAN_</property>
+    </extension>
+</arquillian>

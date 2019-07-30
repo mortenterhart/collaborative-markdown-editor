@@ -1,17 +1,18 @@
 package org.dhbw.mosbach.ai.cmd.services;
 
 import org.dhbw.mosbach.ai.cmd.db.CollaboratorDao;
-import org.dhbw.mosbach.ai.cmd.db.DocDao;
-import org.dhbw.mosbach.ai.cmd.db.UserDao;
 import org.dhbw.mosbach.ai.cmd.model.Collaborator;
 import org.dhbw.mosbach.ai.cmd.model.Doc;
 import org.dhbw.mosbach.ai.cmd.model.User;
-import org.dhbw.mosbach.ai.cmd.response.BadRequest;
-import org.dhbw.mosbach.ai.cmd.response.Success;
-import org.dhbw.mosbach.ai.cmd.response.Unauthorized;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorInsertionModel;
 import org.dhbw.mosbach.ai.cmd.services.payload.CollaboratorRemovalModel;
-import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
+import org.dhbw.mosbach.ai.cmd.services.response.Success;
+import org.dhbw.mosbach.ai.cmd.services.response.Unauthorized;
+import org.dhbw.mosbach.ai.cmd.services.validation.ValidationResult;
+import org.dhbw.mosbach.ai.cmd.services.validation.basic.BasicCollaboratorValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorInsertionValidation;
+import org.dhbw.mosbach.ai.cmd.services.validation.collaborator.CollaboratorRemovalValidation;
+import org.dhbw.mosbach.ai.cmd.session.SessionUtil;
 import org.dhbw.mosbach.ai.cmd.util.HasAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,60 +30,104 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * The {@code CollaboratorService} provides a REST compliant endpoint implementation
+ * for creation and removal of collaborators. A collaborator is a user that is
+ * contributing to a document owned by another user. The services provided within this
+ * endpoint allow the creation of new collaborations for a document and the removal
+ * of a certain collaborator from a document.
+ *
+ * All incoming requests are accurately validated by self-reliant validation functions
+ * residing in the package {@link org.dhbw.mosbach.ai.cmd.services.validation.collaborator}
+ * and cause a corresponding response to be sent back to the client. Request and response
+ * payloads are serialized and deserialized using JAX-RS annotations and their implementations
+ * and are provided using special payload and response models. Based on the applied request
+ * and the service conditions, the endpoint may return one of the following status codes:
+ *
+ * <ul>
+ * <li>{@code 200 OK}: The request was processed successfully and the desired operation
+ * was done.</li>
+ * <li>{@code 400 Bad Request}: The request contained invalid fields or some conditions were
+ * not met. The operation was aborted.</li>
+ * <li>{@code 401 Unauthorized}: The client is not authorized to perform some operation
+ * because he is not authenticated. He has to login first before proceeding.</li>
+ * <li>{@code 403 Forbidden}: The client is not permitted to access a specific document.</li>
+ * </ul>
+ *
+ * Both request and response are provided as JSON formatted fields.
+ *
+ * @author 6694964
+ * @version 1.3
+ *
+ * @see RestEndpoint
+ * @see BasicCollaboratorValidation
+ * @see CollaboratorInsertionValidation
+ * @see CollaboratorRemovalValidation
+ */
 @RequestScoped
 @Path(ServiceEndpoints.PATH_COLLABORATOR)
-public class CollaboratorService implements RestService {
+public class CollaboratorService extends RootService implements RestEndpoint {
 
+    /**
+     * Private logger instance for logging service operations
+     */
     private static final Logger log = LoggerFactory.getLogger(CollaboratorService.class);
 
-    @Inject
-    private DocDao docDao;
-
-    @Inject
-    private UserDao userDao;
-
+    /*
+     * Injected fields for collaborator creation and removal in the database
+     * and request validation
+     */
     @Inject
     private CollaboratorDao collaboratorDao;
 
-    @Context
-    private HttpServletRequest request;
+    @Inject
+    private CollaboratorInsertionValidation collaboratorInsertionValidation;
 
+    @Inject
+    private CollaboratorRemovalValidation collaboratorRemovalValidation;
+
+    /**
+     * The session utility is used to enable and simplify access to the user session.
+     */
+    @Inject
+    private SessionUtil sessionUtil;
+
+    /**
+     * Creates a new collaborator for a specific document by requiring the document id and the
+     * username of the collaborator. The service investigates if the referenced document and user
+     * exist and whether the requesting user has the right required to add a collaborator. That is
+     * because only the owner is permitted to add new collaborators to his document. Moreover, the
+     * owner cannot be added as collaborator himself.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param model   the request model containing the document id and the collaborator username
+     * @param request the injected request for URI information to be logged
+     * @return a {@code 200 OK} response if the collaborator could be added, otherwise
+     * {@code 400 Bad Request} if the request contained invalid fields or the user has no
+     * appropriate rights for this operation.
+     */
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response addCollaborator(@NotNull CollaboratorInsertionModel model) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+    public Response addCollaborator(@NotNull CollaboratorInsertionModel model, @Context HttpServletRequest request) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to add a collaborator.").buildResponse();
         }
 
-        int documentId = model.getDocumentId();
-        String collaboratorUsername = model.getCollaboratorName();
-
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
-
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
+        final ValidationResult collaboratorInsertionCheck = collaboratorInsertionValidation.validate(model);
+        if (collaboratorInsertionCheck.isInvalid()) {
+            return collaboratorInsertionCheck.buildResponse();
         }
 
-        User collaborator = userDao.getUserByName(collaboratorUsername);
-        if (collaborator == null) {
-            return new BadRequest(String.format("User '%s' does not exist. Please choose a valid username.", collaboratorUsername)).buildResponse();
-        }
+        final int documentId = model.getDocumentId();
+        final String collaboratorUsername = model.getCollaboratorUsername();
 
-        if (currentUser.getId() != document.getRepo().getOwner().getId()) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may add collaborators.").buildResponse();
-        }
-
-        if (collaborator.getId() == currentUser.getId()) {
-            return new BadRequest("The owner cannot be added as collaborator.").buildResponse();
-        }
-
-        if (collaboratorDao.getCollaborator(collaborator, document) != null) {
-            return new BadRequest(String.format("Collaborator '%s' was already added to this document.", collaboratorUsername)).buildResponse();
-        }
+        Doc document = collaboratorInsertionValidation.getDocument();
+        User collaborator = collaboratorInsertionValidation.getCollaborator();
 
         Collaborator newCollaborator = new Collaborator();
         newCollaborator.setDoc(document);
@@ -90,45 +135,48 @@ public class CollaboratorService implements RestService {
         newCollaborator.setHasAccess(HasAccess.Y);
 
         collaboratorDao.createCollaborator(newCollaborator);
+        log.info("{}: Created collaborator '{}' for document '{}'", request.getRequestURI(), collaboratorUsername, document.getName());
 
-        return new Success(String.format("The collaborator '%s' was successfully added to your document", collaboratorUsername)).buildResponse();
+        return new Success("The collaborator '%s' was successfully added to your document.", collaboratorUsername).buildResponse();
     }
 
+    /**
+     * Removes a previously added collaborator from a document by means of indicating the
+     * document id and collaborator id in the request. The service checks whether the document
+     * and the collaborator referenced by their corresponding ids exist and belong together.
+     * Moreover, the requesting user needs to be the owner to be able to remove a collaborator
+     * from his document. Thus, it only authorizes the owner to remove collaborators from his
+     * documents, but not from others.
+     *
+     * This operation can only be performed if the user is authenticated. An invocation without
+     * valid session will result in {@code 401 Unauthorized}.
+     *
+     * @param model   the request model containing the document id and collaborator id
+     * @param request the injected request for URI information to be logged
+     * @return a {@code 200 OK} response if the specified collaborator could be removed, otherwise
+     * {@code 400 Bad Request} if the request contained invalid fields or the requesting user
+     * has not the appropriate rights for this operation.
+     */
     @DELETE
     @Path("/remove")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @NotNull
-    public Response removeCollaborator(@NotNull CollaboratorRemovalModel model) {
-        if (request.getSession().getAttribute(CmdConfig.SESSION_USER) == null) {
+    public Response removeCollaborator(@NotNull CollaboratorRemovalModel model, @Context HttpServletRequest request) {
+        if (!sessionUtil.isLoggedIn()) {
             return new Unauthorized("You have to login to be able to remove a collaborator.").buildResponse();
         }
 
-        User currentUser = (User) request.getSession().getAttribute(CmdConfig.SESSION_USER);
-
-        int documentId = model.getDocumentId();
-        int collaboratorId = model.getCollaboratorId();
-
-        Doc document = docDao.getDoc(documentId);
-        if (document == null) {
-            return new BadRequest(String.format("Document with id '%d' does not exist.", documentId)).buildResponse();
+        final ValidationResult collaboratorRemovalCheck = collaboratorRemovalValidation.validate(model);
+        if (collaboratorRemovalCheck.isInvalid()) {
+            return collaboratorRemovalCheck.buildResponse();
         }
 
-        Collaborator collaborator = collaboratorDao.getCollaborator(collaboratorId);
-        if (collaborator == null) {
-            return new BadRequest(String.format("Collaborator '%d' does not exist.", collaboratorId)).buildResponse();
-        }
-
-        if (documentId != collaborator.getDoc().getId()) {
-            return new BadRequest(String.format("Collaborator '%s' does not belong to this document and thus cannot be removed.", collaborator.getUser().getName())).buildResponse();
-        }
-
-        if (currentUser.getId() != document.getRepo().getOwner().getId() && currentUser.getId() != collaborator.getUser().getId()) {
-            return new BadRequest("You are unauthorized. Only the owner of this document may remove collaborators.").buildResponse();
-        }
+        Collaborator collaborator = collaboratorRemovalValidation.getCollaborator();
 
         collaboratorDao.removeCollaborator(collaborator);
+        log.info("{}: Removed collaborator '{}' from document '{}'", request.getRequestURI(), collaborator.getUser().getName(), collaborator.getDoc().getName());
 
-        return new Success(String.format("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName())).buildResponse();
+        return new Success("The collaborator '%s' was successfully removed from your document.", collaborator.getUser().getName()).buildResponse();
     }
 }

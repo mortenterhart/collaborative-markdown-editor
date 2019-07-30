@@ -1,15 +1,21 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+/**
+ * @author 6694964
+ * @version 1.2
+ */
+public class DocumentRemovalModel implements Payload {
 
-@XmlRootElement
-public class DocumentRemovalModel {
-
-    @XmlElement(name = JsonParameters.DOCUMENT_ID, required = true)
+    @JsonProperty(value = PayloadParameters.DOCUMENT_ID, required = true)
     private int documentId;
+
+    @JsonCreator
+    public DocumentRemovalModel(@JsonProperty(PayloadParameters.DOCUMENT_ID) int documentId) {
+        this.documentId = documentId;
+    }
 
     public int getDocumentId() {
         return documentId;

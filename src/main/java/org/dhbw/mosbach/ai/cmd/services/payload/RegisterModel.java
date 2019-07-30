@@ -1,21 +1,31 @@
 package org.dhbw.mosbach.ai.cmd.services.payload;
 
-import org.dhbw.mosbach.ai.cmd.services.JsonParameters;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
+/**
+ * @author 6694964
+ * @version 1.2
+ */
 public class RegisterModel implements Payload {
 
-    @XmlElement(name = JsonParameters.USERNAME, required = true)
+    @JsonProperty(value = PayloadParameters.USERNAME, required = true)
     private String username;
 
-    @XmlElement(name = JsonParameters.EMAIL, required = true)
+    @JsonProperty(value = PayloadParameters.EMAIL, required = true)
     private String email;
 
-    @XmlElement(name = JsonParameters.PASSWORD, required = true)
+    @JsonProperty(value = PayloadParameters.PASSWORD, required = true)
     private String password;
+
+    @JsonCreator
+    public RegisterModel(@JsonProperty(PayloadParameters.USERNAME) String username,
+                         @JsonProperty(PayloadParameters.EMAIL) String email,
+                         @JsonProperty(PayloadParameters.PASSWORD) String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;

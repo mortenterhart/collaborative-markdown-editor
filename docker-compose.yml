@@ -1,0 +1,63 @@
+# Docker-Compose file for the Collaborative Markdown Editor
+#
+# This compose file defines the 'webapp' and 'mysql' services
+# which are automatically built using the Dockerfiles and
+# configured using external scripts from the repository.
+
+version: "3.6"
+
+services:
+    webapp:
+        image: "cmd-wildfly-webapp:latest"
+        hostname: cmd-wildfly-instance
+        container_name: cmd-wildfly-webapp
+        build:
+            context: .
+            dockerfile: Dockerfile.wildfly
+            args:
+                buildno: 1
+        ports:
+            - "8080:8080"
+        links:
+            - "mysql:mysql-instance"
+        networks:
+          - cmd_network
+        restart: on-failure
+        depends_on:
+            - mysql
+
+    mysql:
+        image: "cmd-mysql-db:latest"
+        hostname: mysql-instance
+        container_name: cmd-mysql-instance
+        build:
+            context: .
+            dockerfile: Dockerfile.mysql
+            args:
+                buildno: 2
+        deploy:
+            mode: replicated
+            replicas: 5
+            restart_policy:
+                condition: on-failure
+        volumes:
+            - type: volume
+              source: mysql_data
+              target: /var/lib/mysql
+              volume:
+                  nocopy: true
+        networks:
+          - cmd_network
+        ports:
+            - "3306:3306"
+        restart: on-failure
+
+volumes:
+    mysql_data:
+        name: cmd-mysql-data
+        labels:
+            org.dhbw.mosbach.cmd.license: LGPL 3.0
+
+networks:
+    cmd_network:
+      name: cmd-network

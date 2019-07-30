@@ -1,0 +1,35 @@
+{
+  "name": "Collaborative Markdown Editor",
+  "description": "A collaborative Markdown Editor to write documents with other people and share ideas",
+  "website": "https://collaborative-markdown-editor.herokuapp.com",
+  "repository": "https://github.com/MSkrzypietz/collaborative-markdown-editor",
+  "logo": "https://raw.githubusercontent.com/MSkrzypietz/collaborative-markdown-editor/master/frontend/src/assets/cmd_logo.png",
+
+  "scripts": {
+    "postdeploy": "./mvnw clean"
+  },
+
+  "env": {
+    "MAVEN_CUSTOM_OPTS": {
+      "value": "-P deployment -DskipTests -Dit.skipTests",
+      "description": "Maven options to build in deployment mode and to skip tests",
+      "required": true
+    }
+  },
+
+  "addons": [
+    "heroku-postgresql"
+  ],
+
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    },
+    {
+      "url": "https://github.com/mortenterhart/heroku-buildpack-wildfly"
+    },
+    {
+      "url": "https://github.com/mortenterhart/heroku-buildpack-wildfly-postgresql"
+    }
+  ]
+}

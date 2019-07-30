@@ -43,7 +43,7 @@ public class UserDao {
 
         repoDao.createRepo(repo);
 
-        log.debug("Created a new user in database");
+        log.debug("Created new user '{}' in database", u.getName());
     }
 
     /**
@@ -57,16 +57,16 @@ public class UserDao {
 
         try {
             user = (User) this.em
-                .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
-                .setParameter("username", username.toLowerCase())
-                .getSingleResult();
+                    .createQuery("SELECT u FROM User u WHERE LOWER(u.name)=:username")
+                    .setParameter("username", username.toLowerCase())
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
 
         return user;
     }
-    
+
     /**
      * Get a user entry from the database based on the provided id.
      *
@@ -78,13 +78,30 @@ public class UserDao {
 
         try {
             user = (User) this.em
-                .createQuery("SELECT u FROM User u WHERE u.id=:id")
-                .setParameter("id", id)
-                .getSingleResult();
+                    .createQuery("SELECT u FROM User u WHERE u.id=:id")
+                    .setParameter("id", id)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
 
         return user;
+    }
+
+    /**
+     * Update the username, mail and password of a certain user
+     *
+     * @param user the user
+     * @return The number of updated rows
+     */
+    @Transactional
+    public int updateUser(User user) {
+        log.debug("Updated user '{}' with name, mail and password", user.getName());
+        return this.em.createQuery("UPDATE User u SET u.name=:name, u.mail=:mail, u.password=:password WHERE u.id=:id")
+                      .setParameter("name", user.getName())
+                      .setParameter("mail", user.getMail())
+                      .setParameter("password", user.getPassword())
+                      .setParameter("id", user.getId())
+                      .executeUpdate();
     }
 }

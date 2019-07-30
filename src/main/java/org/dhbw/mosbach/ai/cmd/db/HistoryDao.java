@@ -6,14 +6,13 @@ import org.dhbw.mosbach.ai.cmd.util.CmdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dao class for history interactions with the database
@@ -37,11 +36,12 @@ public class HistoryDao {
      */
     @Transactional
     public void createHistory(History h) {
-    	History latestHistory = getLatestHistoryForDoc(h.getDoc());
+        History latestHistory = getLatestHistoryForDoc(h.getDoc());
 
-    	if(latestHistory != null && latestHistory.getHash().equals(h.getHash()))
-    		return;
-    
+        if (latestHistory != null && latestHistory.getHash().equals(h.getHash())) {
+            return;
+        }
+
         this.em.persist(h);
 
         log.debug("Created a new history entry in database");
@@ -49,46 +49,49 @@ public class HistoryDao {
 
     /**
      * Get the latest history entry for a given document
+     *
      * @param d Given doc object
      * @return A history object, if an entry was found, null otherwise
      */
-	@SuppressWarnings("unchecked")
-	public History getLatestHistoryForDoc(Doc d) {
-    	List<History> history = null;
+    @SuppressWarnings("unchecked")
+    public History getLatestHistoryForDoc(Doc d) {
+        List<History> history = null;
 
         try {
-        	history = (List<History>) this.em
-                   .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
-                   .setParameter("doc_id", d.getId())
-                   .getResultList();
-           if(history == null || history.isEmpty())
-        	   return null;
+            history = (List<History>) this.em
+                    .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                    .setParameter("doc_id", d.getId())
+                    .getResultList();
+            if (history == null || history.isEmpty()) {
+                return null;
+            }
         } catch (NoResultException e) {
             return null;
         }
 
         return history.get(0);
     }
-    
-	/**
-	 * Gets a full list of a documents history
-	 * @param d Given document
-	 * @return A list of history entries if there are any, null otherwise
-	 */
+
+    /**
+     * Gets a full list of a documents history
+     *
+     * @param d Given document
+     * @return A list of history entries if there are any, null otherwise
+     */
     @SuppressWarnings("unchecked")
     @Transactional
-	public List<History> getFullHistoryForDoc(Doc d) {
-    	List<History> fullHistory = new ArrayList<>();
-    	
-    	try {
-    		fullHistory = (List<History>) this.em
-                   .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
-                   .setParameter("doc_id", d.getId())
-                   .getResultList();
+    public List<History> getFullHistoryForDoc(Doc d) {
+        List<History> fullHistory = new ArrayList<>();
+
+        try {
+            fullHistory = (List<History>) this.em
+                    .createQuery("Select h FROM History h WHERE h.doc.id=:doc_id ORDER BY h.ctime DESC")
+                    .setParameter("doc_id", d.getId())
+                    .getResultList();
         } catch (NoResultException e) {
             return null;
         }
-    	
-    	return fullHistory;
+
+        return fullHistory;
     }
 }

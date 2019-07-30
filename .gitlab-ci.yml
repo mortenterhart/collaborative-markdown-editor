@@ -1,11 +1,10 @@
-image: maven:3.6.1-jdk-11
-
 stages:
     - verify
     - build
     - test
 
 lint_frontend:
+    image: node:10.6
     stage: verify
     script: cd frontend/ && npm run install && npm run lint
 
@@ -14,10 +13,13 @@ build_app:
     script: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -V
 
 run_tests:
+    image: node:10.16
     stage: test
     script:
         - cd frontend/ && npm run test
         - ./mvnw verify -P skip-frontend-build,arquillian-wildfly-managed
     artifacts:
         paths:
-            - target/CMD.war
+            - target/CMD.waro
+
+

@@ -13,7 +13,7 @@ services:
         container_name: cmd-wildfly-webapp
         build:
             context: .
-            dockerfile: Dockerfile.wildfly
+            dockerfile: Dockerfile
             args:
                 buildno: 1
         ports:
@@ -27,14 +27,15 @@ services:
             - mysql
 
     mysql:
-        image: "cmd-mysql-db:latest"
+        image: "mysql:8.0.15"
         hostname: mysql-instance
         container_name: cmd-mysql-instance
-        build:
-            context: .
-            dockerfile: Dockerfile.mysql
-            args:
-                buildno: 2
+        environment:
+            MYSQL_ROOT_PASSWORD: mysqlroot
+            MYSQL_USER: mysqluser
+            MYSQL_PASSWORD: mysqlpass
+            MYSQL_DATABASE: cmd
+            MYSQL_PORT: 3306
         deploy:
             mode: replicated
             replicas: 5

@@ -41,4 +41,3 @@ run_docker_build:
     stage: test
     script:
         - docker-compose build
-

@@ -56,9 +56,17 @@ ENV APP_DIR ./collaborative-markdown-editor
 
 RUN echo "Build Number: ${buildno}"
 
-# Execute the configuration script to add MySQL driver
+# Add the configuration script to add MySQL driver
 # and datasource to the WildFly instance
 COPY docker/scripts/jboss-configure-mysql-datasource.sh .
+
+# Switch temporarily to root to get the permission to
+# make the configuration script executable
+USER root
+RUN chmod +x ./jboss-configure-mysql-datasource.sh
+USER jboss
+
+# Execute the configuration script
 RUN ./jboss-configure-mysql-datasource.sh
 
 # Remove the script

@@ -61,4 +61,4 @@ volumes:
 
 networks:
     cmd_network:
-      name: cmd-network
+      name: cmd_network

@@ -7,7 +7,7 @@ build:
 run:
     web:
         command:
-            - $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 -Djboss.http.port=$PORT
+            - /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 -Djboss.http.port=$PORT
     mysql:
         command:
             - mysqld

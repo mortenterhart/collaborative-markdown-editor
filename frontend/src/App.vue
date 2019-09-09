@@ -69,7 +69,7 @@
 </template>
 
 <script>
-    import Login from './components/Login'
+    import Login from './components/Login';
     import Drawer from "./components/Drawer";
 
     export default {

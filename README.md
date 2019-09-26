@@ -90,6 +90,8 @@ Your Wildfly should now be deploying your application and you can verify by visi
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+**Warning**: The build process for Heroku as well as for Docker may take some time (around 3 minutes).
+
 ## Architecture
 
 ### Client-Server-Model

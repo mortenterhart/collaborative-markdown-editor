@@ -38,7 +38,7 @@
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.4.0.Final</arquillian.version>
         <arquillian-rest-client.version>1.0.0.Alpha4</arquillian-rest-client.version>
-        <resteasy.version>3.6.3.Final</resteasy.version>
+        <resteasy.version>4.5.7.Final</resteasy.version>
         <jacoco.version>0.8.4</jacoco.version>
         <maven-surefire.version>3.0.0-M3</maven-surefire.version>
 

@@ -1,4 +1,7 @@
-# Collaborative MarkDown Editor
+# Collaborative Markdown Editor [![Build Status](https://travis-ci.com/mortenterhart/collaborative-markdown-editor.svg?branch=master)](https://travis-ci.com/mortenterhart/collaborative-markdown-editor)
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://deploy.zeet.co/collaborative-markdown-editor.svg)](https://deploy.zeet.co/?url=https://github.com/mortenterhart/collaborative-markdown-editor)
 
 A Markdown Editor with collaboration capabilities. Start with new documents, add your friends and
 colleagues to your document and share amazing ideas.
@@ -85,12 +88,6 @@ mvn wildfly:deploy -P deployment -DskipTests=true
 ```
 
 Your Wildfly should now be deploying your application and you can verify by visiting http://localhost:8080.
-
-## Deployment
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-**Warning**: The build process for Heroku as well as for Docker may take some time (around 3 minutes).
 
 ## Architecture
 

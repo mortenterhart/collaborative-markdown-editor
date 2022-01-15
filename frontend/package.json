@@ -13,7 +13,7 @@
     "core-js": "^2.6.9",
     "debounce": "^1.2.0",
     "js-cookie": "^2.2.1",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "vue": "^2.6.6",
     "vue-axios": "^2.1.4",
     "vue-beautiful-chat": "git+https://github.com/MSkrzypietz/vue-beautiful-chat.git",

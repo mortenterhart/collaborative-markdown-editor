@@ -25,7 +25,7 @@
         <nodejs.version>v10.15.3</nodejs.version>
 
         <!-- Dependency Versions -->
-        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <hibernate.version>5.2.6.Final</hibernate.version>
         <jaxb.version>2.3.0</jaxb.version>
         <jackson.version>2.10.0</jackson.version>
